@@ -1,0 +1,321 @@
+check,status,detail
+raw_metadata_matches_integrity_stage,PASS,"All raw paths, sizes and mtime_ns; no test pixels read for rehashing"
+test_access_disabled,PASS,Runner has no test-evaluation entry point; audit hook blocks test and unregistered raw reads
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r224_baseline_none_ce_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r224_baseline_none_ce_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r224_baseline_none_ce_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_minimal_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_moderate_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ce_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ce_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ce_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_focal_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_focal_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_focal_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_focal_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_focal_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_focal_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_ordinal_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_baseline_none_weighted_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_crop_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_crop_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_crop_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r384_crop_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r384_crop_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r384_crop_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r512_baseline_none_ce_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r512_baseline_none_ce_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r512_baseline_none_ce_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r768_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r768_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r768_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_convnext_tiny_r768_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_convnext_tiny_r768_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_convnext_tiny_r768_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_efficientnet_b0_r224_baseline_none_ce_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_efficientnet_b0_r224_baseline_none_ce_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_efficientnet_b0_r224_baseline_none_ce_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_resnet50_r224_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_resnet50_r224_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_resnet50_r224_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_resnet50_r224_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_resnet50_r224_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_resnet50_r224_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_swin_t_r224_baseline_none_ce_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_swin_t_r224_baseline_none_ce_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_swin_t_r224_baseline_none_ce_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_fine_swin_t_r224_baseline_none_ce_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_fine_swin_t_r224_baseline_none_ce_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_fine_swin_t_r224_baseline_none_ce_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r224_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r224_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r224_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_crop_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_crop_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_crop_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r384_crop_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r384_crop_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r384_crop_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r512_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r512_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r512_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r768_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r768_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r768_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_convnext_tiny_r768_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_convnext_tiny_r768_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_convnext_tiny_r768_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_efficientnet_b0_r224_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_efficientnet_b0_r224_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_efficientnet_b0_r224_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_resnet50_r224_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_resnet50_r224_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_resnet50_r224_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f0_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f0_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f0_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f0_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f0_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f0_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f1_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f1_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f1_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f1_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f1_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f1_s29,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f2_s17,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f2_s17,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f2_s17,PASS,Recorded fit configuration and checkpoint present
+predictions_frozen_swin_t_r224_baseline_f2_s29,PASS,"Development membership, fold, labels, probabilities and recomputed metrics"
+finite_training_frozen_swin_t_r224_baseline_f2_s29,PASS,Finite fitting history; no invalid epoch hidden in checkpoint selection
+config_frozen_swin_t_r224_baseline_f2_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_DeepLabV3Plus_full512_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_DeepLabV3Plus_full512_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_DeepLabV3Plus_full512_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_DeepLabV3Plus_full512_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_DeepLabV3Plus_full512_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_DeepLabV3Plus_full512_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Segformer_full512_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Segformer_full512_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Segformer_full512_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Segformer_full512_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Segformer_full512_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Segformer_full512_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_UnetPlusPlus_full512_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_UnetPlusPlus_full512_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_UnetPlusPlus_full512_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_UnetPlusPlus_full512_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_UnetPlusPlus_full512_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_UnetPlusPlus_full512_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_full512_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_full512_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_full512_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_full512_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_full512_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_full512_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_full512_bce_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_full512_bce_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_full512_bce_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_full512_bce_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_full512_bce_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_full512_bce_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch256_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch256_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch256_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch256_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch256_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch256_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch256_bce_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch256_bce_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch256_bce_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch256_bce_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch256_bce_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch256_bce_s29,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch512_bce_dice_s17,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch512_bce_dice_s17,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch512_bce_dice_s17,PASS,Recorded fit configuration and checkpoint present
+finite_training_seg_Unet_patch512_bce_dice_s29,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_seg_Unet_patch512_bce_dice_s29,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_seg_Unet_patch512_bce_dice_s29,PASS,Recorded fit configuration and checkpoint present
+probe_excluded_from_primary_ma_Unet_full512_weighted_bce_tversky_e12_s17,PASS,"Exploratory AMP probe not in primary MA comparison; finite training, but matched primary suite rerun in FP32"
+finite_training_ma_Unet_full512_weighted_bce_tversky_e12_s17_fp32,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_ma_Unet_full512_weighted_bce_tversky_e12_s17_fp32,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_ma_Unet_full512_weighted_bce_tversky_e12_s17_fp32,PASS,Recorded fit configuration and checkpoint present
+probe_excluded_from_primary_ma_Unet_full512_weighted_bce_tversky_e12_s29,PASS,"Exploratory AMP probe not in primary MA comparison; finite training, but matched primary suite rerun in FP32"
+finite_training_ma_Unet_full512_weighted_bce_tversky_e12_s29_fp32,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_ma_Unet_full512_weighted_bce_tversky_e12_s29_fp32,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_ma_Unet_full512_weighted_bce_tversky_e12_s29_fp32,PASS,Recorded fit configuration and checkpoint present
+probe_excluded_from_primary_ma_Unet_patch256_weighted_bce_tversky_e12_s17,PASS,"Exploratory AMP probe not in primary MA comparison; finite training, but matched primary suite rerun in FP32"
+finite_training_ma_Unet_patch256_weighted_bce_tversky_e12_s17_fp32,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_ma_Unet_patch256_weighted_bce_tversky_e12_s17_fp32,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_ma_Unet_patch256_weighted_bce_tversky_e12_s17_fp32,PASS,Recorded fit configuration and checkpoint present
+probe_excluded_from_primary_ma_Unet_patch256_weighted_bce_tversky_e12_s29,PASS,"Exploratory AMP probe not in primary MA comparison; Nonfinite training loss; original thresholded zero scores are INVALID and excluded, not genuine zero capability."
+finite_training_ma_Unet_patch256_weighted_bce_tversky_e12_s29_fp32,PASS,Nonfinite losses invalidate a run; they cannot be scored as empty-mask predictions
+native_segmentation_ma_Unet_patch256_weighted_bce_tversky_e12_s29_fp32,PASS,Every available validation annotation once; missing supervision excluded; native reference areas match audit; component matching bounded
+config_ma_Unet_patch256_weighted_bce_tversky_e12_s29_fp32,PASS,Recorded fit configuration and checkpoint present
+recorded_raw_image_reads_in_scope,PASS,2070 raw image cache source access records; audit hook separately enforces all other image/mask reads
+no_image_content_overlap_grading_folds,PASS,404 unique development contents; patient independence still unknown
+segmentation_split_before_patches,PASS,"Native image identities, not extracted patches, define train/validation"
+grader_four_families_tested,PASS,All required grading families have actual results
+frozen_three_folds_two_seeds_all_families,PASS,"24 head fits, not 24 architecture families"
+controlled_common_screen_two_seeds_all_families,PASS,"Same development fold, seeds, input, objective and budget"
+segmenter_four_families_tested,PASS,"{'Segformer', 'UnetPlusPlus', 'DeepLabV3Plus', 'Unet'}"
+matched_MA_FP32_suite_complete,PASS,Two input modes × two seeds; exploratory AMP probes excluded

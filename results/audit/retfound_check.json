@@ -1,0 +1,38 @@
+{
+  "repo": "YukunZhou/RETFound_mae_natureCFP",
+  "revision": "556830f78214f0e8da35af965292ac5a3180ac47",
+  "file": "RETFound_mae_natureCFP.pth",
+  "bytes": 3952489221,
+  "sha256": "e1e4f66a1b792eeb6e2efaf158f33be35c8255f36b3d17ed67cd5129da246485",
+  "sha256_matches_hf_lfs": true,
+  "checkpoint_top_keys": [
+    "model",
+    "optimizer",
+    "epoch",
+    "scaler",
+    "args"
+  ],
+  "state_keys": 398,
+  "dropped_unused": 106,
+  "dropped_prefixes": [
+    "decoder_blocks",
+    "decoder_embed",
+    "decoder_norm",
+    "decoder_pos_embed",
+    "decoder_pred",
+    "mask_token",
+    "norm"
+  ],
+  "missing_keys": [
+    "fc_norm.weight",
+    "fc_norm.bias",
+    "head.weight",
+    "head.bias"
+  ],
+  "unexpected_keys": [],
+  "encoder_params_m": 303.3,
+  "forward_output_shape": [
+    1,
+    5
+  ]
+}

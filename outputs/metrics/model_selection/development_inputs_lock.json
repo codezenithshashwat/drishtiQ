@@ -1,0 +1,7 @@
+{
+  "data/interim/manifests/idrid_grading_train_clean.csv": "467fb3f2af9e3eca020a3d9c9eb1aa3647dad4c149e55d8f18f9ef7e45dae5f1",
+  "data/interim/manifests/idrid_grading_excluded.csv": "e86aa2913cd7dfe7a1f7b2ba9a6fbbec9fe52a96dc8768806b7d4d955cee0533",
+  "outputs/metrics/idrid_segmentation_annotation_policy.csv": "0ddb0d8b7cc17d608f36e8e3b877b9e80d7ae9fd48318db8a4e19d68e6ceba2b",
+  "outputs/metrics/idrid_cross_task_mapping_review.csv": "3200945257b22a56c1adc319953a387871931f35fa3c6c7c7a10ba01d8eb99ac",
+  "outputs/metrics/idrid_integrity_resolution_raw_after.json": "1b46b066647db1b77ca354b05317803059f85c144aa46e921cdc613a2f3475c7"
+}

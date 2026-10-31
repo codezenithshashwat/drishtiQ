@@ -1,0 +1,42 @@
+[
+  {
+    "file": "outputs\\metrics\\model_selection\\features_convnext_tiny_224_baseline.npz",
+    "numeric_feature_sha256_unchanged": "b45b5785bf9bb2a50477ddca99fa829bb88048e956dd0d01d625352390682eeb",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_convnext_tiny_384_baseline.npz",
+    "numeric_feature_sha256_unchanged": "52feb14a9758e2ff65445095653152514fcd30d4efe2a885a0f26e4aae22887f",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_convnext_tiny_384_crop.npz",
+    "numeric_feature_sha256_unchanged": "49f15af59d744da00cf248cc508dba91e4afd4d874102f04bdfca2f53616e3e2",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_convnext_tiny_512_baseline.npz",
+    "numeric_feature_sha256_unchanged": "04901ca1eccb488287a9030b4cd291fe9212ea0900d2ad7692e4acb0a0ebbc44",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_convnext_tiny_768_baseline.npz",
+    "numeric_feature_sha256_unchanged": "94b6312d33186936f2964f1a537fc4db39bfddfda7a6751b80f9c50a9dc7e23d",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_efficientnet_b0_224_baseline.npz",
+    "numeric_feature_sha256_unchanged": "fd60bc38f6b61a065ea21316f5d05fac5c44e72b4209d31180455f6ac46338a9",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_resnet50_224_baseline.npz",
+    "numeric_feature_sha256_unchanged": "53542e499b59fa4d40171fc798dbb4d5d1ca65f96e2767b05d5873cb888b51c6",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  },
+  {
+    "file": "outputs\\metrics\\model_selection\\features_swin_t_224_baseline.npz",
+    "numeric_feature_sha256_unchanged": "ae6a0009ec06875ec8dc0ec02f8cf8ec51a185092c92e7119690cafb78ef4f3f",
+    "change": "object-string metadata converted to Unicode; feature values unchanged"
+  }
+]

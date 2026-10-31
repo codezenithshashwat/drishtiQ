@@ -1,0 +1,103 @@
+{
+  "tag": "frozen_convnext_tiny_r384_baseline_f1_s29",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 29,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 4,
+  "epochs_run": 17,
+  "training_seconds": 0.32141439999395516,
+  "train_macro_f1": 0.8926988265971317,
+  "overfit_gap": 0.42249330499023513,
+  "accuracy": 0.5851851851851851,
+  "balanced_accuracy": 0.47704545454545455,
+  "macro_f1": 0.4702055216068966,
+  "weighted_f1": 0.594108568830938,
+  "qwk": 0.7156713315782182,
+  "mae_grade": 0.6074074074074074,
+  "distance_ge2_rate": 0.14074074074074075,
+  "high_grade_to_0_or_1_rate": 0.05,
+  "grade0_to_3_or_4_count": 3,
+  "nll": 1.6640000851011127,
+  "brier": 0.6504573439951389,
+  "ece_10_bins": 0.2491634443729771,
+  "minority_grade1_recall": 0.16666666666666666,
+  "roc_auc_ovr_macro": 0.8269412164501084,
+  "confusion_matrix": [
+    [
+      36,
+      3,
+      3,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      1,
+      2,
+      0
+    ],
+    [
+      3,
+      3,
+      23,
+      9,
+      6
+    ],
+    [
+      2,
+      0,
+      6,
+      14,
+      2
+    ],
+    [
+      0,
+      0,
+      0,
+      11,
+      5
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.8372093023255814,
+      "recall": 0.8,
+      "specificity": 0.9222222222222223,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.14285714285714285,
+      "recall": 0.16666666666666666,
+      "specificity": 0.9534883720930233,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.696969696969697,
+      "recall": 0.5227272727272727,
+      "specificity": 0.8901098901098901,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.3783783783783784,
+      "recall": 0.5833333333333334,
+      "specificity": 0.7927927927927928,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.3333333333333333,
+      "recall": 0.3125,
+      "specificity": 0.9159663865546218,
+      "support": 16
+    }
+  ],
+  "scoring_numerics": "float64 row renormalization for round-trip epsilon; explicit NLL floor 1e-12; no fitted calibration"
+}

@@ -1,0 +1,7 @@
+{
+  "cases": 500,
+  "render_ms": 811.0,
+  "api_ms": 762.0,
+  "method": "browser: navigation start to all table rows rendered; api: GET /api/cases",
+  "note": "measurement only; nothing tuned"
+}

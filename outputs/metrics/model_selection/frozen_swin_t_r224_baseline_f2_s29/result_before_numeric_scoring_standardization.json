@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_swin_t_r224_baseline_f2_s29",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 2,
+  "seed": 29,
+  "training_images": 270,
+  "validation_images": 134,
+  "best_epoch": 4,
+  "epochs_run": 17,
+  "training_seconds": 0.5591435999958776,
+  "train_macro_f1": 0.8884935956221558,
+  "overfit_gap": 0.40005604942851203,
+  "accuracy": 0.582089552238806,
+  "balanced_accuracy": 0.48977272727272725,
+  "macro_f1": 0.48843754619364377,
+  "weighted_f1": 0.5698906796394965,
+  "qwk": 0.7016586886340865,
+  "mae_grade": 0.6417910447761194,
+  "distance_ge2_rate": 0.1865671641791045,
+  "high_grade_to_0_or_1_rate": 0.075,
+  "grade0_to_3_or_4_count": 0,
+  "nll": 1.5101213455200195,
+  "brier": 0.652165697610509,
+  "ece_10_bins": 0.22427856277174024,
+  "minority_grade1_recall": 0.3333333333333333,
+  "roc_auc_ovr_macro": 0.7950360329994864,
+  "confusion_matrix": [
+    [
+      38,
+      1,
+      5,
+      0,
+      0
+    ],
+    [
+      3,
+      2,
+      1,
+      0,
+      0
+    ],
+    [
+      13,
+      2,
+      23,
+      5,
+      1
+    ],
+    [
+      0,
+      0,
+      6,
+      10,
+      8
+    ],
+    [
+      2,
+      1,
+      3,
+      5,
+      5
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.6785714285714286,
+      "recall": 0.8636363636363636,
+      "specificity": 0.8,
+      "support": 44
+    },
+    {
+      "grade": 1,
+      "precision": 0.3333333333333333,
+      "recall": 0.3333333333333333,
+      "specificity": 0.96875,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.6052631578947368,
+      "recall": 0.5227272727272727,
+      "specificity": 0.8333333333333334,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.5,
+      "recall": 0.4166666666666667,
+      "specificity": 0.9090909090909091,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.35714285714285715,
+      "recall": 0.3125,
+      "specificity": 0.923728813559322,
+      "support": 16
+    }
+  ],
+  "architecture": "swin_t",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

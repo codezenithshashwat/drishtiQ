@@ -1,0 +1,12 @@
+{
+  "review_date": "2026-10-28",
+  "primary_source_records": 21,
+  "initial_review_records": 20,
+  "initial_review_before_initial_fits": true,
+  "adaptive_reference": "Tversky added before MA-only follow-up, after baseline failures",
+  "full_text_access_limits": [
+    "PMC CAPTCHA",
+    "some PDF inaccessible"
+  ],
+  "external_validation_performed_locally": false
+}

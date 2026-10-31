@@ -1,0 +1,4 @@
+original_split,exclusion_reason,count
+test,conflicting_DR_or_DME_labels_all_group_members_quarantined,1
+train,conflicting_DR_or_DME_labels_all_group_members_quarantined,7
+train,redundant_exact_duplicate_labels_agree,2

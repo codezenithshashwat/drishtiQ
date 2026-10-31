@@ -1,0 +1,7 @@
+{
+  "unchanged": true,
+  "raw_files": 1491,
+  "method": "all raw path/size/mtime_ns; raw writes and test/unregistered raw reads prohibited by process audit hook",
+  "test_manifest_opened": false,
+  "test_image_inference_count": 0
+}

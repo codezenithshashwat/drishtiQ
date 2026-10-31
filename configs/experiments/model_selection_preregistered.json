@@ -1,0 +1,43 @@
+{
+  "protocol_version": "IDRID_MODEL_SELECTION_V1",
+  "test_access": "No test manifest open, no test-image open, no test inference; audited metadata only",
+  "grading_manifest": "data/interim/manifests/idrid_grading_train_clean.csv",
+  "n_folds": 3,
+  "fold_seed": 20261028,
+  "seeds": [
+    17,
+    29
+  ],
+  "initial_models": [
+    "resnet50",
+    "efficientnet_b0",
+    "convnext_tiny",
+    "swin_t"
+  ],
+  "screen_size": 224,
+  "fine_tune_epochs": 6,
+  "frozen_head_max_epochs": 60,
+  "frozen_patience": 12,
+  "frozen_optimizer": "AdamW lr=.01 wd=.01",
+  "fine_optimizer": "AdamW backbone .0001/head .001 wd=.0001",
+  "fine_tuning": "last stage only; BN statistics frozen; no train augmentation in baseline",
+  "checkpoint": "macro-F1 then QWK; ties retain earliest checkpoint",
+  "finalists": 2,
+  "selection_rule": "mean validation macro F1; within .02 F1 and .02 QWK prefer smaller parameter count; no test selection",
+  "resolution_ladder": [
+    224,
+    384,
+    512,
+    768
+  ],
+  "ablation_scope": "selected baseline, two seeds on fold0, one factor at a time; confirm final recipe on folds1/2",
+  "segmentation_candidates": [
+    "Unet",
+    "UnetPlusPlus",
+    "DeepLabV3Plus",
+    "Segformer"
+  ],
+  "segmentation_holdout": "split within eligible official train images before patches; official test unused",
+  "compute_rule": "profile before candidate fitting; AMP and bounded six-epoch screens; OOMs reported, no arbitrary Cartesian grid",
+  "inference": "no clinical referral threshold; grade3/4-to0/1 is descriptive error bin only"
+}

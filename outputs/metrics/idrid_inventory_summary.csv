@@ -1,0 +1,13 @@
+component,kind,extension,count
+Disease Grading,archive,.zip,1
+Disease Grading,documentation,.txt,2
+Disease Grading,fundus,.jpg,516
+Disease Grading,table,.csv,2
+Localization,archive,.zip,1
+Localization,documentation,.txt,2
+Localization,fundus,.jpg,516
+Localization,table,.csv,4
+Segmentation,archive,.zip,1
+Segmentation,documentation,.txt,2
+Segmentation,fundus,.jpg,81
+Segmentation,mask,.tif,363

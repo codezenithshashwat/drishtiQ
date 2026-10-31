@@ -1,0 +1,6 @@
+policy,train,test,excluded,unique_contents,exact_cross_split_groups,known_conflicting_content_groups_still_included,remaining_duplicate_groups
+A_official_unchanged,413,103,0,510,1,4,6
+B_drop_test_overlap,413,102,1,510,0,4,5
+C_quarantine_all_conflicting_groups,406,102,8,506,0,0,2
+D_deduplicate_agreeing_groups_only,411,103,2,510,1,4,4
+PRIMARY_C_plus_D,404,102,10,506,0,0,0

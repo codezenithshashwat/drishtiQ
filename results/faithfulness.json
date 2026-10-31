@@ -1,0 +1,25 @@
+{
+  "adr": "ADR-032",
+  "grader": "finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+  "results": {
+    "idrid_grading_val": {
+      "n": 59,
+      "skipped_no_cited_lesion": 0,
+      "median_drop_cited": 0.294921875,
+      "median_drop_control": -0.015625,
+      "mean_drop_cited": 0.4211661128674523,
+      "mean_drop_control": -0.03509004237288135,
+      "p_value": 4.493002006269779e-06
+    },
+    "aptos_val": {
+      "n": 221,
+      "skipped_no_cited_lesion": 0,
+      "median_drop_cited": 0.2353515625,
+      "median_drop_control": -0.0126953125,
+      "mean_drop_cited": 0.32657383362092585,
+      "mean_drop_control": -0.023450756504524887,
+      "p_value": 4.262604122429101e-17
+    }
+  },
+  "claim_supported": true
+}

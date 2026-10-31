@@ -1,0 +1,18 @@
+id_code,idrid_path,hamming,exact
+233d948e2544,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_154.jpg,42,False
+233d948e2544,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_154.jpg,42,False
+3a1ecf5e2839,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_171.jpg,42,False
+3a1ecf5e2839,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_171.jpg,42,False
+3ee17aa12e46,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_124.jpg,40,False
+3ee17aa12e46,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_124.jpg,40,False
+77a1f1398fdb,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_124.jpg,40,False
+77a1f1398fdb,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_124.jpg,40,False
+7b87b0015282,data/raw/IDRiD/original/A. Segmentation/A. Segmentation/1. Original Images/a. Training Set/IDRiD_36.jpg,42,False
+7b87b0015282,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_280.jpg,42,False
+7b87b0015282,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_280.jpg,42,False
+92d9e9f08709,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_124.jpg,42,False
+92d9e9f08709,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_124.jpg,42,False
+cd01672507c9,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_171.jpg,42,False
+cd01672507c9,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_171.jpg,42,False
+f762c272c522,data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_105.jpg,42,False
+f762c272c522,data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_105.jpg,42,False

@@ -1,0 +1,7 @@
+split,DME_label,count
+test,0,45
+test,1,10
+test,2,48
+train,0,177
+train,1,41
+train,2,195

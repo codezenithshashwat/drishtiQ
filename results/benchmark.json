@@ -1,0 +1,90 @@
+{
+  "gpu": {
+    "device": "cuda",
+    "model_load_s": 0.8609332999913022,
+    "images_timed": 10,
+    "per_stage": {
+      "total": {
+        "mean_s": 1.0438038499967661,
+        "max_s": 1.158718399994541
+      },
+      "quality": {
+        "mean_s": 0.053562139999121426,
+        "max_s": 0.05556870001601055
+      },
+      "grading_gradcam": {
+        "mean_s": 0.3189682200027164,
+        "max_s": 0.36104420002084225
+      },
+      "optic_disc": {
+        "mean_s": 0.048369099997216836,
+        "max_s": 0.04978810000466183
+      },
+      "fovea": {
+        "mean_s": 0.10712269999785348,
+        "max_s": 0.11095269996440038
+      },
+      "segmentation": {
+        "mean_s": 0.1850912699883338,
+        "max_s": 0.20910099998582155
+      },
+      "rest": {
+        "mean_s": 0.3306904200115241,
+        "max_s": 0.38137439999263734
+      }
+    },
+    "per_patient_two_eyes": {
+      "patients": 5,
+      "mean_s": 2.1728761200094597,
+      "max_s": 2.3078663000487722
+    },
+    "peak_ram_mib": 1850.2890625,
+    "peak_vram_allocated_mib": 363.2236328125,
+    "cuda_visible": true
+  },
+  "cpu": {
+    "device": "cpu",
+    "model_load_s": 0.6434002000023611,
+    "images_timed": 10,
+    "per_stage": {
+      "total": {
+        "mean_s": 1.4210287299996707,
+        "max_s": 1.481735999986995
+      },
+      "quality": {
+        "mean_s": 0.05361494999960996,
+        "max_s": 0.05481879995204508
+      },
+      "grading_gradcam": {
+        "mean_s": 0.4957396299869288,
+        "max_s": 0.5035700999433175
+      },
+      "optic_disc": {
+        "mean_s": 0.05072839000495151,
+        "max_s": 0.05407229997217655
+      },
+      "fovea": {
+        "mean_s": 0.10372078999644145,
+        "max_s": 0.10504250001395121
+      },
+      "segmentation": {
+        "mean_s": 0.3738655900000595,
+        "max_s": 0.39170300000114366
+      },
+      "rest": {
+        "mean_s": 0.3433593800116796,
+        "max_s": 0.38592699996661395
+      }
+    },
+    "per_patient_two_eyes": {
+      "patients": 5,
+      "mean_s": 2.9916418000124394,
+      "max_s": 3.1092049999861047
+    },
+    "peak_ram_mib": 1524.265625,
+    "peak_vram_allocated_mib": null,
+    "cuda_visible": false
+  },
+  "app": "v0.3 (grader convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt)",
+  "note": "Measurement only, no optimisation. 10 IDRiD dev-train images (5 synthetic two-eye patients) after one warm-up."
+}

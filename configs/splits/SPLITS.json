@@ -1,0 +1,7 @@
+{
+  "idrid_grading_devtrain.csv": "477bfd78a6597170dbb437aaa1e2d276101c6bea69e0ddf6aeb3ee461b8febb0",
+  "idrid_grading_val.csv": "a8016083be5e19a3dd085244990f5192993dcad0ecee3819f42e7f7f7001aa45",
+  "idrid_seg_train.csv": "d0f38a3a4177c1f73cc4d69b3ba2d8ffe752407831f0898a0998ca403ac235ff",
+  "idrid_seg_val.csv": "3e64a12f6446b1c39ad07d108c19d4b704b973e6be95dbd3dc0bda8baa9fe5b2",
+  "seed": 20261028
+}

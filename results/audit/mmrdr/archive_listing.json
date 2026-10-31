@@ -1,0 +1,19 @@
+{
+  "members": 24469,
+  "by_folder": {
+    "MMRDR-CFP/img": 11119,
+    "MMRDR-UWF/img": 10405,
+    "MMRDR-OCT/img": 2939,
+    "MMRDR-CFP/": 1,
+    "MMRDR-CFP/FP.csv": 1,
+    "MMRDR-OCT/": 1,
+    "MMRDR-OCT/OCT.csv": 1,
+    "MMRDR-UWF/": 1,
+    "MMRDR-UWF/UWF.csv": 1
+  },
+  "cfp_members": 11121,
+  "cfp_bytes": 7632191054,
+  "cfp_non_images": [
+    "MMRDR-CFP/FP.csv"
+  ]
+}

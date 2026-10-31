@@ -1,0 +1,67 @@
+{
+  "source": "results/locked (ADR-046)",
+  "sets": {
+    "idrid_test": {
+      "set": "IDRiD clean test",
+      "tag": "rc-1",
+      "commit": "564c7b7",
+      "n_images": 102,
+      "n_patients": null,
+      "qwk": 0.8164630746616656,
+      "qwk_ci95": [
+        0.731380715847514,
+        0.882810929176028
+      ],
+      "sensitivity": 0.9047619047619048,
+      "specificity": 0.8974358974358975,
+      "auroc": 0.942816442816443,
+      "images": {
+        "coverage": 0.3333333333333333,
+        "coverage_ci95": [
+          0.23529411764705882,
+          0.4215686274509804
+        ],
+        "missed": 5,
+        "referable": 63,
+        "upper95": 0.17557594972484783
+      }
+    },
+    "deepdrid": {
+      "set": "DeepDRiD regular fundus (locked)",
+      "tag": "rc-1",
+      "commit": "564c7b7",
+      "n_images": 1988,
+      "n_patients": 500,
+      "qwk": 0.7802846683146925,
+      "qwk_ci95": [
+        0.7531511280692029,
+        0.805555277277194
+      ],
+      "sensitivity": 0.9299065420560748,
+      "specificity": 0.8421052631578947,
+      "auroc": 0.9463987219355217,
+      "images": {
+        "coverage": 0.23943661971830985,
+        "coverage_ci95": [
+          0.21251892983341747,
+          0.26674299065657153
+        ],
+        "missed": 9,
+        "referable": 856,
+        "upper95": 0.019864696962588115
+      },
+      "patients": {
+        "coverage": 0.07,
+        "coverage_ci95": [
+          0.05,
+          0.094
+        ],
+        "missed": 0,
+        "referable": 248,
+        "upper95": 0.01476443481255455
+      },
+      "quality_agreement": 0.5357142857142857,
+      "quality_flag_rate_among_poor": 0.16305372290292178
+    }
+  }
+}

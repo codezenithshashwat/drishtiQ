@@ -1,0 +1,307 @@
+{
+  "images": 11118,
+  "split_counts": {
+    "tr": 8893,
+    "ts": 2225
+  },
+  "grades_by_split": {
+    "tr": {
+      "0": 5256,
+      "1": 1043,
+      "2": 1550,
+      "3": 503,
+      "4": 541
+    },
+    "ts": {
+      "0": 1323,
+      "1": 259,
+      "2": 409,
+      "3": 100,
+      "4": 134
+    }
+  },
+  "grades_total": {
+    "0": 6579,
+    "1": 1302,
+    "2": 1959,
+    "3": 603,
+    "4": 675
+  },
+  "paper_grades_total": {
+    "0": 6579,
+    "1": 1302,
+    "2": 1959,
+    "3": 603,
+    "4": 675
+  },
+  "laterality": {
+    "0": 5607,
+    "1": 5511
+  },
+  "lesion_flag_prevalence_by_grade": {
+    "MA": {
+      "0": 0.0,
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.0,
+      "4": 0.791
+    },
+    "hard_exudate": {
+      "0": 0.0,
+      "1": 0.412,
+      "2": 0.627,
+      "3": 0.826,
+      "4": 0.569
+    },
+    "IRH": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.869,
+      "3": 0.884,
+      "4": 0.511
+    },
+    "VB_IRMA": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.327,
+      "4": 0.058
+    },
+    "NV": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.824
+    },
+    "vitreous_haem": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.53
+    },
+    "retinal_detachment": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.138
+    }
+  },
+  "label_consistency_checks": {
+    "grade0_with_any_lesion": 0,
+    "grade_ge1_with_no_lesion": 0,
+    "NV_or_VH_below_grade4": 0,
+    "grade4_without_NV_or_VH": 1
+  },
+  "duplicate_groups": 190,
+  "images_in_duplicate_groups": 409,
+  "cross_split_duplicate_groups": 64,
+  "conflicting_label_groups": 22,
+  "exact_duplicate_groups": 97,
+  "resolutions_top": [
+    [
+      "1659x1659",
+      481
+    ],
+    [
+      "1657x1657",
+      452
+    ],
+    [
+      "1571x1570",
+      375
+    ],
+    [
+      "1569x1568",
+      365
+    ],
+    [
+      "1602x1602",
+      294
+    ],
+    [
+      "1713x1713",
+      270
+    ],
+    [
+      "1655x1655",
+      261
+    ],
+    [
+      "1380x1382",
+      261
+    ],
+    [
+      "1571x1569",
+      233
+    ],
+    [
+      "2354x2354",
+      213
+    ]
+  ],
+  "distinct_resolutions": 1857,
+  "cross_dataset": {
+    "IDRiD_all": {
+      "phash_matches": 9,
+      "exact_matches": 0,
+      "examples": [
+        {
+          "mmrdr": "img/tr003357.jpg",
+          "other": "data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_288.jpg",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr003357.jpg",
+          "other": "data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_288.jpg",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr004263.jpg",
+          "other": "data/raw/IDRiD/original/A. Segmentation/A. Segmentation/1. Original Images/a. Training Set/IDRiD_37.jpg",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr004263.jpg",
+          "other": "data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_281.jpg",
+          "hamming": 38
+        },
+        {
+          "mmrdr": "img/tr004263.jpg",
+          "other": "data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_281.jpg",
+          "hamming": 38
+        },
+        {
+          "mmrdr": "img/tr004426.jpg",
+          "other": "data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_025.jpg",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr004426.jpg",
+          "other": "data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_025.jpg",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr007246.jpg",
+          "other": "data/raw/IDRiD/original/B. Disease Grading/B. Disease Grading/1. Original Images/a. Training Set/IDRiD_260.jpg",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr007246.jpg",
+          "other": "data/raw/IDRiD/original/C. Localization/C. Localization/1. Original Images/a. Training Set/IDRiD_260.jpg",
+          "hamming": 42
+        }
+      ]
+    },
+    "APTOS_train": {
+      "phash_matches": 578,
+      "exact_matches": 0,
+      "examples": [
+        {
+          "mmrdr": "img/tr000028.jpg",
+          "other": "data/raw/APTOS2019/train_images/7e980424868e.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000028.jpg",
+          "other": "data/raw/APTOS2019/train_images/bd375ba756b1.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000099.jpg",
+          "other": "data/raw/APTOS2019/train_images/a12ca80bb8c7.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000142.jpg",
+          "other": "data/raw/APTOS2019/train_images/283c3aeba594.png",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr000150.jpg",
+          "other": "data/raw/APTOS2019/train_images/8a87dd2a784e.png",
+          "hamming": 38
+        },
+        {
+          "mmrdr": "img/tr000150.jpg",
+          "other": "data/raw/APTOS2019/train_images/c18a006f7f1d.png",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr000164.jpg",
+          "other": "data/raw/APTOS2019/train_images/7da558d92100.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000252.jpg",
+          "other": "data/raw/APTOS2019/train_images/0abf0c485f66.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000252.jpg",
+          "other": "data/raw/APTOS2019/train_images/2a4520f1f9a3.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000260.jpg",
+          "other": "data/raw/APTOS2019/train_images/cb2f3c5d71a7.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000325.jpg",
+          "other": "data/raw/APTOS2019/train_images/461fa5292fda.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000325.jpg",
+          "other": "data/raw/APTOS2019/train_images/50916d67bb51.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000325.jpg",
+          "other": "data/raw/APTOS2019/train_images/9d75de31f1b8.png",
+          "hamming": 38
+        },
+        {
+          "mmrdr": "img/tr000327.jpg",
+          "other": "data/raw/APTOS2019/train_images/840a06a9c690.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000327.jpg",
+          "other": "data/raw/APTOS2019/train_images/9c6512166557.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000355.jpg",
+          "other": "data/raw/APTOS2019/train_images/b0619ca93a5f.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000431.jpg",
+          "other": "data/raw/APTOS2019/train_images/15c24478ac72.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000431.jpg",
+          "other": "data/raw/APTOS2019/train_images/8a87dd2a784e.png",
+          "hamming": 40
+        },
+        {
+          "mmrdr": "img/tr000481.jpg",
+          "other": "data/raw/APTOS2019/train_images/0231642cf1c2.png",
+          "hamming": 42
+        },
+        {
+          "mmrdr": "img/tr000524.jpg",
+          "other": "data/raw/APTOS2019/train_images/af7a36454670.png",
+          "hamming": 42
+        }
+      ]
+    }
+  },
+  "messidor2_checked": false,
+  "ddr_segmentation_overlap": "not checked: DDR not downloaded"
+}

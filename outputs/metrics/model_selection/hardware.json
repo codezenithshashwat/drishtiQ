@@ -1,0 +1,16 @@
+{
+  "python": "3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "cpu_threads": 12,
+  "RAM_GiB": 31.63597869873047,
+  "torch": "2.11.0+cu128",
+  "torchvision": "0.26.0+cu128",
+  "sklearn": "1.9.1",
+  "timm": "1.0.30",
+  "smp": "0.6.0",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 3050 A Laptop GPU",
+  "vram_GiB": 3.99755859375,
+  "cuda": "12.8",
+  "free_GiB": 3.170947266742587
+}

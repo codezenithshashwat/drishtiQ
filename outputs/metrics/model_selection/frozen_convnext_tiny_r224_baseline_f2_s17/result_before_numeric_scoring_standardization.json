@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_convnext_tiny_r224_baseline_f2_s17",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 2,
+  "seed": 17,
+  "training_images": 270,
+  "validation_images": 134,
+  "best_epoch": 3,
+  "epochs_run": 16,
+  "training_seconds": 0.3712577000114834,
+  "train_macro_f1": 0.8727607804759556,
+  "overfit_gap": 0.4384595635325559,
+  "accuracy": 0.5373134328358209,
+  "balanced_accuracy": 0.4208333333333334,
+  "macro_f1": 0.43430121694339974,
+  "weighted_f1": 0.535264355430105,
+  "qwk": 0.6872367072754184,
+  "mae_grade": 0.6865671641791045,
+  "distance_ge2_rate": 0.1865671641791045,
+  "high_grade_to_0_or_1_rate": 0.1,
+  "grade0_to_3_or_4_count": 0,
+  "nll": 1.555142879486084,
+  "brier": 0.727376044760616,
+  "ece_10_bins": 0.3067881229208477,
+  "minority_grade1_recall": 0.0,
+  "roc_auc_ovr_macro": 0.7898087335216573,
+  "confusion_matrix": [
+    [
+      36,
+      6,
+      2,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      2,
+      0,
+      0
+    ],
+    [
+      13,
+      5,
+      19,
+      6,
+      1
+    ],
+    [
+      3,
+      0,
+      8,
+      10,
+      3
+    ],
+    [
+      1,
+      0,
+      5,
+      3,
+      7
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.631578947368421,
+      "recall": 0.8181818181818182,
+      "specificity": 0.7666666666666667,
+      "support": 44
+    },
+    {
+      "grade": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "specificity": 0.9140625,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.5277777777777778,
+      "recall": 0.4318181818181818,
+      "specificity": 0.8111111111111111,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.5263157894736842,
+      "recall": 0.4166666666666667,
+      "specificity": 0.9181818181818182,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.6363636363636364,
+      "recall": 0.4375,
+      "specificity": 0.9661016949152542,
+      "support": 16
+    }
+  ],
+  "architecture": "convnext_tiny",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

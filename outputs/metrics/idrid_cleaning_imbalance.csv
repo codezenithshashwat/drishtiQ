@@ -1,0 +1,7 @@
+stage,split,n,majority_grades,minority_grades,max_min_ratio,majority_percent
+official,train,413,[2],[1],6.8,32.92978208
+official,test,103,[0],[1],6.8,33.00970874
+official,all,516,"[0, 2]",[1],6.72,32.55813953
+clean,train,404,[0],[1],7.388888889,32.92079208
+clean,test,102,[0],[1],6.8,33.33333333
+clean,all,506,[0],[1],7.260869565,33.00395257

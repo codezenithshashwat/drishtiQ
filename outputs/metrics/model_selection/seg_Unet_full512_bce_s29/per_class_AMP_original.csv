@@ -1,0 +1,5 @@
+annotation_type,images,dice,iou,recall,precision,mean_image_dice,component_recall,component_precision
+EX,10,0.005010279634981225,0.002511431304049279,0.002511431304049279,1.0,0.002194122888102457,0.0,0.0
+HE,10,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+MA,10,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+SE,5,0.0,0.0,0.0,0.0,0.0,0.0,0.0

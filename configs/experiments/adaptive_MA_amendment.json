@@ -1,0 +1,17 @@
+{
+  "timing": "after initial full-image and native-patch four-lesion failures; before these fits",
+  "motivation": "all initial MA predictions empty at fixed threshold; isolate MA supervision with matched input-strategy comparison",
+  "architecture": "existing U-Net/ResNet18, one MA head",
+  "modes": [
+    "full512",
+    "native_patch256"
+  ],
+  "seeds": [
+    17,
+    29
+  ],
+  "epochs": 12,
+  "objective": "weighted BCE + Tversky with prespecified fixed coefficients",
+  "new_test_access": false,
+  "limits": "target, loss and schedule differ from initial four-lesion runs; compare input modes within this matched suite, not as a single-factor ablation of the original suite"
+}

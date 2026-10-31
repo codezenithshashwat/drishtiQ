@@ -1,0 +1,102 @@
+{
+  "images": 3662,
+  "grades": {
+    "0": 1805,
+    "1": 370,
+    "2": 999,
+    "3": 193,
+    "4": 295
+  },
+  "exact_duplicate_groups": 123,
+  "hash": "256-bit structure hash",
+  "dup_threshold": 32,
+  "review_threshold": 42,
+  "review_pairs": 316,
+  "duplicate_groups": 152,
+  "images_in_duplicate_groups": 314,
+  "conflicting_groups": 47,
+  "dropped": {
+    "redundant_duplicate_same_label": 109,
+    "duplicate_group_conflicting_labels": 98,
+    "matches_idrid_image": 8
+  },
+  "kept": 3447,
+  "kept_grades": {
+    "0": 1774,
+    "1": 333,
+    "2": 915,
+    "3": 165,
+    "4": 260
+  },
+  "nearest_hamming_histogram": {
+    "0-9": 270,
+    "10-19": 2,
+    "20-29": 10,
+    "30-39": 176,
+    "40-49": 686,
+    "50-59": 1066,
+    "60-69": 789,
+    "70-79": 447,
+    "80-89": 194,
+    "90-99": 21,
+    "100-109": 1,
+    "110-119": 0
+  },
+  "resolutions_top": [
+    [
+      "1050x1050",
+      974
+    ],
+    [
+      "2416x1736",
+      638
+    ],
+    [
+      "2588x1958",
+      533
+    ],
+    [
+      "3216x2136",
+      410
+    ],
+    [
+      "2048x1536",
+      351
+    ],
+    [
+      "819x614",
+      287
+    ],
+    [
+      "3388x2588",
+      141
+    ],
+    [
+      "1504x1000",
+      92
+    ],
+    [
+      "1844x1226",
+      61
+    ],
+    [
+      "4288x2848",
+      52
+    ],
+    [
+      "640x480",
+      42
+    ],
+    [
+      "2896x1944",
+      34
+    ]
+  ],
+  "distinct_resolutions": 17,
+  "heuristic_quality_flags": {
+    "count": 87,
+    "note": "same heuristics as the app quality check: FOV<0.2, mean green<25, sharpness<0.5"
+  },
+  "idrid_matches": 17,
+  "messidor2_checked": false
+}

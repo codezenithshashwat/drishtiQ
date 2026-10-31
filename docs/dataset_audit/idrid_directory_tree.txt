@@ -1,0 +1,34 @@
+archives/
+original/
+original\A. Segmentation/
+original\A. Segmentation\A. Segmentation/
+original\A. Segmentation\A. Segmentation\1. Original Images/
+original\A. Segmentation\A. Segmentation\1. Original Images\a. Training Set/
+original\A. Segmentation\A. Segmentation\1. Original Images\b. Testing Set/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set\1. Microaneurysms/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set\2. Haemorrhages/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set\3. Hard Exudates/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set\4. Soft Exudates/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\a. Training Set\5. Optic Disc/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set\1. Microaneurysms/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set\2. Haemorrhages/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set\3. Hard Exudates/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set\4. Soft Exudates/
+original\A. Segmentation\A. Segmentation\2. All Segmentation Groundtruths\b. Testing Set\5. Optic Disc/
+original\B. Disease Grading/
+original\B. Disease Grading\B. Disease Grading/
+original\B. Disease Grading\B. Disease Grading\1. Original Images/
+original\B. Disease Grading\B. Disease Grading\1. Original Images\a. Training Set/
+original\B. Disease Grading\B. Disease Grading\1. Original Images\b. Testing Set/
+original\B. Disease Grading\B. Disease Grading\2. Groundtruths/
+original\C. Localization/
+original\C. Localization\C. Localization/
+original\C. Localization\C. Localization\1. Original Images/
+original\C. Localization\C. Localization\1. Original Images\a. Training Set/
+original\C. Localization\C. Localization\1. Original Images\b. Testing Set/
+original\C. Localization\C. Localization\2. Groundtruths/
+original\C. Localization\C. Localization\2. Groundtruths\1. Optic Disc Center Location/
+original\C. Localization\C. Localization\2. Groundtruths\2. Fovea Center Location/

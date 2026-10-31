@@ -1,0 +1,6 @@
+target_width,original_components,disappeared,collapsed_to_one_target_pixel,target_regions_merging_multiple_source_components,source_components_in_merged_regions,source_components_fragmented
+224,3497,1240,1814,77,164,0
+384,3497,197,1174,67,141,0
+512,3497,47,477,56,115,0
+1024,3497,2,12,19,39,0
+2048,3497,0,0,7,14,0

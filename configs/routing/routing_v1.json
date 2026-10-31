@@ -1,0 +1,51 @@
+{
+  "adr": [
+    "ADR-039",
+    "ADR-040"
+  ],
+  "policy": "c: quality gate passes AND stage confidence >= tau AND P(referable) < threshold",
+  "generated_from": "results/coverage/step2_baseline.json (thresholds) and configs/calibration/app_grader.json (Platt map, tau)",
+  "pinned_checkpoint": "convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+  "pinned_sha256": "acf53697500919cf7c281652c10b12c48e77896ed366a7383a78a432cbef37a1",
+  "tau": 0.55,
+  "platt": {
+    "coef": 3.1193645000457764,
+    "intercept": -4.533926486968994
+  },
+  "thresholds": {
+    "0.025": 0.13603109121322632,
+    "0.05": 0.31740787625312805
+  },
+  "default_target": 0.025,
+  "fitted_on": "fine-tuner internal hold-out (2813 images); never refitted on validation",
+  "verified": {
+    "0.025": {
+      "IDRiD-val": {
+        "coverage": 0.37623762376237624,
+        "missed": 2,
+        "referable": 63,
+        "upper95": 0.11001937340888035
+      },
+      "APTOS-val": {
+        "coverage": 0.5077220077220077,
+        "missed": 1,
+        "referable": 201,
+        "upper95": 0.02740642980341042
+      }
+    },
+    "0.05": {
+      "IDRiD-val": {
+        "coverage": 0.39603960396039606,
+        "missed": 2,
+        "referable": 63,
+        "upper95": 0.11001937340888035
+      },
+      "APTOS-val": {
+        "coverage": 0.5231660231660231,
+        "missed": 3,
+        "referable": 201,
+        "upper95": 0.04299640520178569
+      }
+    }
+  }
+}

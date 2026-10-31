@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_swin_t_r224_baseline_f1_s29",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 29,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 0,
+  "epochs_run": 13,
+  "training_seconds": 0.4113029000000097,
+  "train_macro_f1": 0.5254387941807066,
+  "overfit_gap": 0.046052915691379814,
+  "accuracy": 0.5407407407407407,
+  "balanced_accuracy": 0.5308333333333334,
+  "macro_f1": 0.4793858784893268,
+  "weighted_f1": 0.5195353645928359,
+  "qwk": 0.6568756743795707,
+  "mae_grade": 0.7555555555555555,
+  "distance_ge2_rate": 0.2,
+  "high_grade_to_0_or_1_rate": 0.15,
+  "grade0_to_3_or_4_count": 5,
+  "nll": 1.6314001083374023,
+  "brier": 0.6404127470664759,
+  "ece_10_bins": 0.24968273882512693,
+  "minority_grade1_recall": 0.3333333333333333,
+  "roc_auc_ovr_macro": 0.8457688760803215,
+  "confusion_matrix": [
+    [
+      36,
+      4,
+      0,
+      3,
+      2
+    ],
+    [
+      4,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      9,
+      2,
+      11,
+      15,
+      7
+    ],
+    [
+      6,
+      0,
+      3,
+      11,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      3,
+      13
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.6545454545454545,
+      "recall": 0.8,
+      "specificity": 0.7888888888888889,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.25,
+      "recall": 0.3333333333333333,
+      "specificity": 0.9534883720930233,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.7857142857142857,
+      "recall": 0.25,
+      "specificity": 0.967032967032967,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.34375,
+      "recall": 0.4583333333333333,
+      "specificity": 0.8108108108108109,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.5,
+      "recall": 0.8125,
+      "specificity": 0.8907563025210085,
+      "support": 16
+    }
+  ],
+  "architecture": "swin_t",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

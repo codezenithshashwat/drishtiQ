@@ -1,0 +1,44 @@
+{
+  "model": "convnext_tiny",
+  "resolution": 384,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce",
+  "scope": "selected single-factor recipe, confirmed on remaining development folds; not test validated",
+  "resolution_fold0_ranking": {
+    "768.0": 0.5489019075903814,
+    "512.0": 0.5406526806526806,
+    "384.0": 0.5311216515792319,
+    "224.0": 0.5193665890557422
+  },
+  "ablation_fold0_ranking": {
+    "('baseline', 'none', 'ce')": {
+      "macro_f1": 0.5311216515792319,
+      "qwk": 0.8019987013057741
+    },
+    "('baseline', 'none', 'ordinal')": {
+      "macro_f1": 0.5274394780053075,
+      "qwk": 0.8001015607011731
+    },
+    "('baseline', 'minimal', 'ce')": {
+      "macro_f1": 0.522391872530668,
+      "qwk": 0.791142379730063
+    },
+    "('baseline', 'none', 'weighted_ce')": {
+      "macro_f1": 0.5174544089956779,
+      "qwk": 0.7659700547911812
+    },
+    "('baseline', 'none', 'focal')": {
+      "macro_f1": 0.5157638222288844,
+      "qwk": 0.8011466008640208
+    },
+    "('baseline', 'moderate', 'ce')": {
+      "macro_f1": 0.5154390235653895,
+      "qwk": 0.7789396797793032
+    },
+    "('crop', 'none', 'ce')": {
+      "macro_f1": 0.5133460554088065,
+      "qwk": 0.7505740354597116
+    }
+  }
+}

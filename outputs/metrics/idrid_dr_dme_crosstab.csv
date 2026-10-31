@@ -1,0 +1,11 @@
+split,DR_grade,0,1,2
+test,0,34,0,0
+test,1,5,0,0
+test,2,0,3,29
+test,3,3,3,13
+test,4,3,4,6
+train,0,134,0,0
+train,1,20,0,0
+train,2,16,33,87
+train,3,3,4,67
+train,4,4,4,41

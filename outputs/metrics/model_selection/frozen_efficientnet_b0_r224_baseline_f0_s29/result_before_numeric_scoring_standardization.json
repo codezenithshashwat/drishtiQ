@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_efficientnet_b0_r224_baseline_f0_s29",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 0,
+  "seed": 29,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 15,
+  "epochs_run": 28,
+  "training_seconds": 0.5808028999890666,
+  "train_macro_f1": 1.0,
+  "overfit_gap": 0.47501659125188533,
+  "accuracy": 0.6518518518518519,
+  "balanced_accuracy": 0.512,
+  "macro_f1": 0.5249834087481147,
+  "weighted_f1": 0.6455183509301156,
+  "qwk": 0.719418651594671,
+  "mae_grade": 0.5407407407407407,
+  "distance_ge2_rate": 0.14814814814814814,
+  "high_grade_to_0_or_1_rate": 0.12195121951219512,
+  "grade0_to_3_or_4_count": 1,
+  "nll": 1.7082115411758423,
+  "brier": 0.5900555654383906,
+  "ece_10_bins": 0.2118628199453707,
+  "minority_grade1_recall": 0.0,
+  "roc_auc_ovr_macro": 0.7955467990286047,
+  "confusion_matrix": [
+    [
+      35,
+      1,
+      7,
+      1,
+      0
+    ],
+    [
+      5,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      2,
+      31,
+      7,
+      1
+    ],
+    [
+      3,
+      1,
+      7,
+      14,
+      0
+    ],
+    [
+      1,
+      0,
+      3,
+      4,
+      8
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7446808510638298,
+      "recall": 0.7954545454545454,
+      "specificity": 0.8681318681318682,
+      "support": 44
+    },
+    {
+      "grade": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "specificity": 0.9689922480620154,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.6326530612244898,
+      "recall": 0.7045454545454546,
+      "specificity": 0.8021978021978022,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.5384615384615384,
+      "recall": 0.56,
+      "specificity": 0.8909090909090909,
+      "support": 25
+    },
+    {
+      "grade": 4,
+      "precision": 0.8888888888888888,
+      "recall": 0.5,
+      "specificity": 0.9915966386554622,
+      "support": 16
+    }
+  ],
+  "architecture": "efficientnet_b0",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

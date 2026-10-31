@@ -1,0 +1,81 @@
+{
+  "set": "IDRiD clean test",
+  "n": 102,
+  "routing_valid": true,
+  "grading": {
+    "n": 102,
+    "qwk": 0.8164630746616656,
+    "macro_f1": 0.49530724754605354,
+    "within_one": 0.9019607843137255,
+    "recall_per_grade": {
+      "0": 0.8823529411764706,
+      "1": 0.0,
+      "2": 0.6875,
+      "3": 0.5,
+      "4": 0.38461538461538464
+    },
+    "referable_sensitivity": 0.9047619047619048,
+    "referable_specificity": 0.8974358974358975,
+    "referable_auroc": 0.942816442816443,
+    "decision_changing_errors": {
+      "referable_called_non_referable": 6,
+      "non_referable_called_referable": 4
+    },
+    "ci95": {
+      "qwk": [
+        0.731380715847514,
+        0.882810929176028
+      ],
+      "referable_sensitivity": [
+        0.8253968253968254,
+        0.96875
+      ],
+      "referable_specificity": [
+        0.7941176470588235,
+        0.9777777777777777
+      ],
+      "recall_0": [
+        0.7692307692307693,
+        0.9743589743589743
+      ],
+      "recall_1": [
+        0.0,
+        0.0
+      ],
+      "recall_2": [
+        0.53125,
+        0.8444871794871792
+      ],
+      "recall_3": [
+        0.266578947368421,
+        0.7273601398601394
+      ],
+      "recall_4": [
+        0.1111111111111111,
+        0.6666666666666666
+      ]
+    }
+  },
+  "routing_images": {
+    "units": "images",
+    "n": 102,
+    "routed_routine": 34,
+    "coverage": 0.3333333333333333,
+    "referable": 63,
+    "missed": 5,
+    "miss_rate": 0.07936507936507936,
+    "miss_rate_upper95": 0.17557594972484783,
+    "deferral_rate": 0.1568627450980392,
+    "quality_flag_rate": 0.00980392156862745,
+    "coverage_ci95": [
+      0.23529411764705882,
+      0.4215686274509804
+    ]
+  },
+  "note": "Laterality is not recorded for IDRiD; the laterality check is skipped (eye unknown).",
+  "adr": "ADR-043",
+  "tag": "rc-1",
+  "commit": "564c7b70ac765be9314707c776d98a98c1d07d80",
+  "operating_point": 0.025,
+  "routing_config_sha256": "e7466e999cdd9fd8be046dd513938b6b287bf6a4dcd7204d95d500b0ed36ada4"
+}

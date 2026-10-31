@@ -1,0 +1,14 @@
+{
+  "grading_fits": 82,
+  "validated_segmentation_fits": 20,
+  "unranked_MA_AMP_probes": 4,
+  "excluded_numerically_failed_probes": 1,
+  "checks": {
+    "PASS": 320
+  },
+  "figures_decoded": 40,
+  "test_evaluations": 0,
+  "test_manifest_opened": false,
+  "patient_independence": "UNKNOWN",
+  "external_validation": "NOT PERFORMED"
+}

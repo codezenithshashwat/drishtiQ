@@ -1,0 +1,7 @@
+path,raw_csv_rows,blank_padding_rows,annotation_rows
+data\raw\IDRiD\original\B. Disease Grading\B. Disease Grading\2. Groundtruths\a. IDRiD_Disease Grading_Training Labels.csv,413,0,413
+data\raw\IDRiD\original\B. Disease Grading\B. Disease Grading\2. Groundtruths\b. IDRiD_Disease Grading_Testing Labels.csv,103,0,103
+data\raw\IDRiD\original\C. Localization\C. Localization\2. Groundtruths\1. Optic Disc Center Location\a. IDRiD_OD_Center_Training Set_Markups.csv,515,102,413
+data\raw\IDRiD\original\C. Localization\C. Localization\2. Groundtruths\1. Optic Disc Center Location\b. IDRiD_OD_Center_Testing Set_Markups.csv,515,412,103
+data\raw\IDRiD\original\C. Localization\C. Localization\2. Groundtruths\2. Fovea Center Location\IDRiD_Fovea_Center_Testing Set_Markups.csv,515,412,103
+data\raw\IDRiD\original\C. Localization\C. Localization\2. Groundtruths\2. Fovea Center Location\IDRiD_Fovea_Center_Training Set_Markups.csv,515,102,413

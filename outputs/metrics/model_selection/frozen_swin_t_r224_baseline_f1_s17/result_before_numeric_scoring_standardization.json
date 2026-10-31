@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_swin_t_r224_baseline_f1_s17",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 17,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 0,
+  "epochs_run": 13,
+  "training_seconds": 0.31394710000313353,
+  "train_macro_f1": 0.49277179264190646,
+  "overfit_gap": -0.0017685876127594424,
+  "accuracy": 0.5555555555555556,
+  "balanced_accuracy": 0.6014646464646465,
+  "macro_f1": 0.4945403802546659,
+  "weighted_f1": 0.5269066030970793,
+  "qwk": 0.6951066499372647,
+  "mae_grade": 0.7407407407407407,
+  "distance_ge2_rate": 0.23703703703703705,
+  "high_grade_to_0_or_1_rate": 0.15,
+  "grade0_to_3_or_4_count": 3,
+  "nll": 1.7038919925689697,
+  "brier": 0.6549970884291644,
+  "ece_10_bins": 0.2155760089556376,
+  "minority_grade1_recall": 0.6666666666666666,
+  "roc_auc_ovr_macro": 0.8376638537701009,
+  "confusion_matrix": [
+    [
+      38,
+      4,
+      0,
+      2,
+      1
+    ],
+    [
+      2,
+      4,
+      0,
+      0,
+      0
+    ],
+    [
+      9,
+      5,
+      9,
+      7,
+      14
+    ],
+    [
+      4,
+      2,
+      1,
+      10,
+      7
+    ],
+    [
+      0,
+      0,
+      0,
+      2,
+      14
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7169811320754716,
+      "recall": 0.8444444444444444,
+      "specificity": 0.8333333333333334,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.26666666666666666,
+      "recall": 0.6666666666666666,
+      "specificity": 0.9147286821705426,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.9,
+      "recall": 0.20454545454545456,
+      "specificity": 0.989010989010989,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.47619047619047616,
+      "recall": 0.4166666666666667,
+      "specificity": 0.9009009009009009,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.3888888888888889,
+      "recall": 0.875,
+      "specificity": 0.8151260504201681,
+      "support": 16
+    }
+  ],
+  "architecture": "swin_t",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

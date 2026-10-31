@@ -1,0 +1,228 @@
+{
+  "arch": "convnext_tiny.fb_in1k",
+  "head": "reg",
+  "size": 384,
+  "preprocessing": "plain",
+  "seed": 17,
+  "thresholds": [
+    0.5270244755968633,
+    1.4083803632479426,
+    2.6355262263555232,
+    3.4644776179453403
+  ],
+  "description": "Fine-tuned ConvNeXt-T @384 on IDRiD+APTOS+MMRDR, reg head, FOV crop",
+  "train_data": "idrid_grading_devtrain (303) + aptos_train (2929) + mmrdr_train (10831); inner 80/20 (dataset x grade): early stopping + thresholds; sampling balance=dataset, class weight=sqrt",
+  "eval_overlap": "no",
+  "splits_sha256": {
+    "idrid_grading_devtrain": "477bfd78a6597170dbb437aaa1e2d276101c6bea69e0ddf6aeb3ee461b8febb0",
+    "aptos_train": "f1de9f3a7b3bd493a9714f2e52c07e020bf93631cb08fcf159f697f1948e4ff6",
+    "mmrdr_train": "f653eabfa6e407b90d955d82cc47acf93def0f5b628adab879e2fe5d12e3f017"
+  },
+  "best_epoch": 14,
+  "inner_qwk": 0.9293200858597098,
+  "inner_macro_f1": 0.716282852091867,
+  "train_seconds": 5535.542801100004,
+  "peak_vram_mib": 1210.67724609375,
+  "hyper": {
+    "head": "reg",
+    "size": 384,
+    "seed": 17,
+    "epochs": 15,
+    "patience": 4,
+    "micro": 16,
+    "effective": 32,
+    "lr": 0.0002,
+    "balance": "dataset",
+    "class_weight": "sqrt",
+    "version": "v1",
+    "lr_multipliers": "stem/stage0 0.25, stage1 0.4, stage2 0.6, stage3 0.8, head 5",
+    "weight_decay": 0.05,
+    "warmup_epochs": 1,
+    "schedule": "cosine",
+    "amp": true,
+    "grad_checkpointing": true,
+    "augmentation": "GPU: h/v flip, rotate U(-180,180), scale U(0.95,1.05), brightness/contrast 10%"
+  },
+  "history": [
+    {
+      "epoch": 0,
+      "loss": 0.31686231946382165,
+      "inner_qwk": 0.8176147301150323,
+      "inner_macro_f1": 0.496573264215786,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.8566,
+        "aptos": 0.8391,
+        "mmrdr": 0.806
+      },
+      "epoch_seconds": 343.91130739997607
+    },
+    {
+      "epoch": 1,
+      "loss": 0.09955270514447792,
+      "inner_qwk": 0.8605771689403147,
+      "inner_macro_f1": 0.5493515222337467,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9034,
+        "aptos": 0.8786,
+        "mmrdr": 0.8508
+      },
+      "epoch_seconds": 521.2811979000107
+    },
+    {
+      "epoch": 2,
+      "loss": 0.06195758429980329,
+      "inner_qwk": 0.8894835055079655,
+      "inner_macro_f1": 0.6161877855802494,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.8786,
+        "aptos": 0.9085,
+        "mmrdr": 0.8818
+      },
+      "epoch_seconds": 298.91024230001494
+    },
+    {
+      "epoch": 3,
+      "loss": 0.04669528383833081,
+      "inner_qwk": 0.8965514576299977,
+      "inner_macro_f1": 0.6471835161326901,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9134,
+        "aptos": 0.9319,
+        "mmrdr": 0.8828
+      },
+      "epoch_seconds": 313.13221290000365
+    },
+    {
+      "epoch": 4,
+      "loss": 0.035414938682193184,
+      "inner_qwk": 0.9018704647048061,
+      "inner_macro_f1": 0.6558798640278671,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9361,
+        "aptos": 0.9322,
+        "mmrdr": 0.8898
+      },
+      "epoch_seconds": 312.0006028999924
+    },
+    {
+      "epoch": 5,
+      "loss": 0.031188969768415765,
+      "inner_qwk": 0.8994744167892852,
+      "inner_macro_f1": 0.6593894423662939,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9055,
+        "aptos": 0.9194,
+        "mmrdr": 0.8918
+      },
+      "epoch_seconds": 310.88732069998514
+    },
+    {
+      "epoch": 6,
+      "loss": 0.026966537270048073,
+      "inner_qwk": 0.9118266323417606,
+      "inner_macro_f1": 0.6655976417982956,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9021,
+        "aptos": 0.9274,
+        "mmrdr": 0.9058
+      },
+      "epoch_seconds": 303.28631550000864
+    },
+    {
+      "epoch": 7,
+      "loss": 0.022587279014260275,
+      "inner_qwk": 0.9182589178561694,
+      "inner_macro_f1": 0.6920883672130158,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9065,
+        "aptos": 0.9363,
+        "mmrdr": 0.912
+      },
+      "epoch_seconds": 305.5467164000147
+    },
+    {
+      "epoch": 8,
+      "loss": 0.019702788242408464,
+      "inner_qwk": 0.9167772382263581,
+      "inner_macro_f1": 0.6913661004762982,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9002,
+        "aptos": 0.9333,
+        "mmrdr": 0.911
+      },
+      "epoch_seconds": 516.3565898000088
+    },
+    {
+      "epoch": 9,
+      "loss": 0.016841783940848967,
+      "inner_qwk": 0.9214645943217971,
+      "inner_macro_f1": 0.7045911524726038,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9209,
+        "aptos": 0.9337,
+        "mmrdr": 0.9163
+      },
+      "epoch_seconds": 661.0925463000021
+    },
+    {
+      "epoch": 10,
+      "loss": 0.01458553528168109,
+      "inner_qwk": 0.9196092266011948,
+      "inner_macro_f1": 0.7018603778839545,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9209,
+        "aptos": 0.9293,
+        "mmrdr": 0.9151
+      },
+      "epoch_seconds": 439.65612699999474
+    },
+    {
+      "epoch": 11,
+      "loss": 0.014437405110770256,
+      "inner_qwk": 0.9256693576502096,
+      "inner_macro_f1": 0.7128968819566365,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9152,
+        "aptos": 0.9383,
+        "mmrdr": 0.921
+      },
+      "epoch_seconds": 297.10520140000153
+    },
+    {
+      "epoch": 12,
+      "loss": 0.013050928729791684,
+      "inner_qwk": 0.9234225592625621,
+      "inner_macro_f1": 0.702965842766662,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9171,
+        "aptos": 0.9368,
+        "mmrdr": 0.9184
+      },
+      "epoch_seconds": 302.3503361000039
+    },
+    {
+      "epoch": 13,
+      "loss": 0.011367697755841536,
+      "inner_qwk": 0.9264735629011434,
+      "inner_macro_f1": 0.7158190239463043,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9248,
+        "aptos": 0.939,
+        "mmrdr": 0.9215
+      },
+      "epoch_seconds": 294.78797600002144
+    },
+    {
+      "epoch": 14,
+      "loss": 0.012310599117303023,
+      "inner_qwk": 0.9267407924135351,
+      "inner_macro_f1": 0.7147483124589636,
+      "inner_qwk_by_dataset": {
+        "idrid": 0.9209,
+        "aptos": 0.9393,
+        "mmrdr": 0.922
+      },
+      "epoch_seconds": 289.2818990999949
+    }
+  ]
+}

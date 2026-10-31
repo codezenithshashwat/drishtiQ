@@ -1,0 +1,17 @@
+{
+  "model": "convnext_tiny",
+  "selection_evidence": "two seeds \u00d7 three folds, initial partial-tuning budget",
+  "scope": "development-only provisional baseline, not clinical or external validation",
+  "ranking": {
+    "convnext_tiny": {
+      "macro_f1": 0.5065847453987359,
+      "qwk": 0.7754376962087365,
+      "parameters": 27823973.0
+    },
+    "efficientnet_b0": {
+      "macro_f1": 0.4943264299840031,
+      "qwk": 0.7301276905741885,
+      "parameters": 4013953.0
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "total": 16,
+  "fixed": 11,
+  "open_high_medium": 0,
+  "items": [
+    {
+      "n": 1,
+      "screen": "Upload / Review",
+      "heuristic": "1 Visibility of system status",
+      "severity": "high",
+      "fixed": true
+    },
+    {
+      "n": 2,
+      "screen": "Case View",
+      "heuristic": "9 Error recovery",
+      "severity": "high",
+      "fixed": true
+    },
+    {
+      "n": 3,
+      "screen": "Worklist",
+      "heuristic": "7 Efficiency",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 4,
+      "screen": "All",
+      "heuristic": "2 Match with the real world",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 5,
+      "screen": "Case View",
+      "heuristic": "7 Efficiency",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 6,
+      "screen": "New screening",
+      "heuristic": "3 User control",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 7,
+      "screen": "New screening",
+      "heuristic": "5 Error prevention",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 8,
+      "screen": "Case View",
+      "heuristic": "10 Help",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 9,
+      "screen": "Report",
+      "heuristic": "1 Visibility",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 10,
+      "screen": "About",
+      "heuristic": "10 Help",
+      "severity": "medium",
+      "fixed": true
+    },
+    {
+      "n": 11,
+      "screen": "All (a11y)",
+      "heuristic": "4 Consistency / accessibility",
+      "severity": "high",
+      "fixed": true
+    },
+    {
+      "n": 12,
+      "screen": "Case View",
+      "heuristic": "8 Minimalist design",
+      "severity": "low",
+      "fixed": false
+    },
+    {
+      "n": 13,
+      "screen": "Worklist",
+      "heuristic": "4 Consistency",
+      "severity": "low",
+      "fixed": false
+    },
+    {
+      "n": 14,
+      "screen": "Worklist",
+      "heuristic": "2 Real world",
+      "severity": "low",
+      "fixed": false
+    },
+    {
+      "n": 15,
+      "screen": "All",
+      "heuristic": "3 User control",
+      "severity": "low",
+      "fixed": false
+    },
+    {
+      "n": 16,
+      "screen": "Disagreements",
+      "heuristic": "6 Recognition",
+      "severity": "low",
+      "fixed": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "timing": "after initial resolution screen; before expanded confirmation scores",
+  "reason": "macro-F1 and QWK/MA-detail preservation disagree across resolutions; confirm the selected recipe against matched baseline and 512 CE rather than asserting resolution superiority from one fold",
+  "not_original_preregistration": true,
+  "unchanged": "same folds, two seeds, six epochs, checkpoint criterion and test freeze",
+  "additional_packages": [
+    "chosen-resolution CE baseline on folds1/2",
+    "512 CE on folds1/2"
+  ],
+  "new_test_access": false
+}

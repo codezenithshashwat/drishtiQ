@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction A — Clinical Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="data/case.js"></script><script src="common.js"></script>
+<style>body{font-family:Inter,system-ui,sans-serif;font-feature-settings:"tnum" 1}</style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+  <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full bg-teal-700 grid place-items-center text-white" id="logo"></div>
+    <span class="font-semibold">RetinaScreen</span><span class="text-slate-400">/</span><span class="text-slate-600">Worklist</span><span class="text-slate-400">/</span><span class="font-medium" id="caseid"></span></div>
+  <div class="flex items-center gap-4">
+    <div class="inline-flex rounded-md border border-slate-300 overflow-hidden text-sm"><span class="px-3 py-1.5 bg-teal-700 text-white font-medium">Simple</span><span class="px-3 py-1.5 text-slate-700">Clinical</span></div>
+    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Research prototype · not for clinical use</span>
+  </div>
+</header>
+<main class="grid grid-cols-[minmax(0,1fr)_440px] gap-6 p-6 max-w-[1440px] mx-auto" id="app"></main>
+<script>
+const g = C.grading.grade
+document.getElementById('caseid').textContent = 'Case ' + C.source.image_id
+document.getElementById('app').innerHTML = `
+<section class="space-y-3">
+  <div class="rounded-xl bg-slate-900 p-3">${imageStack('rounded-lg overflow-hidden')}</div>
+  <div class="bg-white rounded-xl border border-slate-200 px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+    <span class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Layers</span>
+    ${LESIONS.map((k) => `<label class="inline-flex items-center gap-2"><input type="checkbox" checked class="accent-teal-700"><span class="w-3 h-3 rounded-sm" style="background:${LESION_COLOR[k]}"></span>${G[k].plain}<span class="text-slate-400 text-xs">${G[k].clinical}</span></label>`).join('')}
+    <label class="inline-flex items-center gap-2"><input type="checkbox" class="accent-teal-700">${ICON('eye')}${G.gradcam.plain}</label>
+    <span class="ml-auto inline-flex items-center gap-3 text-xs text-slate-500"><span class="inline-flex items-center gap-1"><span class="w-4 border-t-2 border-dashed border-sky-400"></span>${G.macula.plain}</span><span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-full border-2 border-slate-400"></span>${G.optic_disc.plain}</span></span>
+  </div>
+</section>
+<aside class="space-y-4">
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Stage of eye damage</div>
+    <div class="mt-2 flex items-baseline gap-3"><span class="text-3xl font-bold" style="color:${STAGE_COLOR[g]}">Stage ${g}</span><span class="text-slate-500">of 4</span></div>
+    <div class="text-lg font-semibold mt-0.5">${stagePlain(g)}</div><div class="text-sm text-slate-500">${stageClinical(g)}</div>
+    <ol class="mt-4 grid grid-cols-5 gap-1">${[0,1,2,3,4].map((i) => `<li class="h-2 rounded-full" style="background:${i <= g ? STAGE_COLOR[i] : '#E2E8F0'}"></li>`).join('')}</ol>
+    <div class="mt-1 grid grid-cols-5 text-[11px] text-slate-500">${[0,1,2,3,4].map((i) => `<span class="${i === g ? 'font-semibold text-slate-900' : ''}">${i}</span>`).join('')}</div>
+    <div class="mt-4 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-sm flex gap-2 text-amber-900">${ICON('triangle-alert','w-4 h-4 mt-0.5 shrink-0')}<span>${sentences('flags').map((s) => s.simple).join(' ') || 'No warnings.'}</span></div>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="flex items-center justify-between"><h2 class="font-semibold">What the AI found</h2><span class="text-xs text-slate-500">Tap a line to see it on the image</span></div>
+    ${['summary','evidence','reasoning','macula','limits'].map((sec) => `
+      <h3 class="mt-4 mb-1.5 text-xs uppercase tracking-wide text-slate-500 font-semibold flex items-center gap-1.5">${ICON(SECTION_ICON[sec],'w-3.5 h-3.5')}${SECTION_TITLE[sec][0]}</h3>
+      <ul class="space-y-1">${sentences(sec).map((s) => `<li class="rounded-md px-2.5 py-1.5 text-[15px] leading-snug ${s.id === SELECTED ? 'bg-teal-50 ring-1 ring-teal-600' : ''}">${s.simple}</li>`).join('')}</ul>`).join('')}
+  </div>
+  <p class="text-xs text-slate-500 px-1">Screening aid, not a diagnosis. A qualified clinician makes the final decision.</p>
+</aside>`
+lucide.createIcons()
+</script>
+</body>
+</html>

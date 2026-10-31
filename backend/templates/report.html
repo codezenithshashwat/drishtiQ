@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if kind == 'doctor' %}DR screening report{% else %}{{ t.title }}{% endif %} · {{ patient_ref }}</title>
+<style>
+  @font-face { font-family: Inter; font-weight: 400; src: url("/report-fonts/inter-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: Inter; font-weight: 500; src: url("/report-fonts/inter-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: Inter; font-weight: 600; src: url("/report-fonts/inter-latin-600-normal.woff2") format("woff2"); }
+  @page { size: A4; margin: 16mm 16mm 18mm; }
+  * { box-sizing: border-box; }
+  html { background: {{ c.surface.subtle }}; }
+  body { margin: 0; font-family: Inter, "Nirmala UI", "Segoe UI", sans-serif; font-size: 13px; line-height: 1.5; color: {{ c.text.primary }}; }
+  .page { max-width: 794px; margin: 0 auto; background: {{ c.surface.card }}; padding: 48px 56px; }
+  @media print { html { background: none; } .page { padding: 0; max-width: none; } }
+  header.doc { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding-bottom: 16px; border-bottom: 2px solid {{ c.text.primary }}; }
+  .overline { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: {{ c.text.muted }}; }
+  h1 { font-size: 20px; font-weight: 600; line-height: 1.25; margin: 4px 0 0; }
+  h2 { font-size: 13px; font-weight: 600; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 1px solid {{ c.border.default }}; }
+  .meta { text-align: right; font-size: 12px; color: {{ c.text.secondary }}; }
+  .meta b { color: {{ c.text.primary }}; font-weight: 500; }
+  .callout { margin-top: 20px; border: 1px solid {{ c.border.strong }}; border-left: 4px solid {{ c.brand['700'] }}; border-radius: 6px; padding: 12px 16px; }
+  .callout.urgent, .callout.human { border-left-color: {{ c.stage[4].solid }}; }
+  .callout.refer, .callout.retake, .callout.incomplete { border-left-color: {{ c.stage[2].solid }}; }
+  .callout .title { font-size: 16px; font-weight: 600; }
+  .callout p { margin: 4px 0 0; color: {{ c.text.secondary }}; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid {{ c.border.default }}; vertical-align: top; }
+  th { font-weight: 500; color: {{ c.text.secondary }}; background: {{ c.surface.subtle }}; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .stage { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .eyes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .eye { border: 1px solid {{ c.border.default }}; border-radius: 8px; padding: 12px; break-inside: avoid; }
+  .eye img { width: 100%; border-radius: 6px; background: {{ c.surface.viewer }}; display: block; }
+  .eye h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; display: flex; justify-content: space-between; }
+  .muted { color: {{ c.text.muted }}; }
+  .small { font-size: 11px; }
+  ul.sent { margin: 8px 0 0; padding-left: 16px; } ul.sent li { margin: 2px 0; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: {{ c.text.secondary }}; margin-top: 8px; }
+  footer.doc { margin-top: 32px; padding-top: 12px; border-top: 1px solid {{ c.border.default }}; font-size: 11px; color: {{ c.text.muted }}; }
+  .patient p.lead { font-size: 14px; max-width: 70ch; }
+  .patient .res { font-size: 16px; font-weight: 600; }
+  .patient ul { padding-left: 18px; } .patient li { margin: 4px 0; }
+  /* UI v3 brand header: name + tagline, crimson -> coral rule. */
+  .brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; padding-bottom: 12px;
+    border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, {{ c.gradient['from'] }}, {{ c.gradient.to }}) 1; }
+  .brand .name { display: flex; align-items: center; gap: 10px; }
+  .brand .word { font-family: "DM Serif Display", Georgia, "Times New Roman", serif; font-size: 22px; line-height: 1; color: {{ c.text.primary }}; }
+  .brand .tag { font-size: 11px; color: {{ c.text.muted }}; margin-top: 2px; }
+  .brand .proto { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: {{ c.accent.text }}; }
+  .overline { color: {{ c.accent.text }}; }
+</style>
+</head>
+<body>
+<div class="page {{ kind }}">
+<div class="brand">
+  <div class="name">
+    <svg width="34" height="22" viewBox="0 0 64 40" aria-hidden="true"><path d="M3 20C10 8 20 3 32 3s22 5 29 17c-7 12-17 17-29 17S10 32 3 20Z" fill="none" stroke="{{ c.gradient['from'] }}" stroke-width="4" stroke-linejoin="round"/><circle cx="32" cy="20" r="11" fill="{{ c.gradient.to }}"/><circle cx="32" cy="20" r="4.5" fill="{{ c.neutral['900'] }}"/></svg>
+    <div><div class="word">{{ brand.name }}</div><div class="tag">{{ brand.tagline }}</div></div>
+  </div>
+  <div class="proto">Research prototype · not a medical device</div>
+</div>
+{% set stage_solid = [c.stage[0].solid, c.stage[1].solid, c.stage[2].solid, c.stage[3].solid, c.stage[4].solid] %}
+{% if kind == 'doctor' %}
+  <header class="doc">
+    <div>
+      <div class="overline">Diabetic retinopathy screening · decision support</div>
+      <h1>Screening report</h1>
+    </div>
+    <div class="meta">Patient <b>{{ patient_ref }}</b><br>Date <b>{{ today }}</b><br>Cases {% for e in eyes %}<b>{{ e.id }}</b>{% if not loop.last %}, {% endif %}{% endfor %}</div>
+  </header>
+
+  <div class="callout {{ summary.follow_up.level }}">
+    <div class="overline">Routing suggestion</div>
+    <div class="title">{{ summary.follow_up.title }}</div>
+    <p>{{ summary.follow_up.text }} {{ summary.note }}</p>
+  </div>
+
+  <h2>Result by eye</h2>
+  <table>
+    <thead><tr><th>Eye</th><th>ICDR stage</th><th>Routing</th><th class="num">P(referable)</th><th>Confidence</th><th>Macular-edema risk</th>
+      <th class="num">MA</th><th class="num">HE</th><th class="num">EX</th><th class="num">SE</th></tr></thead>
+    <tbody>
+    {% for e in eyes %}
+      <tr>
+        <td>{{ e.eye|capitalize }}</td>
+        {% if e.ok %}
+        <td><span class="stage"><span class="dot" style="background: {{ stage_solid[e.stage] }}"></span>{{ e.stage }} · {{ e.stage_label }}</span></td>
+        <td>{{ e.route.label if e.route else '—' }}</td>
+        <td class="num">{{ '%.2f'|format(e.assist.p_referable) if e.assist.available else '—' }}</td>
+        <td>{% if e.assist.available %}{{ e.assist.confidence_level|capitalize }} ({{ '%.2f'|format(e.assist.stage_confidence) }}){% else %}<span class="muted">Not calibrated</span>{% endif %}{% if e.assist.defer %} · deferred{% endif %}</td>
+        <td>{{ e.dme.level|capitalize }}{% if e.dme.nearest_exudate_dd is not none %} <span class="muted">(nearest exudate {{ '%.1f'|format(e.dme.nearest_exudate_dd) }} DD)</span>{% endif %}</td>
+        <td class="num">{{ e.lesions.MA }}</td><td class="num">{{ e.lesions.HE }}</td><td class="num">{{ e.lesions.EX }}</td><td class="num">{{ e.lesions.SE }}</td>
+        {% else %}
+        <td>{{ e.route.label if e.route else '—' }}</td><td colspan="8" class="muted">Image rejected: not assessable.</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="small muted">Lesion columns count segmented regions (microaneurysms, haemorrhages, hard exudates, soft exudates). P(referable) and confidence are calibrated on held-out data (ADR-019).</p>
+
+  <h2>Images and findings</h2>
+  <div class="eyes">
+  {% for e in eyes %}
+    <div class="eye">
+      <h3><span>{{ e.eye|capitalize }} eye</span><span class="muted">{{ e.id }}</span></h3>
+      {% if e.image %}<img src="{{ e.image }}" alt="{{ e.eye }} eye fundus photograph with segmented lesions">{% endif %}
+      <div class="legend">{% for k, n in [('MA','Microaneurysms'),('HE','Haemorrhages'),('EX','Hard exudates'),('SE','Soft exudates')] %}<span><span class="dot" style="background: {{ c.lesion[k] }}"></span> {{ n }}</span>{% endfor %}</div>
+      {% if e.route %}<p class="small"><b>{{ e.route.label }}:</b> {{ e.route.reasons|join(' ') }}</p>{% endif %}
+      {% if e.ok %}
+      <ul class="sent">{% for s in e.sentences %}<li>{{ s.clinical }}</li>{% endfor %}</ul>
+      {% for f in e.flags %}<p class="small"><b>Flag:</b> {{ f.clinical }}</p>{% endfor %}
+      {% endif %}
+      {% if e.quality.issues %}<p class="small"><b>Image quality:</b> {{ e.quality.issues|join(' ') }}</p>{% endif %}
+      {% if e.review %}<p class="small"><b>Clinician review ({{ e.review.created[:10] }}):</b> {{ e.review.decision }}{% if e.review.corrected_stage is not none %}, stage {{ e.review.corrected_stage }}{% endif %}{% if e.review.note %}: {{ e.review.note }}{% endif %}</p>{% endif %}
+    </div>
+  {% endfor %}
+  </div>
+
+  <footer class="doc">
+    Research prototype for screening decision support ({{ model_version }}). Not a diagnosis and not validated for clinical use.
+    Routing: AI-assisted prioritisation with a routine-rescreening pile ({{ summary.operating_point.wording }}). Categories follow the structure of the ICO Guidelines for Diabetic Eye Care (2017); timing follows the local programme. A qualified clinician makes the final decision.
+  </footer>
+{% else %}
+  <header class="doc">
+    <div>
+      <div class="overline">{{ t.result }}</div>
+      <h1>{{ t.title }}</h1>
+    </div>
+    <div class="meta">{{ t.patient }} <b>{{ patient_ref }}</b><br>{{ t.date }} <b>{{ today }}</b></div>
+  </header>
+  <p class="lead">{{ t.intro }}</p>
+
+  <div class="callout {{ summary.follow_up.level }}">
+    <div class="overline">{{ t.next_step }}</div>
+    <p class="res" style="color: {{ c.text.primary }}">{{ t.follow_up[summary.follow_up.level] }}</p>
+  </div>
+
+  <h2>{{ t.result }}</h2>
+  <table>
+    <tbody>
+    {% for e in eyes %}
+      <tr>
+        <th style="width: 30%">{{ t[e.eye] }}</th>
+        <td>{% if e.ok and e.route and e.route.state not in ('RETAKE',) %}<span class="stage"><span class="dot" style="background: {{ stage_solid[e.stage] }}"></span>{{ t.stage[e.stage][0] }}</span><br><span class="muted">{{ t.stage[e.stage][1] }}</span>
+            <br>{{ t.swelling }}: {{ t.risk[e.dme.level] }}
+            {% else %}{{ t.not_assessed }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>{{ t.care_title }}</h2>
+  <ul>{% for line in t.care %}<li>{{ line }}</li>{% endfor %}</ul>
+  <p>{{ t.questions }}</p>
+  <footer class="doc">{{ t.disclaimer }}</footer>
+{% endif %}
+</div>
+</body>
+</html>

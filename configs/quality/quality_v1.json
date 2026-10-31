@@ -1,0 +1,11 @@
+{
+  "adr": "ADR-023",
+  "corner_dark_min": 0.55,
+  "fitted_on": "300 images each from IDRiD dev-train, APTOS-train, MMRDR-train (seed 17) + 64 synthetic non-fundus images (seed 99)",
+  "training_pass_rate": {
+    "idrid_grading_devtrain": 1.0,
+    "aptos_train": 0.98,
+    "mmrdr_train": 0.98
+  },
+  "synthetic_flagged": 1.0
+}

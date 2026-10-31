@@ -1,0 +1,46 @@
+{
+  "scope": "provisional, two seeds on one image-level validation split; no external or official test evaluation",
+  "ranking": {
+    "('Segformer', 'full', 512, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.32376708815962413,
+      "seconds": 22.594103700001142
+    },
+    "('Unet', 'full', 512, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.1744792455500011,
+      "seconds": 22.27848869999434
+    },
+    "('UnetPlusPlus', 'full', 512, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.1406261435783992,
+      "seconds": 46.480074749997584
+    },
+    "('DeepLabV3Plus', 'full', 512, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.11601576139825945,
+      "seconds": 18.292478299990762
+    },
+    "('Unet', 'full', 512, 'bce')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.05450597664692088,
+      "seconds": 21.334954999998445
+    },
+    "('Unet', 'patch', 256, 'bce')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.02024853503774461,
+      "seconds": 22.414269349996175
+    },
+    "('Unet', 'patch', 256, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.00778332992860437,
+      "seconds": 23.14109945000382
+    },
+    "('Unet', 'patch', 512, 'bce_dice')": {
+      "MA_dice": 0.0,
+      "mean_dice": 0.0,
+      "seconds": 23.236711350000405
+    }
+  },
+  "selection_rule": "prioritize native-image MA Dice, then four-lesion mean Dice, inspect compute before final recommendation"
+}

@@ -1,0 +1,4 @@
+split,n,majority_grades,minority_grades,max_min_ratio,majority_baseline_accuracy,entropy_bits
+all,516,"[0, 2]",[1],6.72,0.32558139534883723,2.0786361711692525
+test,103,[0],[1],6.8,0.3300970873786408,2.09038677797729
+train,413,[2],[1],6.8,0.32929782082324455,2.0754464187624904

@@ -1,0 +1,107 @@
+{
+  "tag": "frozen_resnet50_r224_baseline_f1_s29",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 29,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 4,
+  "epochs_run": 17,
+  "training_seconds": 0.36502009999821894,
+  "train_macro_f1": 0.9126739589608345,
+  "overfit_gap": 0.3671758255870806,
+  "accuracy": 0.6148148148148148,
+  "balanced_accuracy": 0.5763131313131313,
+  "macro_f1": 0.5454981333737539,
+  "weighted_f1": 0.6263949317690282,
+  "qwk": 0.7364746945898779,
+  "mae_grade": 0.6,
+  "distance_ge2_rate": 0.17777777777777778,
+  "high_grade_to_0_or_1_rate": 0.05,
+  "grade0_to_3_or_4_count": 2,
+  "nll": 2.7925288677215576,
+  "brier": 0.6991276054106619,
+  "ece_10_bins": 0.28925149440765374,
+  "minority_grade1_recall": 0.3333333333333333,
+  "roc_auc_ovr_macro": 0.843042047475814,
+  "confusion_matrix": [
+    [
+      32,
+      7,
+      4,
+      1,
+      1
+    ],
+    [
+      4,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      7,
+      2,
+      24,
+      3,
+      8
+    ],
+    [
+      1,
+      0,
+      4,
+      13,
+      6
+    ],
+    [
+      0,
+      1,
+      1,
+      2,
+      12
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7272727272727273,
+      "recall": 0.7111111111111111,
+      "specificity": 0.8666666666666667,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.16666666666666666,
+      "recall": 0.3333333333333333,
+      "specificity": 0.9224806201550387,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.7272727272727273,
+      "recall": 0.5454545454545454,
+      "specificity": 0.9010989010989011,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.6842105263157895,
+      "recall": 0.5416666666666666,
+      "specificity": 0.9459459459459459,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.4444444444444444,
+      "recall": 0.75,
+      "specificity": 0.8739495798319328,
+      "support": 16
+    }
+  ],
+  "architecture": "resnet50",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce"
+}

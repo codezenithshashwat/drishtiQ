@@ -1,0 +1,37 @@
+﻿key,english,hindi,context
+title,Your eye screening result,आपकी आँखों की जाँच का परिणाम,Patient summary: page title
+patient,Patient ID,मरीज़ आईडी,Label before the patient ID
+date,Date,तारीख,Label before the date
+intro,Photos of the back of your eyes (the retina) were checked for diabetic eye disease with the help of a computer program. A doctor reviews the result.,आपकी आँखों के पिछले हिस्से (रेटिना) की तस्वीरों में डायबिटीज़ से होने वाली आँखों की बीमारी की जाँच एक कंप्यूटर प्रोग्राम की मदद से की गई। परिणाम की समीक्षा डॉक्टर करते हैं।,Opening paragraph: what was done
+result,Result,परिणाम,Heading of the per-eye results
+next_step,Next step,अगला कदम,Heading of the next-step box
+right,Right eye,दाईं आँख,Row label
+left,Left eye,बाईं आँख,Row label
+unknown,Eye not recorded,आँख दर्ज नहीं,Row label when the eye was not recorded
+not_assessed,Could not be assessed,जाँच नहीं हो सकी,Result when an eye could not be assessed
+swelling,Swelling risk at the centre of vision,दृष्टि के केंद्र में सूजन का जोखिम,Label before the macular-edema risk level
+risk.low,Low,कम,Macular-edema risk level shown after the swelling label
+risk.possible,Possible,संभव,Macular-edema risk level shown after the swelling label
+risk.high,High,अधिक,Macular-edema risk level shown after the swelling label
+care_title,Looking after your eyes,अपनी आँखों का ध्यान रखें,Heading of the eye-care tips
+care.0,"Keep your blood sugar, blood pressure and cholesterol under control.","अपनी ब्लड शुगर, ब्लड प्रेशर और कोलेस्ट्रॉल को नियंत्रण में रखें।",Eye-care tip (bullet)
+care.1,"Have your eyes checked regularly, even if your sight seems fine.","नियमित रूप से आँखों की जाँच करवाएँ, भले ही आपको ठीक दिख रहा हो।",Eye-care tip (bullet)
+care.2,See a doctor quickly if your sight becomes blurred or you see dark spots.,"अगर धुंधला दिखने लगे या काले धब्बे दिखें, तो तुरंत डॉक्टर से मिलें।",Eye-care tip (bullet)
+questions,Questions? Ask your doctor or health worker.,कोई सवाल हो तो अपने डॉक्टर या स्वास्थ्य कार्यकर्ता से पूछें।,Closing line
+disclaimer,This summary is not a diagnosis. It was made by a research prototype. Your doctor makes the final decision.,यह सारांश निदान नहीं है। इसे एक शोध प्रोटोटाइप ने बनाया है। अंतिम निर्णय आपके डॉक्टर लेते हैं।,Footer disclaimer
+stage.0.name,No diabetic damage seen in this photo,इस फ़ोटो में डायबिटीज़ से क्षति नहीं दिखी,Plain name of ICDR stage 0
+stage.0.explain,The check did not see changes from diabetes in this photo. It is not a full eye examination.,इस जाँच में फ़ोटो में डायबिटीज़ से जुड़े बदलाव नहीं दिखे। यह आँखों की पूरी जाँच नहीं है।,One-line explanation of stage 0
+stage.1.name,Early signs,शुरुआती लक्षण,Plain name of ICDR stage 1
+stage.1.explain,Only tiny bulges in small blood vessels were found.,केवल छोटी रक्त-वाहिकाओं में बहुत छोटे उभार मिले।,One-line explanation of stage 1
+stage.2.name,Moderate damage,मध्यम क्षति,Plain name of ICDR stage 2
+stage.2.explain,"More than tiny bulges were found, but not severe.","छोटे उभारों से अधिक बदलाव मिले, पर गंभीर नहीं।",One-line explanation of stage 2
+stage.3.name,Severe damage,गंभीर क्षति,Plain name of ICDR stage 3
+stage.3.explain,"Widespread damage was found, with a high risk of new vessel growth.",व्यापक क्षति मिली; नई रक्त-वाहिकाएँ बनने का खतरा अधिक है।,One-line explanation of stage 3
+stage.4.name,Advanced disease,उन्नत रोग,Plain name of ICDR stage 4
+stage.4.explain,Fragile new blood vessels are growing; sight is at risk.,नाज़ुक नई रक्त-वाहिकाएँ बन रही हैं; दृष्टि खतरे में है।,One-line explanation of stage 4
+follow_up.routine,"This photo check did not find diabetic eye damage that needs a specialist now. It is not a full eye examination. Come back for your next check, or sooner if your vision changes.","इस फ़ोटो जाँच में डायबिटीज़ से आँखों को ऐसी क्षति नहीं मिली जिसके लिए अभी विशेषज्ञ की ज़रूरत हो। यह आँखों की पूरी जाँच नहीं है। अपनी अगली जाँच के लिए आएँ, या अगर आपकी दृष्टि में बदलाव हो तो पहले ही आ जाएँ।","Next-step text for ROUTINE_RESCREEN_ELIGIBLE (frozen wording, ADR-039/040)"
+follow_up.refer,Changes were found that an eye specialist should check. Please book a visit with an eye specialist.,कुछ बदलाव मिले हैं जिन्हें नेत्र विशेषज्ञ को देखना चाहिए। कृपया नेत्र विशेषज्ञ से मिलने का समय लें।,Next-step text when the suggested follow-up is 'refer'
+follow_up.urgent,Changes were found that need an eye specialist soon. Please see an eye specialist as soon as possible.,ऐसे बदलाव मिले हैं जिनके लिए जल्द ही नेत्र विशेषज्ञ को दिखाना ज़रूरी है। कृपया जितनी जल्दी हो सके नेत्र विशेषज्ञ से मिलें।,Next-step text when the suggested follow-up is 'urgent'
+follow_up.human,The computer could not give a clear result for your photos. A doctor or trained grader will look at them and tell you the next step.,कंप्यूटर आपकी तस्वीरों का स्पष्ट परिणाम नहीं दे सका। डॉक्टर या प्रशिक्षित जाँचकर्ता उन्हें देखकर आपको अगला कदम बताएँगे।,Next-step text when the suggested follow-up is 'human'
+follow_up.retake,The photo of at least one eye was not clear enough. A new photo is needed before a result can be given.,कम से कम एक आँख की फ़ोटो पर्याप्त साफ़ नहीं थी। परिणाम देने से पहले नई फ़ोटो लेनी होगी।,Next-step text when a photo must be retaken
+follow_up.incomplete,"Only one eye was photographed, so the check is not complete. Both eyes need a photo.","केवल एक आँख की फ़ोटो ली गई, इसलिए जाँच पूरी नहीं है। दोनों आँखों की फ़ोटो ज़रूरी है।",Next-step text when an eye is missing

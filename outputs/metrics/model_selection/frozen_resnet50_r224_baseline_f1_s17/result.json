@@ -1,0 +1,108 @@
+{
+  "tag": "frozen_resnet50_r224_baseline_f1_s17",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 17,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 3,
+  "epochs_run": 16,
+  "training_seconds": 0.38395040000614244,
+  "train_macro_f1": 0.8111282382775595,
+  "overfit_gap": 0.2683340733781314,
+  "accuracy": 0.5851851851851851,
+  "balanced_accuracy": 0.6003787878787878,
+  "macro_f1": 0.5427941648994281,
+  "weighted_f1": 0.5958526896538593,
+  "qwk": 0.6481685575364668,
+  "mae_grade": 0.6888888888888889,
+  "distance_ge2_rate": 0.18518518518518517,
+  "high_grade_to_0_or_1_rate": 0.05,
+  "grade0_to_3_or_4_count": 5,
+  "nll": 3.0767982876125854,
+  "brier": 0.7340962404393647,
+  "ece_10_bins": 0.3098792918560062,
+  "minority_grade1_recall": 0.6666666666666666,
+  "roc_auc_ovr_macro": 0.8206613182919613,
+  "confusion_matrix": [
+    [
+      30,
+      7,
+      3,
+      1,
+      4
+    ],
+    [
+      2,
+      4,
+      0,
+      0,
+      0
+    ],
+    [
+      6,
+      1,
+      23,
+      6,
+      8
+    ],
+    [
+      0,
+      0,
+      7,
+      11,
+      6
+    ],
+    [
+      1,
+      1,
+      1,
+      2,
+      11
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7692307692307693,
+      "recall": 0.6666666666666666,
+      "specificity": 0.9,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.3076923076923077,
+      "recall": 0.6666666666666666,
+      "specificity": 0.9302325581395349,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.6764705882352942,
+      "recall": 0.5227272727272727,
+      "specificity": 0.8791208791208791,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.55,
+      "recall": 0.4583333333333333,
+      "specificity": 0.918918918918919,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.3793103448275862,
+      "recall": 0.6875,
+      "specificity": 0.8487394957983193,
+      "support": 16
+    }
+  ],
+  "architecture": "resnet50",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce",
+  "scoring_numerics": "float64 row renormalization for round-trip epsilon; explicit NLL floor 1e-12; no fitted calibration"
+}

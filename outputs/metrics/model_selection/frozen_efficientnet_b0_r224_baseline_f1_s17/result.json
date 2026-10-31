@@ -1,0 +1,108 @@
+{
+  "tag": "frozen_efficientnet_b0_r224_baseline_f1_s17",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 17,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 2,
+  "epochs_run": 15,
+  "training_seconds": 0.34945730000617914,
+  "train_macro_f1": 0.8537069618644175,
+  "overfit_gap": 0.35293684763977107,
+  "accuracy": 0.6074074074074074,
+  "balanced_accuracy": 0.5229545454545456,
+  "macro_f1": 0.5007701142246465,
+  "weighted_f1": 0.6034910135670362,
+  "qwk": 0.741311290625587,
+  "mae_grade": 0.6,
+  "distance_ge2_rate": 0.16296296296296298,
+  "high_grade_to_0_or_1_rate": 0.05,
+  "grade0_to_3_or_4_count": 3,
+  "nll": 1.5519356287291943,
+  "brier": 0.620340308438146,
+  "ece_10_bins": 0.2405686380749801,
+  "minority_grade1_recall": 0.16666666666666666,
+  "roc_auc_ovr_macro": 0.8423391546250644,
+  "confusion_matrix": [
+    [
+      39,
+      3,
+      0,
+      1,
+      2
+    ],
+    [
+      4,
+      1,
+      0,
+      1,
+      0
+    ],
+    [
+      7,
+      1,
+      21,
+      7,
+      8
+    ],
+    [
+      1,
+      1,
+      7,
+      10,
+      5
+    ],
+    [
+      0,
+      0,
+      1,
+      4,
+      11
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7647058823529411,
+      "recall": 0.8666666666666667,
+      "specificity": 0.8666666666666667,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.16666666666666666,
+      "recall": 0.16666666666666666,
+      "specificity": 0.9612403100775194,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.7241379310344828,
+      "recall": 0.4772727272727273,
+      "specificity": 0.9120879120879121,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.43478260869565216,
+      "recall": 0.4166666666666667,
+      "specificity": 0.8828828828828829,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.4230769230769231,
+      "recall": 0.6875,
+      "specificity": 0.8739495798319328,
+      "support": 16
+    }
+  ],
+  "architecture": "efficientnet_b0",
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce",
+  "scoring_numerics": "float64 row renormalization for round-trip epsilon; explicit NLL floor 1e-12; no fitted calibration"
+}

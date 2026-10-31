@@ -1,0 +1,8 @@
+{
+  "seconds": 19.397638700000243,
+  "images": 404,
+  "mode": "frozen ImageNet-1k feature extraction; no validation fit",
+  "batch": 16,
+  "preprocessing": "baseline",
+  "size": 768
+}

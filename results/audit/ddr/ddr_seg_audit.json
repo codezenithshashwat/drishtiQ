@@ -1,0 +1,82 @@
+{
+  "images": 757,
+  "by_split": {
+    "train": 383,
+    "valid": 149,
+    "test": 225
+  },
+  "resolutions": [
+    [
+      "2592x1728",
+      213
+    ],
+    [
+      "2736x1824",
+      121
+    ],
+    [
+      "2048x1536",
+      105
+    ],
+    [
+      "3888x2592",
+      49
+    ],
+    [
+      "2992x2000",
+      32
+    ],
+    [
+      "3264x2448",
+      31
+    ],
+    [
+      "2592x1944",
+      31
+    ],
+    [
+      "1956x1934",
+      27
+    ]
+  ],
+  "mask_modes": {
+    "L": 757
+  },
+  "mask_values_examples": [
+    "0",
+    "0 255"
+  ],
+  "images_with_lesion": {
+    "MA": 570,
+    "HE": 601,
+    "EX": 486,
+    "SE": 239
+  },
+  "components_total": {
+    "MA": 10380,
+    "HE": 12538,
+    "EX": 23659,
+    "SE": 1293
+  },
+  "internal_duplicate_pairs": 5,
+  "overlap": {
+    "MMRDR-CFP": {
+      "exact": 0,
+      "within_dup_threshold": 647,
+      "within_review_band": 653
+    },
+    "IDRiD_all": {
+      "exact": 0,
+      "within_dup_threshold": 0,
+      "within_review_band": 1
+    },
+    "APTOS_all": {
+      "exact": 0,
+      "within_dup_threshold": 2,
+      "within_review_band": 19
+    }
+  },
+  "dropped_for_protection": 5,
+  "empty_mask_semantics": "annotated negative (DDR annotated all four lesions per image)",
+  "licence": "CC BY-NC-SA 4.0"
+}

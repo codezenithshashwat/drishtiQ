@@ -1,0 +1,7 @@
+{
+  "timing": "after development CV; not a preregistered confirmatory hypothesis",
+  "performance_band": "unchanged .02 absolute macro-F1 and .02 QWK from best complete package",
+  "inference_cost_rule": "prefer lower reference compute and total parameters within that band",
+  "same_backbone_tiebreak": "prefer fewer trainable parameters; a tiny partial-tuning gain within the band does not justify updating millions of extra weights",
+  "scope": "engineering recommendation, not statistical equivalence or clinical noninferiority; test remains locked"
+}

@@ -1,0 +1,133 @@
+{
+  "images_labelled": 2000,
+  "patients": 500,
+  "missing_files": [],
+  "unlabelled_files": [],
+  "invalid_grades": [
+    "56_r3",
+    "56_l3",
+    "77_r4",
+    "77_r3",
+    "77_l3",
+    "77_l4",
+    "164_r3",
+    "164_r4",
+    "164_l3",
+    "167_r3",
+    "167_l3"
+  ],
+  "grade_counts": {
+    "0": 903,
+    "1": 218,
+    "2": 393,
+    "3": 351,
+    "4": 112,
+    "None": 11
+  },
+  "quality_ok": 934,
+  "exact_duplicate_files": 0,
+  "near_duplicate_pairs_within_set": 37,
+  "near_duplicate_examples": [
+    [
+      "27_l1",
+      "27_l2",
+      0
+    ],
+    [
+      "27_r1",
+      "27_r2",
+      0
+    ],
+    [
+      "31_l1",
+      "31_l2",
+      2
+    ],
+    [
+      "34_l1",
+      "34_l2",
+      2
+    ],
+    [
+      "34_r1",
+      "34_r2",
+      0
+    ],
+    [
+      "36_l1",
+      "36_l2",
+      30
+    ],
+    [
+      "40_l2",
+      "202_l1",
+      32
+    ],
+    [
+      "77_r4",
+      "77_r3",
+      4
+    ],
+    [
+      "96_l1",
+      "96_l2",
+      0
+    ],
+    [
+      "96_r1",
+      "96_r2",
+      0
+    ]
+  ],
+  "leak_check": {
+    "IDRiD (all)": {
+      "reference_images": 1113,
+      "matches": 0,
+      "examples": []
+    },
+    "APTOS train": {
+      "reference_images": 3662,
+      "matches": 1,
+      "examples": [
+        "75_l1"
+      ]
+    },
+    "MMRDR": {
+      "reference_images": 11118,
+      "matches": 11,
+      "examples": [
+        "14_l2",
+        "16_l2",
+        "16_r2",
+        "108_l2",
+        "129_l1",
+        "150_l2",
+        "171_r2",
+        "181_r2",
+        "305_l2",
+        "343_l1"
+      ]
+    },
+    "DDR lesion sets": {
+      "reference_images": 757,
+      "matches": 0,
+      "examples": []
+    }
+  },
+  "removed_for_leak": [
+    "108_l2",
+    "129_l1",
+    "14_l2",
+    "150_l2",
+    "16_l2",
+    "16_r2",
+    "171_r2",
+    "181_r2",
+    "305_l2",
+    "343_l1",
+    "426_l2",
+    "75_l1"
+  ],
+  "locked_images": 1988,
+  "locked_gradable": 1977
+}

@@ -1,0 +1,30 @@
+{
+  "tag": "ma_Unet_patch256_weighted_bce_tversky_e12_s29",
+  "task": "segmentation_MA_specialist",
+  "architecture": "Unet",
+  "encoder": "resnet18",
+  "pretraining": "ImageNet-1k",
+  "targets": [
+    "MA"
+  ],
+  "mode": "patch",
+  "resolution": 256,
+  "seed": 29,
+  "epochs": 12,
+  "optimizer": "AdamW",
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "objective": "0.5 weighted BCE + 0.5 batch-global Tversky; FP alpha=.3, FN beta=.7, smoothing=1",
+  "positive_weight": 50.0,
+  "positive_weight_rule": "min(50, training-native-negative/positive); no validation prevalence used",
+  "training_images": 40,
+  "validation_images": 10,
+  "checkpoint": "fixed final epoch",
+  "threshold": 0.5,
+  "BN": "fixed running statistics",
+  "patch_sampling": "50% MA-centered/jittered, 50% uniform; train only",
+  "nominal_pixels_per_image_epoch": 524288,
+  "parameters": 12461009,
+  "trainable_parameters": 12461009,
+  "amendment": "adaptive failure analysis after initial four-lesion MA Dice was zero; not preregistered"
+}

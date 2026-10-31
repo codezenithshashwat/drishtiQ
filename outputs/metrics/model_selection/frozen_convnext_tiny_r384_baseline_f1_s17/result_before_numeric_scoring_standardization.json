@@ -1,0 +1,102 @@
+{
+  "tag": "frozen_convnext_tiny_r384_baseline_f1_s17",
+  "task": "grading",
+  "stage": "frozen",
+  "fold": 1,
+  "seed": 17,
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 3,
+  "epochs_run": 16,
+  "training_seconds": 0.2803277000057278,
+  "train_macro_f1": 0.8433365625042855,
+  "overfit_gap": 0.30387616982131593,
+  "accuracy": 0.6148148148148148,
+  "balanced_accuracy": 0.5717424242424243,
+  "macro_f1": 0.5394603926829695,
+  "weighted_f1": 0.6220798418484719,
+  "qwk": 0.7331222947218813,
+  "mae_grade": 0.6,
+  "distance_ge2_rate": 0.17037037037037037,
+  "high_grade_to_0_or_1_rate": 0.05,
+  "grade0_to_3_or_4_count": 3,
+  "nll": 1.4518681764602661,
+  "brier": 0.5973863097970163,
+  "ece_10_bins": 0.21075734849329347,
+  "minority_grade1_recall": 0.3333333333333333,
+  "roc_auc_ovr_macro": 0.846989453003361,
+  "confusion_matrix": [
+    [
+      36,
+      3,
+      3,
+      2,
+      1
+    ],
+    [
+      1,
+      2,
+      1,
+      2,
+      0
+    ],
+    [
+      3,
+      4,
+      20,
+      7,
+      10
+    ],
+    [
+      2,
+      0,
+      5,
+      14,
+      3
+    ],
+    [
+      0,
+      0,
+      0,
+      5,
+      11
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.8571428571428571,
+      "recall": 0.8,
+      "specificity": 0.9333333333333333,
+      "support": 45
+    },
+    {
+      "grade": 1,
+      "precision": 0.2222222222222222,
+      "recall": 0.3333333333333333,
+      "specificity": 0.9457364341085271,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.6896551724137931,
+      "recall": 0.45454545454545453,
+      "specificity": 0.9010989010989011,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.4666666666666667,
+      "recall": 0.5833333333333334,
+      "specificity": 0.8558558558558559,
+      "support": 24
+    },
+    {
+      "grade": 4,
+      "precision": 0.44,
+      "recall": 0.6875,
+      "specificity": 0.8823529411764706,
+      "support": 16
+    }
+  ]
+}

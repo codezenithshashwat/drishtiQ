@@ -1,0 +1,6 @@
+architecture,input_size,batch,parameters,forward_backward_seconds,estimated_480_update_seconds,peak_MiB,scope
+Unet,512,1,12461444,0.03231633333295273,15.51183999981731,235.45703125,synthetic warm-up/pilot only; no optimizer steps or held-out images
+UnetPlusPlus,512,1,13965444,0.08209756666231745,39.40683199791238,549.54833984375,synthetic warm-up/pilot only; no optimizer steps or held-out images
+DeepLabV3Plus,512,1,11647316,0.02111719999811612,10.136255999095738,190.9423828125,synthetic warm-up/pilot only; no optimizer steps or held-out images
+Segformer,512,1,3451748,0.06312560000030014,30.300288000144068,327.38037109375,synthetic warm-up/pilot only; no optimizer steps or held-out images
+Unet,256,4,12461444,0.030508199997711927,14.643935998901725,253.89453125,synthetic warm-up/pilot only; no optimizer steps or held-out images

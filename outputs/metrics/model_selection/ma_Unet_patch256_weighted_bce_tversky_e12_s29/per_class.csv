@@ -1,0 +1,2 @@
+annotation_type,images,dice,iou,recall,precision,mean_image_dice,component_recall,component_precision
+MA,10,0.0,0.0,0.0,0.0,0.0,0.0,0.0

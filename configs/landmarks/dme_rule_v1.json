@@ -1,0 +1,57 @@
+{
+  "min_exudate_area_px": 40,
+  "fitted_on": "IDRiD dev-train (macro-F1)",
+  "dev": {
+    "n": 303,
+    "confusion_rows_true_cols_pred": [
+      [
+        94,
+        20,
+        15
+      ],
+      [
+        7,
+        23,
+        1
+      ],
+      [
+        5,
+        28,
+        110
+      ]
+    ],
+    "macro_f1": 0.6896080861092888,
+    "high_risk_sensitivity": 0.7692307692307693,
+    "high_risk_ppv": 0.873015873015873,
+    "any_exudate_sensitivity": 0.9310344827586207,
+    "no_exudate_specificity": 0.7286821705426356
+  },
+  "val": {
+    "n": 101,
+    "confusion_rows_true_cols_pred": [
+      [
+        28,
+        6,
+        9
+      ],
+      [
+        2,
+        5,
+        1
+      ],
+      [
+        5,
+        2,
+        43
+      ]
+    ],
+    "macro_f1": 0.6763635501499579,
+    "high_risk_sensitivity": 0.86,
+    "high_risk_ppv": 0.8113207547169812,
+    "any_exudate_sensitivity": 0.8793103448275862,
+    "no_exudate_specificity": 0.6511627906976745
+  },
+  "val_landmarks_uncertain": 9,
+  "val_accuracy_landmarks_uncertain": 1.0,
+  "val_accuracy_landmarks_confident": 0.7282608695652174
+}

@@ -1,0 +1,23 @@
+{
+  "hash_bits": 256,
+  "hash_threshold": 42,
+  "correlation_threshold": 0.3,
+  "negatives": {
+    "pairs": 81406,
+    "hash_min": 22,
+    "hash_median": 114.0,
+    "at_or_below_hash_threshold": 4,
+    "close_pairs_checked": 169,
+    "close_pairs_max_correlation": 0.8905,
+    "confirmed_false_duplicates": 4
+  },
+  "positives": {
+    "n": 80,
+    "hash_median": 12.0,
+    "hash_max": 42,
+    "correlation_min": 0.2899,
+    "correlation_median": 0.864,
+    "missed": 1
+  },
+  "rule": "duplicate iff structure-hash Hamming <= hash_threshold AND peak detail correlation >= correlation_threshold"
+}

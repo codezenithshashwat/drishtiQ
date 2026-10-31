@@ -1,0 +1,25 @@
+{
+  "models": [
+    "efficientnet_b0",
+    "convnext_tiny"
+  ],
+  "basis": "common fold0, two seeds, partial fine-tuning; exploratory screening",
+  "ranking": {
+    "efficientnet_b0": {
+      "macro_f1": 0.5279140225648361,
+      "qwk": 0.7296152001085073
+    },
+    "convnext_tiny": {
+      "macro_f1": 0.5193665890557422,
+      "qwk": 0.8100268125600834
+    },
+    "swin_t": {
+      "macro_f1": 0.4851334987537474,
+      "qwk": 0.7429979644309933
+    },
+    "resnet50": {
+      "macro_f1": 0.451790648638576,
+      "qwk": 0.7434868140912534
+    }
+  }
+}

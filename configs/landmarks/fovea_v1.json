@@ -1,0 +1,29 @@
+{
+  "params": {
+    "distance_dd": 2.25,
+    "vertical_dd": 0.3,
+    "search_dd": 0.4,
+    "min_contrast": 1.7844741821289065
+  },
+  "fitted_on": "IDRiD dev-train localisation labels (305 images)",
+  "dev": {
+    "n": 305,
+    "od_within_1_radius": 0.9737704918032787,
+    "fovea_median_error_px": 92.33134963272225,
+    "fovea_median_error_disc_radii": 0.3495560115711023,
+    "fovea_within_1_disc_radius": 0.9311475409836065,
+    "flagged_uncertain": 0.10163934426229508,
+    "fovea_within_1_disc_radius_when_confident": 0.9525547445255474,
+    "fovea_within_1_disc_radius_when_flagged": 0.7419354838709677
+  },
+  "val": {
+    "n": 101,
+    "od_within_1_radius": 0.9603960396039604,
+    "fovea_median_error_px": 101.86579713034203,
+    "fovea_median_error_disc_radii": 0.3871619637881716,
+    "fovea_within_1_disc_radius": 0.8910891089108911,
+    "flagged_uncertain": 0.0891089108910891,
+    "fovea_within_1_disc_radius_when_confident": 0.9021739130434783,
+    "fovea_within_1_disc_radius_when_flagged": 0.7777777777777778
+  }
+}

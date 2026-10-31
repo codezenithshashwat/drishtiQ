@@ -1,0 +1,136 @@
+{
+  "set": "DeepDRiD regular fundus (locked)",
+  "n_images": 1988,
+  "n_patients": 500,
+  "routing_valid": true,
+  "primary_image_level": {
+    "grading": {
+      "n": 1977,
+      "qwk": 0.7802846683146925,
+      "macro_f1": 0.5123396714828561,
+      "within_one": 0.9124936772888215,
+      "recall_per_grade": {
+        "0": 0.5791805094130675,
+        "1": 0.44036697247706424,
+        "2": 0.7633587786259542,
+        "3": 0.3646723646723647,
+        "4": 0.6428571428571429
+      },
+      "referable_sensitivity": 0.9299065420560748,
+      "referable_specificity": 0.8421052631578947,
+      "referable_auroc": 0.9463987219355217,
+      "decision_changing_errors": {
+        "referable_called_non_referable": 60,
+        "non_referable_called_referable": 177
+      },
+      "ci95": {
+        "qwk": [
+          0.7531511280692029,
+          0.805555277277194
+        ],
+        "referable_sensitivity": [
+          0.9087712627576546,
+          0.9486588747307371
+        ],
+        "referable_specificity": [
+          0.8150584766961521,
+          0.8680896575615497
+        ],
+        "recall_0": [
+          0.537512473513688,
+          0.6215664669915267
+        ],
+        "recall_1": [
+          0.36632770235786466,
+          0.5177070876185921
+        ],
+        "recall_2": [
+          0.7181064486472288,
+          0.8073411484879375
+        ],
+        "recall_3": [
+          0.3013666723389773,
+          0.43104029184868475
+        ],
+        "recall_4": [
+          0.5363636363636364,
+          0.75
+        ]
+      }
+    },
+    "routing_images": {
+      "units": "images",
+      "n": 1988,
+      "routed_routine": 476,
+      "coverage": 0.23943661971830985,
+      "referable": 856,
+      "missed": 9,
+      "miss_rate": 0.010514018691588784,
+      "miss_rate_upper95": 0.019864696962588115,
+      "deferral_rate": 0.1426403641881639,
+      "quality_flag_rate": 0.10462776659959759,
+      "coverage_ci95": [
+        0.21251892983341747,
+        0.26674299065657153
+      ]
+    }
+  },
+  "quality_gate": {
+    "accuracy": 0.5357142857142857,
+    "flag_rate_among_poor": 0.16305372290292178,
+    "flag_rate_among_good": 0.037756202804746494,
+    "poor": 1061,
+    "good": 927
+  },
+  "secondary_eye_level_grading": {
+    "n": 942,
+    "qwk": 0.7619281253284043,
+    "macro_f1": 0.5200688106587729,
+    "within_one": 0.9012738853503185,
+    "recall_per_grade": {
+      "0": 0.48491879350348027,
+      "1": 0.5377358490566038,
+      "2": 0.828125,
+      "3": 0.4,
+      "4": 0.7291666666666666
+    },
+    "referable_sensitivity": 0.9777777777777777,
+    "referable_specificity": 0.7932960893854749,
+    "referable_auroc": 0.9541232728693934,
+    "decision_changing_errors": {
+      "referable_called_non_referable": 9,
+      "non_referable_called_referable": 111
+    },
+    "deferred_or_ungradable_eyes": 52
+  },
+  "patient_level_routing": {
+    "units": "patients",
+    "n": 500,
+    "label_unknown": 2,
+    "routed_routine": 35,
+    "coverage": 0.07,
+    "coverage_ci95": [
+      0.05,
+      0.094
+    ],
+    "referable": 248,
+    "missed": 0,
+    "miss_rate": 0.0,
+    "miss_rate_upper95": 0.01476443481255455,
+    "states": {
+      "URGENT_REVIEW": 285,
+      "REFERABLE": 76,
+      "CLINICIAN_REVIEW": 89,
+      "RETAKE": 15,
+      "INCOMPLETE_SCREENING": 0,
+      "ROUTINE_RESCREEN_ELIGIBLE": 35
+    },
+    "referable_sensitivity_patient": 1.0
+  },
+  "ci": "bootstrap by patient (2,000 resamples)",
+  "adr": "ADR-043",
+  "tag": "rc-1",
+  "commit": "564c7b70ac765be9314707c776d98a98c1d07d80",
+  "operating_point": 0.025,
+  "routing_config_sha256": "e7466e999cdd9fd8be046dd513938b6b287bf6a4dcd7204d95d500b0ed36ada4"
+}

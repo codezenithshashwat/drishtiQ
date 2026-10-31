@@ -1,0 +1,128 @@
+{
+  "tag": "fine_resnet50_r224_baseline_none_ce_f0_s17",
+  "task": "grading",
+  "stage": "partial_fine_tuning",
+  "architecture": "resnet50",
+  "fold": 0,
+  "seed": 17,
+  "resolution": 224,
+  "preprocessing": "baseline",
+  "augmentation": "none",
+  "objective": "ce",
+  "max_epochs": 6,
+  "microbatch": 4,
+  "effective_batch": 16,
+  "head_lr": 0.001,
+  "backbone_lr": 0.0001,
+  "optimizer": "AdamW",
+  "weight_decay": 0.0001,
+  "checkpoint": "maximum validation macro F1, then QWK, earliest exact tie",
+  "early_stopping": "none within short prespecified screening budget",
+  "normalization": "ImageNet mean/std",
+  "BN": "eval/frozen running statistics",
+  "stochastic_depth_dropout": "disabled; global eval with trainable gradients",
+  "warm_start": "frozen_resnet50_r224_baseline_f0_s17",
+  "parameters": 23518277,
+  "trainable_parameters": 14974981,
+  "approx_reference_224_GFLOPs": 4.089,
+  "pretraining": "torchvision ImageNet-1k V1; recipes differ by architecture",
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": 3,
+  "epochs_run": 6,
+  "training_seconds": 12.905936700000893,
+  "inference_seconds_per_image": 0.0037163096296825206,
+  "peak_allocated_MiB": 344.4345703125,
+  "checkpoint_MiB": 90.02931308746338,
+  "train_macro_f1": 0.7298082731005463,
+  "overfit_gap": 0.28773011366389634,
+  "confusion_matrix": [
+    [
+      35,
+      0,
+      9,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      33,
+      6,
+      0
+    ],
+    [
+      1,
+      0,
+      14,
+      6,
+      4
+    ],
+    [
+      1,
+      0,
+      5,
+      3,
+      7
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7446808510638298,
+      "recall": 0.7954545454545454,
+      "specificity": 0.8681318681318682,
+      "support": 44
+    },
+    {
+      "grade": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "specificity": 1.0,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.532258064516129,
+      "recall": 0.75,
+      "specificity": 0.6813186813186813,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.4,
+      "recall": 0.24,
+      "specificity": 0.9181818181818182,
+      "support": 25
+    },
+    {
+      "grade": 4,
+      "precision": 0.6363636363636364,
+      "recall": 0.4375,
+      "specificity": 0.9663865546218487,
+      "support": 16
+    }
+  ],
+  "accuracy": 0.6,
+  "balanced_accuracy": 0.44459090909090904,
+  "macro_f1": 0.44207815943664996,
+  "weighted_f1": 0.5706568633892184,
+  "qwk": 0.7247078159240321,
+  "mae_grade": 0.5777777777777777,
+  "distance_ge2_rate": 0.15555555555555556,
+  "high_grade_to_0_or_1_rate": 0.04878048780487805,
+  "grade0_to_3_or_4_count": 0,
+  "nll": 1.3639663348415338,
+  "brier": 0.5973906050726787,
+  "ece_10_bins": 0.2333646881155118,
+  "minority_grade1_recall": 0.0,
+  "roc_auc_ovr_macro": 0.8237873044723933,
+  "scoring_numerics": "float64 row renormalization for round-trip epsilon; explicit NLL floor 1e-12; no fitted calibration"
+}

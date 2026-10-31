@@ -1,0 +1,29 @@
+check,status,detail
+raw_matches_completed_audit,PASS,"IDRiD path, size, mtime_ns and bytes agree with final completed audit snapshot"
+two_independent_manifest_builds_identical,PASS,All constructed manifest/policy-table bytes identical for repeated pure builds
+duplicate_archive_evidence,PASS,24 duplicate image aliases; both archive grading CSVs also byte-matched
+six_duplicate_groups_and_four_conflicts_reconciled,PASS,Grouped existing image hashes independently and reconciled audited conflicts
+zero_clean_train_test_exact_overlap,PASS,0
+zero_within_clean_exact_duplicates,PASS,506 included rows; 506 content hashes
+all_included_filepaths_exist,PASS,506
+all_manifest_paths_within_raw,PASS,Included and excluded grading rows reference immutable raw inputs
+manifest_file_hashes_match_current_raw,PASS,"All 516 grading rows checked against the current raw snapshot, not just path existence"
+included_valid_DR_DME_labels,PASS,No missing or out-of-domain included targets
+included_labels_match_raw_CSV,PASS,checked below against original raw CSV fields
+no_quarantined_content_included,PASS,All aliases of four conflicting content groups excluded from primary grading
+no_excluded_key_included,PASS,0
+grading_sample_keys_globally_unique,PASS,516
+official_partition_fully_accounted_for,PASS,Primary included/excluded partition of all official grading rows
+no_cross_partition_reassignment,PASS,Every clean row retains original split
+mask_absence_never_negative,PASS,42 unavailable masks carry null target and validity=false
+annotation_table_complete,PASS,405
+available_mask_paths_exist,PASS,363
+available_masks_valid_in_completed_audit,PASS,All available masks fully decoded and binary in unchanged audited files
+multitask_only_exact_permitted_same_split,PASS,3
+multitask_train_no_clean_test_content,PASS,Only permitted exact same-split links; approximate candidates blocked
+cross_task_candidates_not_auto_merged,PASS,47 strong candidates and 31 uncertain candidates remain review-only
+patient_level_independence,UNKNOWN,Patient-level leakage cannot be fully audited from the publicly available identifiers.
+approximate_cross_task_identity,REVIEW,47 strong and 31 uncertain candidates unresolved; primary combined use restricted to exact links
+written_CSVs_reopen_and_match_generated_bytes,PASS,14
+prior_audit_artifacts_unchanged,PASS,18
+raw_unchanged_during_resolution,PASS,"All files under data/raw: path, byte count, mtime_ns and SHA-256; access times excluded"

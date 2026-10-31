@@ -1,0 +1,1 @@
+{"operation": "MA numerical stability audit", "tag": "ma_Unet_patch256_weighted_bce_tversky_e12_s29", "status": "FAILED_EXCLUDED", "error": "Nonfinite training loss; original thresholded zero scores are INVALID and excluded, not genuine zero capability.", "recovery": "all four matched MA fits rerun in FP32 with finite checks"}

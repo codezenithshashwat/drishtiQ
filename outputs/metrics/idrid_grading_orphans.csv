@@ -1,0 +1,1 @@
+path,component,split,image_id,filename,extension,size_bytes,mtime_ns,sha256,kind,width,height,aspect_ratio,mode,channels,format,dtype,readable,error,decoded_sha256,pixel_min,pixel_max,pixel_mean,pixel_std,brightness,contrast,black_fraction,laplacian_variance,fov_bbox_proxy,perceptual_hash,R_mean,R_std,G_mean,G_std,B_mean,B_std,DR_grade,DME_label,source,_merge

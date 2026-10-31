@@ -1,0 +1,30 @@
+check,status,detail
+archive_crc:A. Segmentation.zip,PASS,all members CRC valid
+archive_crc:B. Disease Grading.zip,PASS,all members CRC valid
+archive_crc:C. Localization.zip,PASS,all members CRC valid
+grading_bidirectional_correspondence,PASS,"{'both': 516, 'left_only': 0, 'right_only': 0}"
+grading_valid_values,PASS,DR 0..4; DME 0..2; missing invalid
+grading_unique_split_ids,PASS,516
+mask_correspondence,PASS,363
+binary_masks,PASS,"{'[0, 1]': 362, '[0, 255]': 1}"
+localization_bounds,PASS,1032 nonblank annotations; export padding excluded
+localization_unique_keys,PASS,1032 nonblank annotations
+localization_coverage,PASS,nonblank annotation correspondence; padding is not orphan ground truth
+cross_split_content_duplicates,FAIL,1
+zero_byte_files,PASS,0
+unexpected_files,PASS,[]
+patient_level_leakage,UNKNOWN,Patient-level leakage cannot be fully audited from the publicly available identifiers.
+near_duplicate_screen,PASS,0 nonexact grading pairs with 64x64 grayscale correlation >=0.995 and RGB MAE <=5/255; cannot exclude arbitrary transforms or patient dependencies
+raw_immutability,PASS,"before/after path, size, mtime_ns and SHA-256 comparison"
+git_tracked_dataset_images,UNKNOWN,fatal: not a git repository (or any of the parent directories): .git
+figures_exist,PASS,19
+csv_reopen,PASS,all generated idrid_*.csv reopened with pandas
+archive_extraction_correspondence,PASS,"1488 archive members compared with extracted files by path, size, CRC32"
+content_label_consistency,FAIL,"[{'content_sha256': '0f0ccc64dc53883f16907d7add8a3b53586cd04ffafef0939d99aea769cd6746', 'split': 'train', 'image_id': 'IDRiD_118', 'DR_grade': 0, 'DME_label': 0, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_118.jpg'}, {'content_sha256': '0f0ccc64dc53883f16907d7add8a3b53586cd04ffafef0939d99aea769cd6746', 'split': 'test', 'image_id': 'IDRiD_064', 'DR_grade': 3, 'DME_label': 0, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\b. Testing Set\\IDRiD_064.jpg'}, {'content_sha256': '11dee2a00eb7f688f1409f829d4fbdfc9baf1aa673049b040b1efc16a57c918d', 'split': 'train', 'image_id': 'IDRiD_028', 'DR_grade': 4, 'DME_label': 2, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_028.jpg'}, {'content_sha256': '11dee2a00eb7f688f1409f829d4fbdfc9baf1aa673049b040b1efc16a57c918d', 'split': 'train', 'image_id': 'IDRiD_327', 'DR_grade': 3, 'DME_label': 2, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_327.jpg'}, {'content_sha256': '7d7ea473969b1cb8208953f509f07f3f1e7cc43ab147da2164f5d317e820f72c', 'split': 'train', 'image_id': 'IDRiD_045', 'DR_grade': 2, 'DME_label': 0, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_045.jpg'}, {'content_sha256': '7d7ea473969b1cb8208953f509f07f3f1e7cc43ab147da2164f5d317e820f72c', 'split': 'train', 'image_id': 'IDRiD_333', 'DR_grade': 2, 'DME_label': 1, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_333.jpg'}, {'content_sha256': 'e922c66bbce5130200ba4d90ae4eeb48f5e79f9414de47532ff8c34e4583706c', 'split': 'train', 'image_id': 'IDRiD_021', 'DR_grade': 1, 'DME_label': 0, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_021.jpg'}, {'content_sha256': 'e922c66bbce5130200ba4d90ae4eeb48f5e79f9414de47532ff8c34e4583706c', 'split': 'train', 'image_id': 'IDRiD_391', 'DR_grade': 2, 'DME_label': 0, 'path': 'data\\raw\\IDRiD\\original\\B. Disease Grading\\B. Disease Grading\\1. Original Images\\a. Training Set\\IDRiD_391.jpg'}]"
+all_annotation_csv_core_integrity,PASS,"No missing core values, duplicate nonblank rows/IDs or nonblank extra fields after excluding all-blank export padding"
+published_total_comparison,PASS,"{""observed"": {""grading"": 516, ""grading_train"": 413, ""grading_test"": 103, ""segmentation"": 81, ""MA"": 81, ""HE"": 80, ""EX"": 81, ""SE"": 40, ""OD"": 81}, ""documented"": {""grading"": 516, ""grading_train"": 413, ""grading_test"": 103, ""segmentation"": 81, ""MA"": 81, ""HE"": 80, ""EX"": 81, ""SE"": 40, ""OD"": 81}, ""source"": ""https://idrid.grand-challenge.org/Data/ and 2018 descriptor""}"
+extracted_files_not_in_archives,PASS,[]
+preprocessing_derived_file_scope,PASS,0 files in interim/processed/external; []
+original_format_copies_in_output_code,PASS,[]
+cross_task_approximate_identity,REVIEW,"{'high_similarity_candidate': 47, 'unresolved_candidate': 31, 'verified_exact': 3}; approximate matches are candidates, not confirmed identity"
+raw_immutability_including_supplemental_audits,PASS,"Every raw path, byte count, mtime_ns and SHA-256 compared again after supplementary analysis"

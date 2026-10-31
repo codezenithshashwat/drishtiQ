@@ -1,0 +1,832 @@
+{
+  "adr": "ADR-041",
+  "comparator": {
+    "grader": "models\\checkpoints\\phase2\\graders\\convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+    "policy": "c",
+    "thresholds": {
+      "0.025": 0.13603109121322632,
+      "0.05": 0.31740787625312805
+    },
+    "frozen_from": "configs/routing/routing_v1.json",
+    "refit_here_for_reference": {
+      "0.025": 0.13602885603904724,
+      "0.05": 0.3167482912540436
+    }
+  },
+  "d_ensemble": {
+    "tau": 0.55,
+    "thresholds": {
+      "0.025": 0.20467087626457214,
+      "0.05": 0.33217477798461914
+    },
+    "validation": {
+      "IDRiD-val": {
+        "0.025": {
+          "pinned": {
+            "units": 101,
+            "referable": 63,
+            "routed": 38,
+            "coverage": 0.37623762376237624,
+            "missed": 2,
+            "miss_rate": 0.031746031746031744,
+            "miss_rate_upper95": 0.11001937340888035
+          },
+          "alternative": {
+            "units": 101,
+            "referable": 63,
+            "routed": 40,
+            "coverage": 0.39603960396039606,
+            "missed": 3,
+            "miss_rate": 0.047619047619047616,
+            "miss_rate_upper95": 0.13291840074815056
+          },
+          "delta_coverage": {
+            "delta": 0.01980198019801982,
+            "ci95": [
+              0.0,
+              0.04950495049504949
+            ]
+          }
+        },
+        "0.05": {
+          "pinned": {
+            "units": 101,
+            "referable": 63,
+            "routed": 40,
+            "coverage": 0.39603960396039606,
+            "missed": 2,
+            "miss_rate": 0.031746031746031744,
+            "miss_rate_upper95": 0.11001937340888035
+          },
+          "alternative": {
+            "units": 101,
+            "referable": 63,
+            "routed": 41,
+            "coverage": 0.40594059405940597,
+            "missed": 4,
+            "miss_rate": 0.06349206349206349,
+            "miss_rate_upper95": 0.15466067739537748
+          },
+          "delta_coverage": {
+            "delta": 0.00990099009900991,
+            "ci95": [
+              -0.01980198019801982,
+              0.03960396039603964
+            ]
+          }
+        }
+      },
+      "APTOS-val": {
+        "0.025": {
+          "pinned": {
+            "units": 518,
+            "referable": 201,
+            "routed": 263,
+            "coverage": 0.5077220077220077,
+            "missed": 1,
+            "miss_rate": 0.004975124378109453,
+            "miss_rate_upper95": 0.02740642980341042
+          },
+          "alternative": {
+            "units": 518,
+            "referable": 201,
+            "routed": 265,
+            "coverage": 0.5115830115830116,
+            "missed": 0,
+            "miss_rate": 0.0,
+            "miss_rate_upper95": 0.01818525005438626
+          },
+          "delta_coverage": {
+            "delta": 0.0038610038610038533,
+            "ci95": [
+              -0.0038610038610039643,
+              0.013513513513513542
+            ]
+          }
+        },
+        "0.05": {
+          "pinned": {
+            "units": 518,
+            "referable": 201,
+            "routed": 271,
+            "coverage": 0.5231660231660231,
+            "missed": 3,
+            "miss_rate": 0.014925373134328358,
+            "miss_rate_upper95": 0.04299640520178569
+          },
+          "alternative": {
+            "units": 518,
+            "referable": 201,
+            "routed": 272,
+            "coverage": 0.525096525096525,
+            "missed": 3,
+            "miss_rate": 0.014925373134328358,
+            "miss_rate_upper95": 0.04299640520178569
+          },
+          "delta_coverage": {
+            "delta": 0.0019305019305019266,
+            "ci95": [
+              -0.0038610038610038533,
+              0.009652509652509633
+            ]
+          }
+        }
+      }
+    },
+    "members": [
+      "convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+      "convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s23.pt",
+      "(s41 never trained; queue stopped)"
+    ],
+    "rule": {
+      "coverage_gain": false,
+      "miss_tolerance_ok": false,
+      "verdict": "ABANDON"
+    }
+  },
+  "c_referable_head": {
+    "primary_head_vs_pinned": {
+      "tau": 0.65,
+      "thresholds": {
+        "0.025": 0.13570542633533478,
+        "0.05": 0.20985890924930573
+      },
+      "validation": {
+        "IDRiD-val": {
+          "0.025": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 35,
+              "coverage": 0.3465346534653465,
+              "missed": 1,
+              "miss_rate": 0.015873015873015872,
+              "miss_rate_upper95": 0.08529570929926303
+            },
+            "delta_coverage": {
+              "delta": -0.02970297029702973,
+              "ci95": [
+                -0.07920792079207922,
+                0.01980198019801982
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 40,
+              "coverage": 0.39603960396039606,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 35,
+              "coverage": 0.3465346534653465,
+              "missed": 1,
+              "miss_rate": 0.015873015873015872,
+              "miss_rate_upper95": 0.08529570929926303
+            },
+            "delta_coverage": {
+              "delta": -0.04950495049504955,
+              "ci95": [
+                -0.09900990099009899,
+                -0.00990099009900991
+              ]
+            }
+          }
+        },
+        "APTOS-val": {
+          "0.025": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 263,
+              "coverage": 0.5077220077220077,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 288,
+              "coverage": 0.555984555984556,
+              "missed": 11,
+              "miss_rate": 0.05472636815920398,
+              "miss_rate_upper95": 0.09580919277880466
+            },
+            "delta_coverage": {
+              "delta": 0.04826254826254828,
+              "ci95": [
+                0.027027027027026973,
+                0.0714285714285714
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 271,
+              "coverage": 0.5231660231660231,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 290,
+              "coverage": 0.5598455598455598,
+              "missed": 11,
+              "miss_rate": 0.05472636815920398,
+              "miss_rate_upper95": 0.09580919277880466
+            },
+            "delta_coverage": {
+              "delta": 0.03667953667953672,
+              "ci95": [
+                0.01737451737451734,
+                0.05791505791505791
+              ]
+            }
+          }
+        }
+      },
+      "rule": {
+        "coverage_gain": false,
+        "miss_tolerance_ok": false,
+        "verdict": "ABANDON"
+      }
+    },
+    "secondary_derived_vs_pinned": {
+      "tau": 0.65,
+      "thresholds": {
+        "0.025": 0.16963987052440643,
+        "0.05": 0.2711469829082489
+      },
+      "validation": {
+        "IDRiD-val": {
+          "0.025": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 33,
+              "coverage": 0.32673267326732675,
+              "missed": 0,
+              "miss_rate": 0.0,
+              "miss_rate_upper95": 0.05687235233201625
+            },
+            "delta_coverage": {
+              "delta": -0.04950495049504949,
+              "ci95": [
+                -0.09900990099009904,
+                0.0
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 40,
+              "coverage": 0.39603960396039606,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 35,
+              "coverage": 0.3465346534653465,
+              "missed": 1,
+              "miss_rate": 0.015873015873015872,
+              "miss_rate_upper95": 0.08529570929926303
+            },
+            "delta_coverage": {
+              "delta": -0.04950495049504955,
+              "ci95": [
+                -0.08910891089108913,
+                -0.00990099009900991
+              ]
+            }
+          }
+        },
+        "APTOS-val": {
+          "0.025": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 263,
+              "coverage": 0.5077220077220077,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 264,
+              "coverage": 0.5096525096525096,
+              "missed": 2,
+              "miss_rate": 0.009950248756218905,
+              "miss_rate_upper95": 0.03547958755408201
+            },
+            "delta_coverage": {
+              "delta": 0.0019305019305019266,
+              "ci95": [
+                -0.009652509652509633,
+                0.013513513513513487
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 271,
+              "coverage": 0.5231660231660231,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 272,
+              "coverage": 0.525096525096525,
+              "missed": 5,
+              "miss_rate": 0.024875621890547265,
+              "miss_rate_upper95": 0.05709366926972771
+            },
+            "delta_coverage": {
+              "delta": 0.0019305019305019266,
+              "ci95": [
+                -0.013513513513513487,
+                0.019305019305019266
+              ]
+            }
+          }
+        }
+      }
+    },
+    "secondary_head_vs_own_derived": {
+      "IDRiD-val": {
+        "0.025": {
+          "delta": 0.019801980198019764,
+          "ci95": [
+            0.0,
+            0.04950495049504949
+          ]
+        },
+        "0.05": {
+          "delta": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "APTOS-val": {
+        "0.025": {
+          "delta": 0.04633204633204635,
+          "ci95": [
+            0.0289575289575289,
+            0.06563706563706562
+          ]
+        },
+        "0.05": {
+          "delta": 0.03474903474903479,
+          "ci95": [
+            0.019305019305019266,
+            0.052123552123552075
+          ]
+        }
+      }
+    },
+    "inner_qwk": 0.9250528858007189,
+    "best_epoch": 10
+  },
+  "b_ood": {
+    "method": "Mahalanobis (Ledoit-Wolf) on pinned s17 pre-logit embedding (768-d)",
+    "gate_cut_holdout_p95": 1845.6597453014338,
+    "auroc_dataset_shift_idrid_vs_aptos": 0.6206850414771207,
+    "auroc_synthetic_pooled": 0.8510802247619147,
+    "auroc_synthetic_by_kind": {
+      "blur": 0.9999712914414568,
+      "dark": 0.48410459310838005,
+      "noise": 0.9202658934494898,
+      "jpeg": 0.9999791210483322
+    },
+    "routing_with_gate": {
+      "tau": 0.55,
+      "thresholds": {
+        "0.025": 0.1459878534078598,
+        "0.05": 0.3287326991558075
+      },
+      "validation": {
+        "IDRiD-val": {
+          "0.025": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "delta_coverage": {
+              "delta": 0.0,
+              "ci95": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 40,
+              "coverage": 0.39603960396039606,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 40,
+              "coverage": 0.39603960396039606,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "delta_coverage": {
+              "delta": 0.0,
+              "ci95": [
+                0.0,
+                0.0
+              ]
+            }
+          }
+        },
+        "APTOS-val": {
+          "0.025": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 263,
+              "coverage": 0.5077220077220077,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 263,
+              "coverage": 0.5077220077220077,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "delta_coverage": {
+              "delta": 0.0,
+              "ci95": [
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 271,
+              "coverage": 0.5231660231660231,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 271,
+              "coverage": 0.5231660231660231,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "delta_coverage": {
+              "delta": 0.0,
+              "ci95": [
+                0.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "missed_pooled": {
+      "pinned": 8,
+      "with_gate": 8
+    },
+    "degraded_inputs_at_2_5pct": {
+      "blur": {
+        "routed_by_pinned_c": 5,
+        "referable_routed": 0,
+        "of_which_blocked_by_gate": 5,
+        "referable_blocked": 0
+      },
+      "dark": {
+        "routed_by_pinned_c": 308,
+        "referable_routed": 5,
+        "of_which_blocked_by_gate": 0,
+        "referable_blocked": 0
+      },
+      "noise": {
+        "routed_by_pinned_c": 310,
+        "referable_routed": 36,
+        "of_which_blocked_by_gate": 180,
+        "referable_blocked": 33
+      },
+      "jpeg": {
+        "routed_by_pinned_c": 53,
+        "referable_routed": 19,
+        "of_which_blocked_by_gate": 53,
+        "referable_blocked": 19
+      }
+    },
+    "rule": {
+      "verdict": "ABANDON",
+      "auroc_ok": false,
+      "fewer_misses": false
+    }
+  },
+  "a_disagreement": {
+    "segmenter": "v0 + pp_v2 (app default)",
+    "flag": "HE + EX components >= k_HE_EX, or MA components >= k_MA",
+    "grade0_reference": {
+      "n": 680,
+      "he_ex_percentiles": {
+        "90": 22.0,
+        "95": 39.0,
+        "97.5": 57.049999999999955,
+        "99": 75.42000000000007
+      },
+      "ma_p99_5": 59.02500000000009
+    },
+    "k_MA": 60,
+    "candidates": [
+      {
+        "threshold_HE_EX": 22,
+        "extra_review_rate_holdout": 0.08780661215783861
+      },
+      {
+        "threshold_HE_EX": 39,
+        "extra_review_rate_holdout": 0.05367934589406328
+      },
+      {
+        "threshold_HE_EX": 58,
+        "extra_review_rate_holdout": 0.02915037326697476
+      },
+      {
+        "threshold_HE_EX": 76,
+        "extra_review_rate_holdout": 0.01848560255954497
+      }
+    ],
+    "chosen_threshold_HE_EX": 58,
+    "known_misses_2_5pct": {
+      "IDRiD_208.jpg": {
+        "set": "IDRiD-val",
+        "grade": 2,
+        "MA": 1,
+        "HE": 0,
+        "EX": 0,
+        "SE": 0,
+        "HE_EX_SE": 0,
+        "flagged": false
+      },
+      "IDRiD_270.jpg": {
+        "set": "IDRiD-val",
+        "grade": 2,
+        "MA": 0,
+        "HE": 2,
+        "EX": 0,
+        "SE": 0,
+        "HE_EX_SE": 2,
+        "flagged": false
+      },
+      "d28bd830c171.png": {
+        "set": "APTOS-val",
+        "grade": 2,
+        "MA": 2,
+        "HE": 2,
+        "EX": 5,
+        "SE": 2,
+        "HE_EX_SE": 9,
+        "flagged": false
+      }
+    },
+    "enrichment_among_would_be_routine_2_5pct": {
+      "IDRiD-val": {
+        "flagged": 2,
+        "flagged_referable": 0,
+        "unflagged": 36,
+        "unflagged_referable": 2,
+        "extra_review_rate": 0.019801980198019802,
+        "rr": 2.4666666666666663,
+        "rr_ci95": [
+          0.15011930042025529,
+          40.53072741087382
+        ]
+      },
+      "APTOS-val": {
+        "flagged": 4,
+        "flagged_referable": 0,
+        "unflagged": 259,
+        "unflagged_referable": 1,
+        "extra_review_rate": 0.007722007722007722,
+        "rr": 17.333333333333332,
+        "rr_ci95": [
+          0.7998986295859453,
+          375.60314936401943
+        ]
+      },
+      "pooled": {
+        "rr": 6.040816326530612,
+        "rr_ci95": [
+          0.3435768548939707,
+          106.2104777172497
+        ],
+        "cells": [
+          0,
+          6,
+          3,
+          292
+        ]
+      }
+    },
+    "routing_with_flag": {
+      "tau": 0.55,
+      "thresholds": {
+        "0.025": 0.13728678226470947,
+        "0.05": 0.3174079358577728
+      },
+      "validation": {
+        "IDRiD-val": {
+          "0.025": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 36,
+              "coverage": 0.3564356435643564,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "delta_coverage": {
+              "delta": -0.01980198019801982,
+              "ci95": [
+                -0.04950495049504949,
+                0.0
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 101,
+              "referable": 63,
+              "routed": 40,
+              "coverage": 0.39603960396039606,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "alternative": {
+              "units": 101,
+              "referable": 63,
+              "routed": 38,
+              "coverage": 0.37623762376237624,
+              "missed": 2,
+              "miss_rate": 0.031746031746031744,
+              "miss_rate_upper95": 0.11001937340888035
+            },
+            "delta_coverage": {
+              "delta": -0.01980198019801982,
+              "ci95": [
+                -0.04950495049504949,
+                0.0
+              ]
+            }
+          }
+        },
+        "APTOS-val": {
+          "0.025": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 263,
+              "coverage": 0.5077220077220077,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 259,
+              "coverage": 0.5,
+              "missed": 1,
+              "miss_rate": 0.004975124378109453,
+              "miss_rate_upper95": 0.02740642980341042
+            },
+            "delta_coverage": {
+              "delta": -0.007722007722007707,
+              "ci95": [
+                -0.015444015444015469,
+                -0.0019305019305019266
+              ]
+            }
+          },
+          "0.05": {
+            "pinned": {
+              "units": 518,
+              "referable": 201,
+              "routed": 271,
+              "coverage": 0.5231660231660231,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "alternative": {
+              "units": 518,
+              "referable": 201,
+              "routed": 267,
+              "coverage": 0.5154440154440154,
+              "missed": 3,
+              "miss_rate": 0.014925373134328358,
+              "miss_rate_upper95": 0.04299640520178569
+            },
+            "delta_coverage": {
+              "delta": -0.007722007722007707,
+              "ci95": [
+                -0.015444015444015524,
+                -0.0019305019305019266
+              ]
+            }
+          }
+        }
+      }
+    },
+    "rule": {
+      "coverage_gain": false,
+      "miss_tolerance_ok": true,
+      "verdict": "ABANDON",
+      "rr_ci_excludes_1": false
+    }
+  }
+}

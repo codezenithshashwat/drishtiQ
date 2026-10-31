@@ -1,0 +1,712 @@
+{
+  "adr": "ADR-039",
+  "grader": "models\\checkpoints\\phase2\\graders\\convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+  "checkpoint_sha256": "acf53697500919cf7c281652c10b12c48e77896ed366a7383a78a432cbef37a1",
+  "units": "images",
+  "p_referable": "logistic calibration of the regression score on the internal hold-out",
+  "holdout": {
+    "n": 2813,
+    "referable": 905,
+    "quality_pass": 0.9370778528261643,
+    "thresholds": {
+      "a": {
+        "0.05": 0.28847724199295044,
+        "0.025": 0.08422204852104187,
+        "0.01": 0.026355009526014328
+      },
+      "b": {
+        "0.05": 0.3030686676502228,
+        "0.025": 0.0891653373837471,
+        "0.01": 0.026355009526014328
+      },
+      "c": {
+        "0.05": 0.31740787625312805,
+        "0.025": 0.13603109121322632,
+        "0.01": 0.026355009526014328
+      }
+    },
+    "results": {
+      "a": {
+        "0.05": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1747,
+          "coverage": 0.6210451475293282,
+          "coverage_ci95": [
+            0.6025595449697831,
+            0.6388286526839673
+          ],
+          "missed": 45,
+          "miss_rate": 0.049723756906077346,
+          "miss_rate_upper95": 0.06597143746847849,
+          "sensitivity": 0.9502762430939227,
+          "specificity": 0.8920335429769392,
+          "npv_routine": 0.9742415569547797,
+          "review_rate": 0.37895485247067184
+        },
+        "0.025": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1621,
+          "coverage": 0.576253110558123,
+          "coverage_ci95": [
+            0.5588250977603981,
+            0.5947476004265908
+          ],
+          "missed": 22,
+          "miss_rate": 0.02430939226519337,
+          "miss_rate_upper95": 0.03657440289220044,
+          "sensitivity": 0.9756906077348066,
+          "specificity": 0.8380503144654088,
+          "npv_routine": 0.986428130783467,
+          "review_rate": 0.423746889441877
+        },
+        "0.01": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1505,
+          "coverage": 0.5350159971560612,
+          "coverage_ci95": [
+            0.5168769996445076,
+            0.5542125844294348
+          ],
+          "missed": 9,
+          "miss_rate": 0.009944751381215469,
+          "miss_rate_upper95": 0.01879396996385522,
+          "sensitivity": 0.9900552486187846,
+          "specificity": 0.7840670859538784,
+          "npv_routine": 0.9940199335548173,
+          "review_rate": 0.4649840028439388
+        }
+      },
+      "b": {
+        "0.05": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1703,
+          "coverage": 0.6054034838250978,
+          "coverage_ci95": [
+            0.5869178812655528,
+            0.6228314966228226
+          ],
+          "missed": 45,
+          "miss_rate": 0.049723756906077346,
+          "miss_rate_upper95": 0.06597143746847849,
+          "sensitivity": 0.9502762430939227,
+          "specificity": 0.8689727463312369,
+          "npv_routine": 0.9735760422783324,
+          "review_rate": 0.3945965161749022
+        },
+        "0.025": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1587,
+          "coverage": 0.5641663704230359,
+          "coverage_ci95": [
+            0.545680767863491,
+            0.5830074653394952
+          ],
+          "missed": 22,
+          "miss_rate": 0.02430939226519337,
+          "miss_rate_upper95": 0.03657440289220044,
+          "sensitivity": 0.9756906077348066,
+          "specificity": 0.820230607966457,
+          "npv_routine": 0.9861373660995589,
+          "review_rate": 0.43583362957696414
+        },
+        "0.01": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1473,
+          "coverage": 0.5236402417348027,
+          "coverage_ci95": [
+            0.5055101315321721,
+            0.5421258442943476
+          ],
+          "missed": 9,
+          "miss_rate": 0.009944751381215469,
+          "miss_rate_upper95": 0.01879396996385522,
+          "sensitivity": 0.9900552486187846,
+          "specificity": 0.7672955974842768,
+          "npv_routine": 0.9938900203665988,
+          "review_rate": 0.4763597582651973
+        }
+      },
+      "c": {
+        "0.05": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1674,
+          "coverage": 0.5950942054745822,
+          "coverage_ci95": [
+            0.577310700319943,
+            0.61358869534305
+          ],
+          "missed": 45,
+          "miss_rate": 0.049723756906077346,
+          "miss_rate_upper95": 0.06597143746847849,
+          "sensitivity": 0.9502762430939227,
+          "specificity": 0.8537735849056604,
+          "npv_routine": 0.9731182795698925,
+          "review_rate": 0.40490579452541775
+        },
+        "0.025": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1577,
+          "coverage": 0.5606114468538926,
+          "coverage_ci95": [
+            0.5421258442943476,
+            0.5787415570565233
+          ],
+          "missed": 22,
+          "miss_rate": 0.02430939226519337,
+          "miss_rate_upper95": 0.03657440289220044,
+          "sensitivity": 0.9756906077348066,
+          "specificity": 0.8149895178197065,
+          "npv_routine": 0.9860494610019024,
+          "review_rate": 0.43938855314610736
+        },
+        "0.01": {
+          "units": 2813,
+          "referable": 905,
+          "routed": 1473,
+          "coverage": 0.5236402417348027,
+          "coverage_ci95": [
+            0.5047991468183434,
+            0.541414859580519
+          ],
+          "missed": 9,
+          "miss_rate": 0.009944751381215469,
+          "miss_rate_upper95": 0.01879396996385522,
+          "sensitivity": 0.9900552486187846,
+          "specificity": 0.7672955974842768,
+          "npv_routine": 0.9938900203665988,
+          "review_rate": 0.4763597582651973
+        }
+      }
+    }
+  },
+  "validation": {
+    "IDRiD-val": {
+      "a": {
+        "0.05": {
+          "units": 101,
+          "referable": 63,
+          "routed": 41,
+          "coverage": 0.40594059405940597,
+          "coverage_ci95": [
+            0.3069306930693069,
+            0.504950495049505
+          ],
+          "missed": 4,
+          "miss_rate": 0.06349206349206349,
+          "miss_rate_upper95": 0.15466067739537748,
+          "sensitivity": 0.9365079365079365,
+          "specificity": 0.9736842105263158,
+          "npv_routine": 0.9024390243902439,
+          "review_rate": 0.594059405940594
+        },
+        "0.025": {
+          "units": 101,
+          "referable": 63,
+          "routed": 39,
+          "coverage": 0.38613861386138615,
+          "coverage_ci95": [
+            0.297029702970297,
+            0.48514851485148514
+          ],
+          "missed": 4,
+          "miss_rate": 0.06349206349206349,
+          "miss_rate_upper95": 0.15466067739537748,
+          "sensitivity": 0.9365079365079365,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.8974358974358975,
+          "review_rate": 0.6138613861386139
+        },
+        "0.01": {
+          "units": 101,
+          "referable": 63,
+          "routed": 36,
+          "coverage": 0.3564356435643564,
+          "coverage_ci95": [
+            0.25742574257425743,
+            0.45544554455445546
+          ],
+          "missed": 1,
+          "miss_rate": 0.015873015873015872,
+          "miss_rate_upper95": 0.08529570929926303,
+          "sensitivity": 0.9841269841269842,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.9722222222222222,
+          "review_rate": 0.6435643564356436
+        }
+      },
+      "b": {
+        "0.05": {
+          "units": 101,
+          "referable": 63,
+          "routed": 41,
+          "coverage": 0.40594059405940597,
+          "coverage_ci95": [
+            0.31683168316831684,
+            0.49504950495049505
+          ],
+          "missed": 4,
+          "miss_rate": 0.06349206349206349,
+          "miss_rate_upper95": 0.15466067739537748,
+          "sensitivity": 0.9365079365079365,
+          "specificity": 0.9736842105263158,
+          "npv_routine": 0.9024390243902439,
+          "review_rate": 0.594059405940594
+        },
+        "0.025": {
+          "units": 101,
+          "referable": 63,
+          "routed": 39,
+          "coverage": 0.38613861386138615,
+          "coverage_ci95": [
+            0.2871287128712871,
+            0.48514851485148514
+          ],
+          "missed": 4,
+          "miss_rate": 0.06349206349206349,
+          "miss_rate_upper95": 0.15466067739537748,
+          "sensitivity": 0.9365079365079365,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.8974358974358975,
+          "review_rate": 0.6138613861386139
+        },
+        "0.01": {
+          "units": 101,
+          "referable": 63,
+          "routed": 36,
+          "coverage": 0.3564356435643564,
+          "coverage_ci95": [
+            0.25742574257425743,
+            0.45544554455445546
+          ],
+          "missed": 1,
+          "miss_rate": 0.015873015873015872,
+          "miss_rate_upper95": 0.08529570929926303,
+          "sensitivity": 0.9841269841269842,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.9722222222222222,
+          "review_rate": 0.6435643564356436
+        }
+      },
+      "c": {
+        "0.05": {
+          "units": 101,
+          "referable": 63,
+          "routed": 40,
+          "coverage": 0.39603960396039606,
+          "coverage_ci95": [
+            0.3069306930693069,
+            0.49504950495049505
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 1.0,
+          "npv_routine": 0.95,
+          "review_rate": 0.6039603960396039
+        },
+        "0.025": {
+          "units": 101,
+          "referable": 63,
+          "routed": 38,
+          "coverage": 0.37623762376237624,
+          "coverage_ci95": [
+            0.27722772277227725,
+            0.4752475247524752
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 0.9473684210526315,
+          "npv_routine": 0.9473684210526316,
+          "review_rate": 0.6237623762376238
+        },
+        "0.01": {
+          "units": 101,
+          "referable": 63,
+          "routed": 36,
+          "coverage": 0.3564356435643564,
+          "coverage_ci95": [
+            0.26732673267326734,
+            0.44554455445544555
+          ],
+          "missed": 1,
+          "miss_rate": 0.015873015873015872,
+          "miss_rate_upper95": 0.08529570929926303,
+          "sensitivity": 0.9841269841269842,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.9722222222222222,
+          "review_rate": 0.6435643564356436
+        }
+      },
+      "secondary_definition_c": {
+        "0.05": {
+          "units": 101,
+          "referable": 63,
+          "routed": 40,
+          "coverage": 0.39603960396039606,
+          "coverage_ci95": [
+            0.3069306930693069,
+            0.49504950495049505
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 1.0,
+          "npv_routine": 0.95,
+          "review_rate": 0.6039603960396039
+        },
+        "0.025": {
+          "units": 101,
+          "referable": 63,
+          "routed": 38,
+          "coverage": 0.37623762376237624,
+          "coverage_ci95": [
+            0.2871287128712871,
+            0.4752475247524752
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 0.9473684210526315,
+          "npv_routine": 0.9473684210526316,
+          "review_rate": 0.6237623762376238
+        },
+        "0.01": {
+          "units": 101,
+          "referable": 63,
+          "routed": 36,
+          "coverage": 0.3564356435643564,
+          "coverage_ci95": [
+            0.26732673267326734,
+            0.44554455445544555
+          ],
+          "missed": 1,
+          "miss_rate": 0.015873015873015872,
+          "miss_rate_upper95": 0.08529570929926303,
+          "sensitivity": 0.9841269841269842,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.9722222222222222,
+          "review_rate": 0.6435643564356436
+        }
+      },
+      "isotonic_check_c": {
+        "0.05": {
+          "units": 101,
+          "referable": 63,
+          "routed": 39,
+          "coverage": 0.38613861386138615,
+          "coverage_ci95": [
+            0.29678217821782177,
+            0.48514851485148514
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 0.9736842105263158,
+          "npv_routine": 0.9487179487179487,
+          "review_rate": 0.6138613861386139
+        },
+        "0.025": {
+          "units": 101,
+          "referable": 63,
+          "routed": 38,
+          "coverage": 0.37623762376237624,
+          "coverage_ci95": [
+            0.2871287128712871,
+            0.4752475247524752
+          ],
+          "missed": 2,
+          "miss_rate": 0.031746031746031744,
+          "miss_rate_upper95": 0.11001937340888035,
+          "sensitivity": 0.9682539682539683,
+          "specificity": 0.9473684210526315,
+          "npv_routine": 0.9473684210526316,
+          "review_rate": 0.6237623762376238
+        },
+        "0.01": {
+          "units": 101,
+          "referable": 63,
+          "routed": 36,
+          "coverage": 0.3564356435643564,
+          "coverage_ci95": [
+            0.26732673267326734,
+            0.45544554455445546
+          ],
+          "missed": 1,
+          "miss_rate": 0.015873015873015872,
+          "miss_rate_upper95": 0.08529570929926303,
+          "sensitivity": 0.9841269841269842,
+          "specificity": 0.9210526315789473,
+          "npv_routine": 0.9722222222222222,
+          "review_rate": 0.6435643564356436
+        }
+      }
+    },
+    "APTOS-val": {
+      "a": {
+        "0.05": {
+          "units": 518,
+          "referable": 201,
+          "routed": 279,
+          "coverage": 0.5386100386100386,
+          "coverage_ci95": [
+            0.49613899613899615,
+            0.581081081081081
+          ],
+          "missed": 2,
+          "miss_rate": 0.009950248756218905,
+          "miss_rate_upper95": 0.03547958755408201,
+          "sensitivity": 0.9900497512437811,
+          "specificity": 0.8738170347003155,
+          "npv_routine": 0.992831541218638,
+          "review_rate": 0.46138996138996136
+        },
+        "0.025": {
+          "units": 518,
+          "referable": 201,
+          "routed": 268,
+          "coverage": 0.5173745173745173,
+          "coverage_ci95": [
+            0.4768339768339768,
+            0.5617760617760618
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8454258675078864,
+          "npv_routine": 1.0,
+          "review_rate": 0.48262548262548266
+        },
+        "0.01": {
+          "units": 518,
+          "referable": 201,
+          "routed": 265,
+          "coverage": 0.5115830115830116,
+          "coverage_ci95": [
+            0.4671814671814672,
+            0.555984555984556
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8359621451104101,
+          "npv_routine": 1.0,
+          "review_rate": 0.48841698841698844
+        }
+      },
+      "b": {
+        "0.05": {
+          "units": 518,
+          "referable": 201,
+          "routed": 273,
+          "coverage": 0.527027027027027,
+          "coverage_ci95": [
+            0.48450772200772196,
+            0.5714285714285714
+          ],
+          "missed": 3,
+          "miss_rate": 0.014925373134328358,
+          "miss_rate_upper95": 0.04299640520178569,
+          "sensitivity": 0.9850746268656716,
+          "specificity": 0.8517350157728707,
+          "npv_routine": 0.989010989010989,
+          "review_rate": 0.472972972972973
+        },
+        "0.025": {
+          "units": 518,
+          "referable": 201,
+          "routed": 262,
+          "coverage": 0.5057915057915058,
+          "coverage_ci95": [
+            0.46525096525096526,
+            0.5521235521235521
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8264984227129337,
+          "npv_routine": 1.0,
+          "review_rate": 0.4942084942084942
+        },
+        "0.01": {
+          "units": 518,
+          "referable": 201,
+          "routed": 259,
+          "coverage": 0.5,
+          "coverage_ci95": [
+            0.4575289575289575,
+            0.5444015444015444
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8170347003154574,
+          "npv_routine": 1.0,
+          "review_rate": 0.5
+        }
+      },
+      "c": {
+        "0.05": {
+          "units": 518,
+          "referable": 201,
+          "routed": 271,
+          "coverage": 0.5231660231660231,
+          "coverage_ci95": [
+            0.4806949806949807,
+            0.5675675675675675
+          ],
+          "missed": 3,
+          "miss_rate": 0.014925373134328358,
+          "miss_rate_upper95": 0.04299640520178569,
+          "sensitivity": 0.9850746268656716,
+          "specificity": 0.8454258675078864,
+          "npv_routine": 0.988929889298893,
+          "review_rate": 0.4768339768339769
+        },
+        "0.025": {
+          "units": 518,
+          "referable": 201,
+          "routed": 263,
+          "coverage": 0.5077220077220077,
+          "coverage_ci95": [
+            0.46327220077220077,
+            0.5501930501930502
+          ],
+          "missed": 1,
+          "miss_rate": 0.004975124378109453,
+          "miss_rate_upper95": 0.02740642980341042,
+          "sensitivity": 0.9950248756218906,
+          "specificity": 0.8264984227129337,
+          "npv_routine": 0.9961977186311787,
+          "review_rate": 0.4922779922779923
+        },
+        "0.01": {
+          "units": 518,
+          "referable": 201,
+          "routed": 259,
+          "coverage": 0.5,
+          "coverage_ci95": [
+            0.4594594594594595,
+            0.5405405405405406
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8170347003154574,
+          "npv_routine": 1.0,
+          "review_rate": 0.5
+        }
+      },
+      "isotonic_check_c": {
+        "0.05": {
+          "units": 518,
+          "referable": 201,
+          "routed": 270,
+          "coverage": 0.5212355212355212,
+          "coverage_ci95": [
+            0.47876447876447875,
+            0.5656370656370656
+          ],
+          "missed": 2,
+          "miss_rate": 0.009950248756218905,
+          "miss_rate_upper95": 0.03547958755408201,
+          "sensitivity": 0.9900497512437811,
+          "specificity": 0.8454258675078864,
+          "npv_routine": 0.9925925925925926,
+          "review_rate": 0.4787644787644788
+        },
+        "0.025": {
+          "units": 518,
+          "referable": 201,
+          "routed": 262,
+          "coverage": 0.5057915057915058,
+          "coverage_ci95": [
+            0.4613899613899614,
+            0.5482625482625483
+          ],
+          "missed": 1,
+          "miss_rate": 0.004975124378109453,
+          "miss_rate_upper95": 0.02740642980341042,
+          "sensitivity": 0.9950248756218906,
+          "specificity": 0.8233438485804416,
+          "npv_routine": 0.9961832061068703,
+          "review_rate": 0.4942084942084942
+        },
+        "0.01": {
+          "units": 518,
+          "referable": 201,
+          "routed": 257,
+          "coverage": 0.49613899613899615,
+          "coverage_ci95": [
+            0.4517374517374517,
+            0.5386100386100386
+          ],
+          "missed": 0,
+          "miss_rate": 0.0,
+          "miss_rate_upper95": 0.01818525005438626,
+          "sensitivity": 1.0,
+          "specificity": 0.8107255520504731,
+          "npv_routine": 1.0,
+          "review_rate": 0.5038610038610039
+        }
+      }
+    }
+  },
+  "rule_of_three": {
+    "IDRiD-val": {
+      "referable": 63,
+      "upper95_if_zero_misses": 0.05687235233201625,
+      "approx_3_over_n": 0.047619047619047616,
+      "certifiable_levels": []
+    },
+    "APTOS-val": {
+      "referable": 201,
+      "upper95_if_zero_misses": 0.01818525005438626,
+      "approx_3_over_n": 0.014925373134328358,
+      "certifiable_levels": [
+        0.05,
+        0.025
+      ]
+    }
+  },
+  "falsification": {
+    "a": {
+      "coverage_ci_includes_0_on_both": false,
+      "miss_rate_over_tolerance_on": [
+        "IDRiD-val"
+      ],
+      "abandoned": true
+    },
+    "b": {
+      "coverage_ci_includes_0_on_both": false,
+      "miss_rate_over_tolerance_on": [
+        "IDRiD-val"
+      ],
+      "abandoned": true
+    },
+    "c": {
+      "coverage_ci_includes_0_on_both": false,
+      "miss_rate_over_tolerance_on": [],
+      "abandoned": false
+    }
+  },
+  "patient_level": "not possible on development data (no eye pairs); deferred to the locked DeepDRiD / Messidor-2 evaluation"
+}

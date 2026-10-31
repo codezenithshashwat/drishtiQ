@@ -1,0 +1,194 @@
+﻿# Datasets: never committed (see DATA.md). Anchored to the root so src/data/ (code) stays tracked.
+/data/
+
+# ==========================================
+# MODEL WEIGHTS AND CACHES
+# ==========================================
+
+# Model binaries (never push large trained weights)
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+# Large generated numerical arrays
+*.npy
+*.npz
+
+# Downloaded pretrained models and caches
+/models/pretrained/
+
+# Other model directories: verify their contents before excluding
+/models/final/
+/models/registry/
+
+# IMPORTANT:
+# models/checkpoints/ is intentionally NOT ignored.
+# Required JSON metadata should be tracked.
+# Model weights inside it are excluded by extensions above.
+
+# Evaluation artefacts: keep the registry and small summaries, drop bulky outputs
+results/runs/**/*.png
+results/runs/**/predictions_*.csv
+results/cache/
+
+# Logs
+*.log
+logs/
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+kaggle.json
+.kaggle/
+*token*
+!design/tokens.json
+*credential*
+*secret*
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Kaggle upload staging, downloaded Kaggle outputs, audit image sheets (contain patient images)
+/kaggle_upload/
+/checkpoints/
+results/audit_images/
+
+# Audit/model-selection figures: regenerate locally; may contain fundus images
+outputs/figures/
+
+# Design directions: exported case data contains a fundus image
+design/directions/data/
+
+# GPU queue runtime files (STATUS.md, jobs.yaml and decisions/ are tracked)
+queue/logs/
+queue/state.json
+queue/state.tmp
+queue/queue.pid
+queue/STOP
+
+# Screenshots for review (contain fundus images)
+design/review/
+
+# Internal review sheets (may describe individual images; never committed)
+review/internal/
+
+# Local tool settings and editor state
+.c[l]aude/
+
+# Training runs, local case store and uploads (may contain patient images)
+runs/
+/runs/
+uploads/
+*.sqlite
+*.sqlite3
+*.db
+data/app/
+
+# App screenshots: future captures stay local (they show fundus images)
+results/screenshots/
+
+
+# Per-image dataset labels, grades, masks-derived tables and predictions with
+# true grades: not republished (dataset licences). Regenerate them from the
+# official downloads, see docs/REPRODUCE.md.
+configs/splits/*.csv
+outputs/metrics/idrid_content_label_conflicts.csv
+outputs/metrics/idrid_cross_task_*.csv
+outputs/metrics/idrid_duplicate_archive_evidence.csv
+outputs/metrics/idrid_duplicate_group_resolution.csv
+outputs/metrics/idrid_duplicate_resolution.csv
+outputs/metrics/idrid_grading_labels.csv
+outputs/metrics/idrid_localization_metadata*.csv
+outputs/metrics/idrid_component_areas.csv
+outputs/metrics/idrid_ma_component_topology.csv
+outputs/metrics/idrid_resolution_analysis.csv
+outputs/metrics/idrid_missing_masks.csv
+outputs/metrics/idrid_segmentation_annotation_policy.csv
+outputs/metrics/model_selection/*/validation_predictions.csv
+outputs/metrics/model_selection/*/native_validation_metrics*.csv
+outputs/metrics/model_selection/grading_folds.csv
+outputs/metrics/model_selection/selected_grading_OOF_predictions.csv
+results/audit/aptos/aptos_clean_manifest.csv
+results/audit/aptos/aptos_duplicate_groups.csv
+results/audit/aptos/aptos_fingerprints.csv
+results/audit/mmrdr/*.csv
+results/audit/ddr/ddr_seg_fingerprints.csv
+results/runs/*/per_image_dice.csv
+results/audit/aptos/aptos_review_pairs.csv
+
+
+
+# ==========================================
+# DRISHTIQ - AGENT GENERATED DOCUMENTATION
+# ==========================================
+
+# AI-generated audit and progress reports
+REPORT_*.md
+AUDIT_*.md
+AUDIT_REPORT*.md
+
+# AI-generated planning documents
+IMPLEMENTATION_PLAN*.md
+DEVELOPMENT_PLAN*.md
+EXECUTION_PLAN*.md
+ROADMAP_*.md
+TECHNICAL_HANDOVER*.md
+
+# Temporary agent working files
+*.agent.log
+*.audit.log
+
+
+# ==========================================
+# RUNTIME & GENERATED FILES
+# ==========================================
+
+
+
+# Local application databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+
+# ==========================================
+# LOCAL CREDENTIALS
+# ==========================================
+
+.aws/
+*.p12
+*.pfx
+
+# Allow sanitized environment examples
+!.env.example

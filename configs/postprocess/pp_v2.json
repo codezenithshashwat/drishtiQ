@@ -1,0 +1,125 @@
+{
+  "fov_erode_frac": 0.0,
+  "od_mask_lesions": [
+    "MA",
+    "EX"
+  ],
+  "od_radius_factor": 1.0,
+  "thresholds": {
+    "MA": 0.7,
+    "HE": 0.5,
+    "EX": 0.7,
+    "SE": 0.4
+  },
+  "min_area": {
+    "MA": 40,
+    "HE": 20,
+    "EX": 0,
+    "SE": 200
+  },
+  "max_area": {
+    "MA": null,
+    "HE": null,
+    "EX": null,
+    "SE": null
+  },
+  "selected_on": "5-fold OOF, 50 IDRiD dev segmentation images, pooled pixel Dice; constraint: grade-0 FP regions (fold-4 model, 100 grade-0 dev-train grading images) <= no post-processing",
+  "oof_summary": {
+    "MA": {
+      "baseline": {
+        "dice": 0.26094744746378784,
+        "precision": 0.19818266573215726,
+        "recall": 0.3818938771349757,
+        "aupr": 0.18457591200507245,
+        "fp_regions_g0_dev": 21.54
+      },
+      "chosen": {
+        "key": [
+          "MA",
+          0.0,
+          1.0,
+          0.7,
+          40,
+          null
+        ],
+        "dice": 0.285933794002957,
+        "precision": 0.2684452868800899,
+        "recall": 0.3058597557479502,
+        "aupr": 0.1852406496485074,
+        "fp_regions_g0_dev": 8.82
+      }
+    },
+    "HE": {
+      "baseline": {
+        "dice": 0.4039457060194124,
+        "precision": 0.4792726279775297,
+        "recall": 0.3490809181266498,
+        "aupr": 0.327170091818092,
+        "fp_regions_g0_dev": 3.16
+      },
+      "chosen": {
+        "key": [
+          "HE",
+          0.0,
+          null,
+          0.5,
+          20,
+          null
+        ],
+        "dice": 0.4039589050461067,
+        "precision": 0.4793158388393623,
+        "recall": 0.3490777102864031,
+        "aupr": 0.327170091818092,
+        "fp_regions_g0_dev": 3.1
+      }
+    },
+    "EX": {
+      "baseline": {
+        "dice": 0.4889220310409282,
+        "precision": 0.45356863580301854,
+        "recall": 0.530252552091656,
+        "aupr": 0.4399228914718337,
+        "fp_regions_g0_dev": 9.94
+      },
+      "chosen": {
+        "key": [
+          "EX",
+          0.0,
+          1.0,
+          0.7,
+          0,
+          null
+        ],
+        "dice": 0.4964624361823439,
+        "precision": 0.5129823240236472,
+        "recall": 0.4809733530786754,
+        "aupr": 0.4410807133825391,
+        "fp_regions_g0_dev": 6.68
+      }
+    },
+    "SE": {
+      "baseline": {
+        "dice": 0.4676660219643117,
+        "precision": 0.6490137645650779,
+        "recall": 0.365529570981921,
+        "aupr": 0.4298412218462184,
+        "fp_regions_g0_dev": 2.64
+      },
+      "chosen": {
+        "key": [
+          "SE",
+          0.0,
+          null,
+          0.4,
+          200,
+          null
+        ],
+        "dice": 0.4784894116214748,
+        "precision": 0.6322238384529819,
+        "recall": 0.384896279912444,
+        "aupr": 0.4298412218462184,
+        "fp_regions_g0_dev": 2.36
+      }
+    }
+  }
+}

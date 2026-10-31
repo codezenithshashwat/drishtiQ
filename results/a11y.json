@@ -1,0 +1,85 @@
+{
+  "tool": "axe-core 4.10.2 (in-app, ?axe=1)",
+  "ui": "v3",
+  "serious_critical": 0,
+  "screens": {
+    "landing": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "worklist": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "worklist_routine_tab": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "new_screening": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "case_repeat_visit": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "case_urgent": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "case_intake": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "history": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "disagreements": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "report_doctor": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "report_patient_en": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "report_patient_hi": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    },
+    "about": {
+      "violations": 0,
+      "serious_critical": 0,
+      "console_errors": 0,
+      "ran": true
+    }
+  }
+}

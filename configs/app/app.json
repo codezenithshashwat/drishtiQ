@@ -1,0 +1,13 @@
+{
+  "version": "v0.3 (grader convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt)",
+  "grader": "finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt",
+  "grader_note": "Swapped in by ADR-013 (a2_swap). Previous graders are listed under history; revert by restoring one.",
+  "history": [
+    {
+      "grader": "v0",
+      "version": "v0.2 (v0 grader + pp_v2 lesion post-processing + landmarks/explanations)",
+      "replaced": "2026-10-29T08:40:52",
+      "reason": "ADR-013 (a2_swap)"
+    }
+  ]
+}

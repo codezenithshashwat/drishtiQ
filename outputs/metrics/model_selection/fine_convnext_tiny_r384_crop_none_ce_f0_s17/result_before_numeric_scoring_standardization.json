@@ -1,0 +1,127 @@
+{
+  "tag": "fine_convnext_tiny_r384_crop_none_ce_f0_s17",
+  "task": "grading",
+  "stage": "partial_fine_tuning",
+  "architecture": "convnext_tiny",
+  "fold": 0,
+  "seed": 17,
+  "resolution": 384,
+  "preprocessing": "crop",
+  "augmentation": "none",
+  "objective": "ce",
+  "max_epochs": 6,
+  "microbatch": 4,
+  "effective_batch": 16,
+  "head_lr": 0.001,
+  "backbone_lr": 0.0001,
+  "optimizer": "AdamW",
+  "weight_decay": 0.0001,
+  "checkpoint": "maximum validation macro F1, then QWK, earliest exact tie",
+  "early_stopping": "none within short prespecified screening budget",
+  "normalization": "ImageNet mean/std",
+  "BN": "eval/frozen running statistics",
+  "stochastic_depth_dropout": "disabled; global eval with trainable gradients",
+  "warm_start": "frozen_convnext_tiny_r384_crop_f0_s17",
+  "parameters": 27823973,
+  "trainable_parameters": 15475973,
+  "approx_reference_224_GFLOPs": 4.456,
+  "pretraining": "torchvision ImageNet-1k V1; recipes differ by architecture",
+  "training_images": 269,
+  "validation_images": 135,
+  "best_epoch": -1,
+  "epochs_run": 6,
+  "training_seconds": 24.197423100005835,
+  "inference_seconds_per_image": 0.00848451259263567,
+  "peak_allocated_MiB": 396.63916015625,
+  "checkpoint_MiB": 106.2101469039917,
+  "train_macro_f1": 0.9830932521692357,
+  "overfit_gap": 0.48124943656912944,
+  "confusion_matrix": [
+    [
+      38,
+      1,
+      4,
+      0,
+      1
+    ],
+    [
+      5,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      2,
+      29,
+      4,
+      6
+    ],
+    [
+      1,
+      1,
+      5,
+      13,
+      5
+    ],
+    [
+      2,
+      0,
+      2,
+      4,
+      8
+    ]
+  ],
+  "per_class": [
+    {
+      "grade": 0,
+      "precision": 0.7755102040816326,
+      "recall": 0.8636363636363636,
+      "specificity": 0.8791208791208791,
+      "support": 44
+    },
+    {
+      "grade": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "specificity": 0.9689922480620154,
+      "support": 6
+    },
+    {
+      "grade": 2,
+      "precision": 0.7073170731707317,
+      "recall": 0.6590909090909091,
+      "specificity": 0.8681318681318682,
+      "support": 44
+    },
+    {
+      "grade": 3,
+      "precision": 0.6190476190476191,
+      "recall": 0.52,
+      "specificity": 0.9272727272727272,
+      "support": 25
+    },
+    {
+      "grade": 4,
+      "precision": 0.4,
+      "recall": 0.5,
+      "specificity": 0.8991596638655462,
+      "support": 16
+    }
+  ],
+  "accuracy": 0.6518518518518519,
+  "balanced_accuracy": 0.5085454545454546,
+  "macro_f1": 0.5018438156001063,
+  "weighted_f1": 0.6460893670577508,
+  "qwk": 0.7306769471328822,
+  "mae_grade": 0.5481481481481482,
+  "distance_ge2_rate": 0.14814814814814814,
+  "high_grade_to_0_or_1_rate": 0.0975609756097561,
+  "grade0_to_3_or_4_count": 1,
+  "nll": 1.2386338710784912,
+  "brier": 0.5494321087027225,
+  "ece_10_bins": 0.1978598016279715,
+  "minority_grade1_recall": 0.0,
+  "roc_auc_ovr_macro": 0.8409682358073602
+}

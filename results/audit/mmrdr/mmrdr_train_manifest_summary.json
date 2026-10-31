@@ -1,0 +1,20 @@
+{
+  "images": 11118,
+  "dropped": {
+    "redundant_duplicate_same_label": 179,
+    "duplicate_group_conflicting_labels": 62,
+    "near_copy_of_validation_or_locked_image": 46
+  },
+  "kept": 10831,
+  "kept_grades": {
+    "0": 6359,
+    "1": 1280,
+    "2": 1926,
+    "3": 598,
+    "4": 668
+  },
+  "kept_by_source_split": {
+    "tr": 8684,
+    "ts": 2147
+  }
+}

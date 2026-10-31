@@ -1,0 +1,334 @@
+# GPU queue (tools/gpu_queue.py). Jobs run top to bottom; the first enabled job that is not done/failed runs next.
+# Quote every step. "python" = project venv. Rules applied here are pre-registered (ADR-013/015/016/017/018).
+jobs:
+  - id: a2_swap
+    title: "A2: ADR-013 rule on fixed candidate reg384 s17 (venv runs 081750 / 082105) vs comparator; switch app grader if it passes"
+    est_gpu_min: 1
+    steps:
+      - 'python tools/rules.py grader-swap --name a2_swap --adr ADR-013 --candidate finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt --baseline idrid_grading_val=20261028-234705-grade-frozen_models_checkpoints_phase1_frozen_ --baseline aptos_val=20261028-234822-grade-frozen_models_checkpoints_phase1_frozen_ --candidate-run idrid_grading_val=20261029-081750-grade-finetune_models_checkpoints_phase2_grade --candidate-run aptos_val=20261029-082105-grade-finetune_models_checkpoints_phase2_grade --apply'
+
+  - id: a3_baseline_ddr
+    title: "A3 prerequisite: v0.1 (v0 + pp_v2) evaluated on DDR-test (225) for the ADR-016 comparison"
+    est_gpu_min: 10
+    steps:
+      - 'python -m eval segment --model v0 --split ddr_seg_test --postprocess configs/postprocess/pp_v2.json'
+
+  - id: b5b6_metrics
+    title: "B5 calibration/abstention (ADR-019) + B6 triage metric (ADR-020) for the current app grader"
+    est_gpu_min: 15
+    steps:
+      - 'python tools/assistant_metrics.py'
+
+  - id: a2_seed23
+    title: "A2 seeds: reg384 seed 23 (same recipe)"
+    est_gpu_min: 80
+    steps:
+      - 'python src/train/finetune_mixed.py --head reg --size 384 --seed 23'
+
+  - id: a3_train
+    title: "A3: U-Net/R18 on DDR train+valid + IDRiD dev (5-fold CV, fold 4 = candidate); pp re-selection on CV; IDRiD-val + DDR-test; ADR-016 per lesion"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 400  # measured 1.09 s/step x 4000 steps x 5 folds + evaluation
+    large_output: true
+    steps:
+      - 'python src/train/seg_a3.py --fold 0'
+      - 'python src/train/seg_a3.py --fold 1'
+      - 'python src/train/seg_a3.py --fold 2'
+      - 'python src/train/seg_a3.py --fold 3'
+      - 'python src/train/seg_a3.py --fold 4'
+      - 'python -m eval.seg_pp_select --cache results/cache/seg_a3_cv --fold4-model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold4_s17.pt --label a3-cv --fp-constraint --out configs/postprocess/pp_a3_v1.json'
+      - 'python -m eval segment --model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold4_s17.pt --split idrid_seg_val --postprocess configs/postprocess/pp_a3_v1.json'
+      - 'python -m eval segment --model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold4_s17.pt --split ddr_seg_test --postprocess configs/postprocess/pp_a3_v1.json'
+      - 'python tools/rules.py seg-swap --name a3_swap --new-cv a3-cv+pp_a3_v1 --new a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold4_s17.pt+pp_a3_v1 --new-spec a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold4_s17.pt --new-pp configs/postprocess/pp_a3_v1.json --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: dme_refit
+    title: "DME rule refit on dev-train with the app segmenter (after A3); report IDRiD-val; app uses the refit"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 25
+    steps:
+      - 'python -m eval.fit_dme --name dme_rule_v2 --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: s1_thresholds
+    title: "S1 (ADR-027): thresholds for macro-F1 on the inner hold-out; rule vs app system"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 15
+    steps:
+      - 'python tools/s1_thresholds.py'
+      - 'python tools/system_eval.py --name s1_thresholds --adr ADR-027 --rule s1 --patch ''{"thresholds": "configs/grading/s1_thresholds.json"}'' --apply'
+      - 'python tools/assistant_metrics.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: seg_ensemble_tta
+    title: "Segmentation (ADR-031 #1): A3 5-fold ensemble + flip TTA; pp re-selection; per-lesion rule vs app segmenter; FROC"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 60
+    steps:
+      - 'python tools/seg_oof.py --out results/cache/seg_a3tta_cv'
+      - 'python -m eval.seg_pp_select --cache results/cache/seg_a3tta_cv --fold4-model "a3ens:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold[0-9]_s17.pt" --label a3ens-cv --fp-constraint --out configs/postprocess/pp_a3ens_v1.json'
+      - 'python -m eval segment --model "a3ens:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold[0-9]_s17.pt" --split idrid_seg_val --postprocess configs/postprocess/pp_a3ens_v1.json'
+      - 'python -m eval segment --model "a3ens:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold[0-9]_s17.pt" --split ddr_seg_test --postprocess configs/postprocess/pp_a3ens_v1.json'
+      - 'python tools/rules.py seg-swap --name a3ens_swap --adr ADR-031 --new-cv a3ens-cv+pp_a3ens_v1 --new "a3ens:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold[0-9]_s17.pt+pp_a3ens_v1" --new-spec "a3ens:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_fold[0-9]_s17.pt" --new-pp configs/postprocess/pp_a3ens_v1.json --base-from-app --apply'
+      - 'python tools/froc.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: seg_ma_variant
+    title: "Segmentation (ADR-031 #2): MA variant (green local-contrast input, Tversky), 5 folds; rule for MA vs app segmenter"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 380
+    large_output: true
+    steps:
+      - 'python src/train/seg_a3.py --fold 0 --variant ma_lcn'
+      - 'python src/train/seg_a3.py --fold 1 --variant ma_lcn'
+      - 'python src/train/seg_a3.py --fold 2 --variant ma_lcn'
+      - 'python src/train/seg_a3.py --fold 3 --variant ma_lcn'
+      - 'python src/train/seg_a3.py --fold 4 --variant ma_lcn'
+      - 'python -m eval.seg_pp_select --cache results/cache/seg_a3_cv_ma_lcn --fold4-model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_ma_lcn_fold4_s17.pt --label a3ma-cv --fp-constraint --out configs/postprocess/pp_a3ma_v1.json'
+      - 'python -m eval segment --model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_ma_lcn_fold4_s17.pt --split idrid_seg_val --postprocess configs/postprocess/pp_a3ma_v1.json'
+      - 'python -m eval segment --model a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_ma_lcn_fold4_s17.pt --split ddr_seg_test --postprocess configs/postprocess/pp_a3ma_v1.json'
+      - 'python tools/rules.py seg-swap --name a3ma_swap --adr ADR-031 --lesions MA --new-cv a3ma-cv+pp_a3ma_v1 --new a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_ma_lcn_fold4_s17.pt+pp_a3ma_v1 --new-spec a3:models/checkpoints/phase2/seg_a3/unet_r18_fov1536_ma_lcn_fold4_s17.pt --new-pp configs/postprocess/pp_a3ma_v1.json --base-from-app --apply'
+      - 'python tools/froc.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: a2_seed41
+    title: "A2 seeds: reg384 seed 41 (same recipe)"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 80
+    steps:
+      - 'python src/train/finetune_mixed.py --head reg --size 384 --seed 41'
+
+  - id: a2_ensemble
+    title: "A2 ensemble: 3-seed reg384 vs single s17, ADR-017; switch app grader only if s17 is the app grader and the rule passes"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 10
+    steps:
+      - 'python tools/rules.py grader-swap --name a2_ensemble --adr ADR-017 --candidate "finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s[0-9][0-9].pt" --baseline idrid_grading_val=20261029-081750-grade-finetune_models_checkpoints_phase2_grade --baseline aptos_val=20261029-082105-grade-finetune_models_checkpoints_phase2_grade --apply --require-app-grader finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: s2_stage01
+    title: "S2 (ADR-028): stage 0 vs 1 specialist at 768 px; rule g1 vs app system"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 240
+    large_output: true
+    steps:
+      - 'python src/train/finetune_special.py --task stage01 --size 768 --micro 4'
+      - 'python tools/system_eval.py --name s2_stage01 --adr ADR-028 --rule g1 --patch ''{"specialists": {"stage01": "models/checkpoints/phase2/specialists/convnext_tiny_stage01_plain768_v1_s17.pt"}}'' --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: s3_stage34
+    title: "S3 (ADR-028): stage 3 vs 4 specialist at 512 px, class 4 oversampled; rule g4 vs app system"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 60
+    large_output: true
+    steps:
+      - 'python src/train/finetune_special.py --task stage34 --size 512 --micro 8'
+      - 'python tools/system_eval.py --name s3_stage34 --adr ADR-028 --rule g4 --patch ''{"specialists": {"stage34": "models/checkpoints/phase2/specialists/convnext_tiny_stage34_plain512_v1_s17.pt"}}'' --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: s4_corn
+    title: "S4 (ADR-029): CORN ordinal grader, warm start from reg384 s17; ADR-013 rule vs app system"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 80
+    steps:
+      - 'python src/train/finetune_special.py --task corn --size 384 --micro 16 --init models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt'
+      - 'python tools/system_eval.py --name s4_corn --adr ADR-029 --rule adr013 --grader finetune:models/checkpoints/phase2/graders/convnext_tiny_corn_plain384_v1_s17.pt --drop thresholds --apply'
+      - 'python tools/assistant_metrics.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: eyepacs
+    title: "Conditional EyePACS 2015 (ADR-037): trigger on APTOS-val stage-1/4 recall; download, audit, retrain, ADR-013"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 60
+    large_output: true
+    steps:
+      - 'python tools/eyepacs.py'
+      - 'python tools/assistant_metrics.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: seg_upgrade_loss
+    title: "Conditional segmentation loss upgrade per lesion (ADR-036): focal + Dice where CV AUPR is > 0.05 short of target"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 380
+    large_output: true
+    steps:
+      - 'python tools/seg_trigger.py --stage loss'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: seg_upgrade_encoder
+    title: "Conditional segmentation encoder upgrade per lesion (ADR-036): ConvNeXt-T U-Net where still > 0.05 short"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 450
+    large_output: true
+    steps:
+      - 'python tools/seg_trigger.py --stage encoder'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: dme_refit_final
+    title: "DME rule refit on dev-train with the final segmenter (ADR-014); report IDRiD-val"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 25
+    steps:
+      - 'python -m eval.fit_dme --name dme_rule_v3 --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: a4_fusion
+    title: "A4 lesion-to-grade fusion (ADR-021): fit on inner hold-out, evaluate, swap rule + stage-1 recall gain on APTOS-val"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 180
+    steps:
+      - 'python tools/a4_fusion.py'
+      - 'python tools/rules.py grader-swap --name a4_fusion --adr ADR-021 --candidate fusion:configs/fusion/a4_v1.json --baseline-app --candidate-latest --require-recall-g1-gain aptos_val --apply --apply-as fusion'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: pseudo_label
+    title: "Pseudo-labelling on APTOS test_images (ADR-018): leak check, d fixed on inner hold-out, student reg384 s17, ADR-013 comparison vs single s17. ADR-018a: swap rule applied vs the app grader"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 100
+    steps:
+      - 'python tools/pseudo_label.py'
+      - 'python src/train/finetune_mixed.py --head reg --size 384 --seed 17 --version v1pl --pseudo data/interim/pseudo/aptos_test_pl_v1.csv'
+      - 'python tools/rules.py grader-swap --name pseudo_label --adr ADR-018a --candidate finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1pl_s17.pt --baseline-app --apply'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: deepdrid_relock
+    title: "Re-audit DeepDRiD lock after pseudo-labelling (adds the APTOS test images to the leak check; ADR-034a)"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 5
+    steps:
+      - 'python tools/audit_deepdrid.py'
+
+  - id: faithfulness
+    title: "Explanation faithfulness test (ADR-032): hide cited lesions vs equal-area control"
+    enabled: false  # 2026-10-30 ADR-041: run directly (not via the queue) as Step 4e
+    est_gpu_min: 70
+    steps:
+      - 'python tools/faithfulness.py'
+      - 'python tools/scorecard.py'
+
+  - id: r2_bad_input
+    title: "R2 bad-input safety (ADR-023): non-fundus, blurred, dark inputs never get a confident stage"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 5
+    steps:
+      - 'python tools/robustness.py r2'
+
+  - id: r1_robustness
+    title: "R1 robustness (ADR-022): 10 degradations on IDRiD-val + APTOS-val, inference only"
+    enabled: false  # 2026-10-30 ADR-041: run directly (not via the queue) as Step 4f
+    est_gpu_min: 60
+    steps:
+      - 'python tools/robustness.py r1'
+
+  - id: r3_gradcam_audit
+    title: "R3 Grad-CAM shortcut audit (ADR-024) on IDRiD-val + APTOS-val"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 20
+    steps:
+      - 'python tools/robustness.py r3'
+
+  - id: r4_quality_gate
+    title: "R4 quality gate on DDR-train ungradable vs gradable (ADR-025), CPU only"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 30
+    steps:
+      - 'python tools/robustness.py r4'
+
+  - id: b5b6_final
+    title: "B5 calibration/abstention (ADR-019) + B6 triage metric (ADR-020) for the current app graderafter ensemble/pseudo-label decisions; no-op if the grader did not change"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 15
+    steps:
+      - 'python tools/assistant_metrics.py'
+
+  - id: tta_final
+    title: "TTA (ADR-030): flip + rotations on the final system; ADR-013 rule; calibration refit"
+    enabled: false  # 2026-10-30 ADR-041: cancelled by owner decision (not failed)
+    est_gpu_min: 90
+    steps:
+      - 'python tools/system_eval.py --name tta_final --adr ADR-030 --rule adr013 --patch ''{"tta": true}'' --apply'
+      - 'python tools/assistant_metrics.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: benchmark_final
+    title: "Final timing on the final system (GPU / CPU), then refresh all generated numbers"
+    enabled: false  # 2026-10-30 ADR-041: run directly (not via the queue) as Step 6
+    est_gpu_min: 15
+    steps:
+      - 'python tools/benchmark.py'
+      - 'python tools/agreement_app.py'
+      - 'python tools/freeze_check.py'
+      - 'python tools/key_numbers.py'
+      - 'python tools/scorecard.py'
+      - 'python -m pytest -q backend tests'
+
+  - id: rc1_check
+    title: "rc-1 readiness check (ADR-038): queue finished, preflight, reproduce, tests; never tags"
+    enabled: false  # 2026-10-30 ADR-041: run directly (not via the queue) as Step 7
+    est_gpu_min: 15
+    steps:
+      - 'python tools/rc1_check.py'
