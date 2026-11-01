@@ -129,3 +129,19 @@ Fonts and icons are bundled and no model is downloaded at run time (`tests/test_
 ```
 
 This includes a real-HTTP end-to-end test (`tests/test_e2e_http.py`: upload, analyse, review, worklist, reports in English and Hindi) and the offline test.
+
+## DrishtiQ Network (community module)
+
+A separate, community-facing part of the app at `/network`: awareness content, eye-screening camp search, interest registration,
+optional accounts ("My DrishtiQ"), health-worker and organiser tools, and **Saathi**, a Hindi/English/Hinglish voice and text helper.
+It is a prototype of a proposed ecosystem. Camps are **demonstration data** (clearly labelled) unless an admin marks a camp verified.
+It has its own database (`data/app/network.sqlite`) and shares sign-in with the specialist workspace, where clinical access requires an ophthalmologist grant.
+With consent, a specialist can link a camp registration to a screening visit. Network exposes only screening progress and the signed next action; clinical images, stages and notes remain private. Design: `drishtiQ_network.md`.
+
+- Run as usual (`start.bat`, or uvicorn + `npm run dev`); open `/network`. No setup is needed: Saathi works without any API key.
+- Demo mode (default, `NETWORK_DEMO_MODE=1`) seeds demonstration camps, three **prototype** staff accounts (shown on `/network/staff`), and a prototype ophthalmologist (`9000000004`, password `Demo@Eye-Doctor1`, shown on `/app/login`). Set `NETWORK_DEMO_MODE=0` for anything real; create staff with
+  `python -m backend.network.cli create-staff --role organiser --name "..." --identifier 98xxxxxxxx --org "..."`.
+- Optional free AI: put a Google AI Studio free-tier key in `.env` as `GEMINI_API_KEY` (see `.env.example`). It only helps understand unusual sentences, never receives personal data,
+  and pauses itself on quota errors; there is no paid fallback. Without it, a deterministic Hindi/English understanding layer handles everything.
+- Voice uses the browser's own speech recognition and synthesis (Chrome/Edge best); typing always works.
+- Tests: `python -m pytest -q backend/network` and, after `npm run build`, `node frontend/tests/run-ui-checks.mjs`; browser journey: `node frontend/tests/network-e2e.mjs http://127.0.0.1:8000`.

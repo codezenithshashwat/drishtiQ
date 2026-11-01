@@ -10,8 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STRINGS = ROOT / "review/hindi_review.csv"
 REQUIRED = (["title", "patient", "date", "intro", "result", "next_step", "right", "left", "unknown", "not_assessed", "swelling",
-             "care_title", "questions", "disclaimer", "care.0", "care.1", "care.2"]
-            + [f"risk.{k}" for k in ("low", "possible", "high")] + [f"follow_up.{k}" for k in ("routine", "refer", "urgent", "human", "retake", "incomplete")]
+             "care_title", "questions", "disclaimer", "care.0", "care.1", "care.2", "eye_pending", "eye_missing"]
+            + [f"risk.{k}" for k in ("low", "possible", "high")] + [f"follow_up.{k}" for k in ("routine", "refer", "urgent", "human", "retake", "incomplete", "follow_up", "pending")]
             + [f"stage.{s}.{p}" for s in range(5) for p in ("name", "explain")])
 
 
@@ -27,7 +27,7 @@ def load(path=STRINGS):
         t["risk"] = {k: rows[f"risk.{k}"][col].strip() for k in ("low", "possible", "high")}
         t["care"] = [rows[f"care.{i}"][col].strip() for i in range(3)]
         t["stage"] = {s: (rows[f"stage.{s}.name"][col].strip(), rows[f"stage.{s}.explain"][col].strip()) for s in range(5)}
-        t["follow_up"] = {k: rows[f"follow_up.{k}"][col].strip() for k in ("routine", "refer", "urgent", "human", "retake", "incomplete")}
+        t["follow_up"] = {k: rows[f"follow_up.{k}"][col].strip() for k in ("routine", "refer", "urgent", "human", "retake", "incomplete", "follow_up", "pending")}
         out[lang] = t
     return out
 

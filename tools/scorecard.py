@@ -49,8 +49,11 @@ def generate():
     about = "frontend/src/app/screens/About.tsx"
     item(sec, "DR grading in the app", f"{app['grader'].split('/')[-1]} (system {g})", True, "configs/app/app.json")
     item(sec, "Segmentation of MA / HE / EX (+SE) in the app", ", ".join(f"{k}: {v['model'].split(':')[0]}" for k, v in (app.get("segmenter") or {k: {"model": "v0"} for k in "MA HE EX SE".split()}).items()), True, "configs/app/app.json")
-    item(sec, "Explainable heatmaps + physician side-by-side view", "Grad-CAM + lesion maps; physician view " + ("present" if has("frontend/src/app/screens/CaseView.tsx", "Physician view") else "missing"),
-         has("frontend/src/app/screens/CaseView.tsx", "Physician view") or None, "frontend/src/app/screens/CaseView.tsx")
+    case_view = "frontend/src/app/screens/CaseView.tsx"
+    image_viewer = "frontend/src/app/screens/ImageViewer.tsx"
+    comparison = has(case_view, "Physician view") or (has(case_view, "ImageViewer") and has(image_viewer, "Original reference") and has(image_viewer, "Compare"))
+    item(sec, "Explainable heatmaps + physician side-by-side view", "Grad-CAM + lesion maps; comparison view " + ("present" if comparison else "missing"),
+         comparison or None, f"{case_view}, {image_viewer}")
     item(sec, "Models compared (ConvNeXt, EfficientNet, RETFound) on About", "table " + ("present" if has(about, "Models we compared") else "missing"), has(about, "Models we compared") or None, about)
     item(sec, "Named benchmarks: APTOS-val shown; Messidor-2 placeholder", "APTOS-val run " + ("registered" if latest(rows, task="grade", model=g, eval_split="aptos_val") else "missing"),
          bool(latest(rows, task="grade", model=g, eval_split="aptos_val")) and has(about, "Messidor-2"), "results/registry.csv")

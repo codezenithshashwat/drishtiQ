@@ -10,7 +10,7 @@ Nothing was tuned on validation or locked sets to meet a target. "pending" means
 |---|---|---|---|
 | DR grading in the app | convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt (system finetune:models/checkpoints/phase2/graders/convnext_tiny_mixed_reg_plain384_datasetbal_sqrtcw_v1_s17.pt) | met | `configs/app/app.json` |
 | Segmentation of MA / HE / EX (+SE) in the app | MA: v0, HE: v0, EX: v0, SE: v0 | met | `configs/app/app.json` |
-| Explainable heatmaps + physician side-by-side view | Grad-CAM + lesion maps; physician view present | met | `frontend/src/app/screens/CaseView.tsx` |
+| Explainable heatmaps + physician side-by-side view | Grad-CAM + lesion maps; comparison view present | met | `frontend/src/app/screens/CaseView.tsx, frontend/src/app/screens/ImageViewer.tsx` |
 | Models compared (ConvNeXt, EfficientNet, RETFound) on About | table present | met | `frontend/src/app/screens/About.tsx` |
 | Named benchmarks: APTOS-val shown; Messidor-2 placeholder | APTOS-val run registered | met | `results/registry.csv` |
 | Scalability measured: images/hour (GPU, CPU); 500-case worklist render | GPU 3449/h, CPU 2533/h; 500 cases render in 811 ms | met | `results/benchmark.json, results/worklist_scale.json` |
@@ -64,10 +64,10 @@ Nothing was tuned on validation or locked sets to meet a target. "pending" means
 | Accessibility audit: 0 serious/critical | 0 serious/critical (axe-core 4.10.2 (in-app, ?axe=1)) | met | `results/a11y.json` |
 | Usability test script ready (results filled by user) | script present | pending | `review/usability_test.md` |
 
-## 7. External validation: 1 of 3 met
+## 7. External validation: 0 of 3 met
 
 | Target | Measured | Status | Source |
 |---|---|---|---|
-| rc-1 tagged before any external evaluation | tagged | met | `git tag` |
+| rc-1 tagged before any external evaluation | not yet | pending | `git tag` |
 | IDRiD clean test: referable AUROC ≥ 0.90 | pending (locked) | pending | `results/external/idrid_test.json` |
 | DeepDRiD: referable AUROC ≥ 0.90 | pending (locked) | pending | `results/external/deepdrid.json` |

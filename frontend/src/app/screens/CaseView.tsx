@@ -1,13 +1,15 @@
-import { ArrowRight, CircleCheck, FileText, PencilLine } from 'lucide-react'
+import { ArrowRight, CircleCheck, FileText, Link2, PencilLine, ShieldCheck, Unlink } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import tokens from '../../../../design/tokens.json'
 import { Alert, Badge, Button, Card, Checkbox, ConfidenceBadge, Field, Input, Segmented, Select, Skeleton, Toast, cn } from '../../design/components'
-import { api, jpeg, png, type CaseDetail, type Glossary, type LesionKey, type Mode, type Sentence } from '../api'
-import { DME_LABEL, ROUTING, eyeName, STAGE_CLINICAL, isValidation, num, routingAlertTone, validationSource, pct, when } from '../format'
+import { api, type CaseDetail, type Encounter, type Glossary, type LesionKey, type Mode, type NextAction, type Sentence } from '../api'
+import { DME_LABEL, NEXT_ACTIONS, ROUTING, VISIT, eyeName, STAGE_CLINICAL, isValidation, nextActionInfo, num, routingAlertTone, validationSource, pct, when } from '../format'
 import { linkProps, navigate } from '../router'
+import { ImageViewer, type Layer } from './ImageViewer'
+import { useUnsavedChanges } from '../useUnsavedChanges'
 
 const LESION_ORDER: LesionKey[] = ['MA', 'HE', 'EX', 'SE']
-type Layer = LesionKey | 'cam' | 'macula' | 'disc'
+
 type Preset = 'original' | 'overlay' | 'cam' | LesionKey
 
 const STAGE_BOX = ['bg-stage-0-tint text-stage-0-text border-stage-0-border', 'bg-stage-1-tint text-stage-1-text border-stage-1-border',
@@ -19,7 +21,6 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
   const [mode, setMode] = useState<Mode>('simple')
   const [layers, setLayers] = useState<Set<Layer>>(new Set(['MA', 'HE', 'EX', 'SE', 'macula']))
   const [original, setOriginal] = useState(false)
-  const [physician, setPhysician] = useState(false)
   const [highlight, setHighlight] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [nextId, setNextId] = useState<string | null>(null)
@@ -27,12 +28,16 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
   useEffect(() => {
     setCase(null)
     setError(null)
-    api.case(id).then((d) => { setCase(d); onLoaded(d) }, (e) => setError(e.message))
+    let active = true
+    api.case(id).then((d) => { if (active) { setCase(d); onLoaded(d) } }, (e) => { if (active) setError(e.message) })
+    return () => { active = false }
   }, [id, onLoaded])
   // Next case still waiting for review, in worklist order.
   useEffect(() => {
-    api.cases().then((d) => setNextId(d.cases.find((x) => x.status === 'new' && x.id !== id)?.id ?? null), () => setNextId(null))
-  }, [id, c?.status])
+    let active = true
+    api.cases().then((d) => { if (active) setNextId(d.cases.find((x) => x.queue !== 'signed' && x.id !== id)?.id ?? null) }, () => { if (active) setNextId(null) })
+    return () => { active = false }
+  }, [id, c?.effective.signed])
   useEffect(() => {
     if (!toast) return
     const t = window.setTimeout(() => setToast(null), 4000)
@@ -44,18 +49,13 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
 
   const a = c.analysis
   const ok = a.status === 'ok' && a.grading && a.findings
-  const toggle = (l: Layer) => { setHighlight(null); setOriginal(false); setLayers((s) => { const n = new Set(s); if (n.has(l)) n.delete(l); else n.add(l); return n }) }
+  const toggle = (l: Layer) => { setHighlight(null); setOriginal(false); setLayers((s) => { const n = new Set(s); n.delete('cam'); if (n.has(l)) n.delete(l); else n.add(l); return n }) }
   const stagePlain = (g: number) => glossary?.[`stage${g}`]?.plain ?? STAGE_CLINICAL[g]
   const stageName = (g: number) => (mode === 'simple' ? stagePlain(g) : STAGE_CLINICAL[g])
   const lesionName = (k: LesionKey) => (mode === 'simple' ? glossary?.[k]?.plain : glossary?.[k]?.clinical) ?? a.findings?.lesions[k].name ?? k
 
-  const preset: Preset | null = original ? 'original'
-    : layers.size === 1 && layers.has('cam') ? 'cam'
-      : LESION_ORDER.every((k) => layers.has(k)) ? 'overlay'
-        : LESION_ORDER.filter((k) => layers.has(k)).length === 1 && !layers.has('cam') ? LESION_ORDER.find((k) => layers.has(k))! : null
   function applyPreset(p: Preset) {
     setHighlight(null)
-    setPhysician(false)
     if (p === 'original') { setOriginal(true); return }
     setOriginal(false)
     setLayers(new Set<Layer>(p === 'overlay' ? [...LESION_ORDER, 'macula'] : p === 'cam' ? ['cam'] : [p, 'macula']))
@@ -66,7 +66,6 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
     const refs = s.refs?.lesions ?? []
     const marks = (s.refs?.landmarks ?? []).filter((m): m is 'macula' | 'disc' => m === 'macula' || m === 'disc')
     setOriginal(false)
-    setPhysician(false)
     setLayers(new Set<Layer>([...refs, ...(marks.length ? marks : ['macula' as const])]))
     setHighlight(s.id)
   }
@@ -75,16 +74,16 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
     <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow mb-2">Case {c.id}</p>
-          <h1 className="flex flex-wrap items-center gap-3 font-display text-display-sm">
+          <h1 className="page-title flex flex-wrap items-center gap-3">
             {c.patient_ref} · {eyeName(c.eye)}
             <span className="flex flex-wrap items-center gap-2 font-sans">
               {a.status === 'ok' ? <Badge tone="brand" dot>Analysis complete</Badge> : <Badge tone="danger" dot>Not gradable</Badge>}
               {isValidation(c.source) && <Badge tone="info">Validation image</Badge>}
-              {c.status === 'reviewed' ? <Badge tone="success">Reviewed</Badge> : <Badge tone="neutral">Awaiting review</Badge>}
+              {c.effective.signed ? <Badge tone="success" icon={ShieldCheck}>Signed: {nextActionInfo(c.effective.next_action)?.label}</Badge> : <Badge tone="neutral">Not yet signed</Badge>}
             </span>
           </h1>
-          <p className="mt-2 text-secondary text-text-secondary">Added {when(c.created)} · {a.model_version}</p>
+          <div className="mt-3"><Badge tone={ROUTING[c.routing.state].tone} dot>AI-suggested: {c.routing.label}</Badge></div>
+          <p className="mt-2 text-secondary text-text-secondary">Case {c.id} · Added {when(c.created)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Segmented label="Explanation level" value={mode} onChange={setMode} options={[{ value: 'simple', label: 'Simple' }, { value: 'clinical', label: 'Clinical' }]} />
@@ -96,68 +95,15 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
-        <div className="flex min-w-0 flex-col gap-6">
-          {/* Viewer: stays dark so fundus colours read correctly. */}
-          <section aria-label="Fundus photograph" className="overflow-hidden rounded-card border border-border-viewer bg-surface-viewer shadow-lift">
-            <div className="flex flex-wrap items-center gap-2 border-b border-border-viewer px-4 py-3">
-              {ok && LESION_ORDER.map((k) => (
-                <LayerChip key={k} label={`${lesionName(k)} (${a.findings!.lesions[k].count})`}
-                  color={tokens.color.lesion[k]} on={!original && layers.has(k)} onClick={() => toggle(k)} />
-              ))}
-              {ok && <LayerChip label={mode === 'simple' ? 'Where the AI looked' : 'Grad-CAM'} color={tokens.color.heatmap.low} on={!original && layers.has('cam')} onClick={() => toggle('cam')} />}
-              {ok && <LayerChip label={mode === 'simple' ? 'Centre of vision' : 'Macula (1 DD)'} color="#FFFFFF" on={!original && layers.has('macula')} onClick={() => toggle('macula')} />}
-              {ok && <LayerChip label={mode === 'simple' ? 'Optic nerve head' : 'Optic disc'} color={tokens.color.landmark.disc} on={!original && layers.has('disc')} onClick={() => toggle('disc')} />}
-              <span className="ml-auto" />
-              {ok && <LayerChip label="Physician view" on={physician} onClick={() => setPhysician((v) => !v)} />}
-              <LayerChip label="Original" on={original} onClick={() => setOriginal((v) => !v)} />
-            </div>
-            {ok && physician && !original ? (
-              <div>
-                <p className="border-b border-border-viewer px-4 py-3 text-secondary text-neutral-300">
-                  Left: <span className="text-white">where the model looked</span> to choose the stage (Grad-CAM). Right: <span className="text-white">what was found</span> (segmented lesions). They can differ: the stage model may weigh areas without visible lesions, and small lesions may not change the stage.
-                </p>
-                <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
-                  {[['Where the model looked', 'cam'], ['What was found', 'lesions']].map(([title, kind]) => (
-                    <figure key={kind} className="m-0">
-                      <figcaption className="mb-2 text-overline font-semibold uppercase text-neutral-300">{title}</figcaption>
-                      <div className="relative">
-                        <img src={jpeg(a.display_image)} alt={`${eyeName(c.eye)}, ${title.toLowerCase()}`} className="block w-full" />
-                        {kind === 'cam' && a.attribution && <img src={png(a.attribution.overlay)} alt="" aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />}
-                        {kind === 'lesions' && a.lesions!.map((l) => <img key={l.key} src={png(l.overlay)} alt="" aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />)}
-                      </div>
-                    </figure>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center p-4">
-                <div className="relative inline-block max-w-full">
-                  <img src={jpeg(a.display_image)} alt={`${eyeName(c.eye)} fundus photograph`} className="block max-h-[640px] max-w-full rounded-control" />
-                  {ok && !original && a.lesions!.filter((l) => layers.has(l.key)).map((l) => (
-                    <img key={l.key} src={png(l.overlay)} alt="" aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
-                  ))}
-                  {ok && !original && layers.has('cam') && a.attribution && (
-                    <img src={png(a.attribution.overlay)} alt="" aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
-                  )}
-                  {ok && !original && <Landmarks c={c} macula={layers.has('macula')} disc={layers.has('disc')} />}
-                </div>
-              </div>
-            )}
-            {ok && layers.has('cam') && !original && !physician && (
-              <p className="border-t border-border-viewer px-4 py-3 text-caption text-neutral-300">{a.attribution?.note}</p>
-            )}
-            {ok && (
-              <div role="group" aria-label="Image layers" className="flex flex-wrap gap-3 border-t border-border-viewer bg-surface-viewerRaised px-4 py-3">
-                <Thumb label="Original" on={preset === 'original'} onClick={() => applyPreset('original')} c={c} />
-                <Thumb label={mode === 'simple' ? 'AI findings' : 'All lesions'} on={preset === 'overlay'} onClick={() => applyPreset('overlay')} c={c} overlays={a.lesions!.map((l) => l.overlay)} />
-                {a.attribution && <Thumb label={mode === 'simple' ? 'Where AI looked' : 'Grad-CAM'} on={preset === 'cam'} onClick={() => applyPreset('cam')} c={c} overlays={[a.attribution.overlay]} />}
-                {a.lesions!.map((l) => (
-                  <Thumb key={l.key} label={lesionName(l.key)} on={preset === l.key} onClick={() => applyPreset(l.key)} c={c} overlays={[l.overlay]} />
-                ))}
-              </div>
-            )}
-          </section>
+      <VisitStrip c={c} onChange={(e) => setCase({ ...c, encounter: e })} />
+
+      <div className="case-layout">
+        <div className="min-w-0 [grid-area:viewer]">
+          <ImageViewer analysis={a} eye={eyeName(c.eye)} layers={layers} original={original}
+            onOriginal={() => applyPreset('original')} onMode={m => applyPreset(m === 'lesions' ? 'overlay' : 'cam')}
+            onToggle={toggle} name={lesionName} />
+        </div>
+        <div className="flex min-w-0 flex-col gap-6 [grid-area:support]">
           <PatientCard c={c} stageName={stageName} />
           {ok && (
             <Card title="Explanation" subtitle="Click a sentence to show the lesions it is about.">
@@ -167,7 +113,7 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
         </div>
 
         {/* Assessment panel */}
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4 [grid-area:assessment]">
           {isValidation(c.source) && (
             <Alert tone="info" title="Validation image, not used for training">
               {validationSource(c.source).dataset} image {validationSource(c.source).id}. Shown as the model sees any new image; its specialist grade is in the validation set.
@@ -193,8 +139,8 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
 
           {ok && (
             <Card>
-              <div className="flex items-start justify-between gap-4">
-                <p className="text-secondary font-medium text-text-secondary">AI-suggested stage</p>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <p className="text-secondary font-medium text-text-secondary">AI severity suggestion <span className="text-text-muted">(provisional)</span></p>
                 {c.assist.confidence_level ? <ConfidenceBadge level={c.assist.confidence_level} /> : <Badge>Confidence not calibrated</Badge>}
               </div>
               <div className={cn('mt-3 inline-flex flex-col rounded-card border px-4 py-3', STAGE_BOX[a.grading!.grade])}>
@@ -202,6 +148,7 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
                 <span className="mt-1 text-secondary font-medium">{STAGE_CLINICAL[a.grading!.grade]}</span>
               </div>
               {mode === 'simple' && <p className="mt-2 text-body text-text-secondary">{stagePlain(a.grading!.grade)}</p>}
+              {!a.quality.usable && <p className="mt-2 rounded-control bg-status-warning-tint p-2 text-caption text-status-warning-text">The image failed the automated quality check, so this stage is not reliable. It must never be read as the eye being free of disease.</p>}
               <dl className="mt-4 flex flex-col divide-y divide-border-default border-t border-border-default text-body">
                 {[
                   [mode === 'simple' ? 'Chance it needs an eye specialist' : 'P(referable DR), calibrated', c.assist.available ? pct(c.assist.p_referable) : '—'],
@@ -218,70 +165,34 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
             </Card>
           )}
 
+          {ok && (
+            <Card title="Clinician decision" subtitle="Your signed decision governs this eye's next action, the report and the patient's status.">
+              <DecisionNow c={c} />
+              <ReviewForm key={c.id} c={c} onSaved={(d) => { setCase(d); setToast('Decision signed. Specialist Attention, the report and the patient status now follow it.') }} />
+              <Button variant="secondary" icon={FileText} className="mt-4 w-full"
+                onClick={() => navigate(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)}>View report</Button>
+            </Card>
+          )}
+          {!ok && (
+            <Card title="Clinician decision" subtitle="The AI could not grade this photograph. You can still record what you see, or request a retake.">
+              <DecisionNow c={c} />
+              <ReviewForm key={c.id} c={c} onSaved={(d) => { setCase(d); setToast('Decision signed.') }} />
+            </Card>
+          )}
+
           <RoutingCard c={c} />
 
           {ok && (
-            <Card title="Detected findings">
+            <Card title="Candidate lesion regions (AI)" subtitle="Segmentation model output: candidate regions, not confirmed lesions. A separate model from the severity grader.">
               <FindingsList c={c} mode={mode} name={lesionName} layers={layers} toggle={toggle} />
             </Card>
           )}
 
-          {ok && (
-            <Card title="Clinician review" subtitle="The clinician makes the decision; reviews are stored with the case.">
-              <ReviewForm c={c} onSaved={(d) => { setCase(d); setToast('Review saved. It is stored with the case for model feedback.') }} />
-              <Button variant="secondary" icon={FileText} className="mt-4 w-full"
-                onClick={() => navigate(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)}>View detailed report</Button>
-            </Card>
-          )}
+
         </div>
       </div>
-      {toast && <div className="fixed bottom-6 right-6 z-30"><Toast title={toast} /></div>}
+      {toast && <div className="fixed bottom-4 right-4 z-30"><Toast title={toast} /></div>}
     </>
-  )
-}
-
-function LayerChip({ label, color, on, onClick }: { label: string; color?: string; on: boolean; onClick: () => void }) {
-  return (
-    <button aria-pressed={on} onClick={onClick}
-      className={cn('inline-flex h-control-sm items-center gap-2 rounded-full border px-3 text-secondary font-medium',
-        on ? 'border-neutral-400 bg-surface-viewerRaised text-white' : 'border-border-viewer text-neutral-300 hover:border-neutral-500 hover:text-white')}>
-      {color && <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: color, opacity: on ? 1 : 0.5 }} />}
-      {label}
-    </button>
-  )
-}
-
-function Thumb({ label, on, onClick, c, overlays = [] }: { label: string; on: boolean; onClick: () => void; c: CaseDetail; overlays?: string[] }) {
-  return (
-    <button aria-pressed={on} onClick={onClick} className="flex w-[84px] shrink-0 flex-col items-center gap-2">
-      <span className={cn('relative block h-[64px] w-[84px] overflow-hidden rounded-control border-2 bg-black', on ? 'border-accent-display' : 'border-border-viewer hover:border-neutral-500')}>
-        <img src={jpeg(c.analysis.display_image)} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-        {overlays.map((o, i) => <img key={i} src={png(o)} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />)}
-      </span>
-      <span className={cn('text-caption', on ? 'font-semibold text-white' : 'text-neutral-300')}>{label}</span>
-    </button>
-  )
-}
-
-function Landmarks({ c, macula, disc }: { c: CaseDetail; macula: boolean; disc: boolean }) {
-  const [size, setSize] = useState<{ w: number; h: number } | null>(null)
-  useEffect(() => {
-    const im = new Image()
-    im.onload = () => setSize({ w: im.naturalWidth, h: im.naturalHeight })
-    im.src = jpeg(c.analysis.display_image)
-  }, [c.analysis.display_image])
-  if (!size || !c.analysis.findings) return null
-  const lm = c.analysis.findings.landmarks
-  return (
-    <svg viewBox={`0 0 ${size.w} ${size.h}`} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-      {macula && (
-        <g stroke="#FFFFFF" fill="none">
-          <circle cx={lm.fovea.x} cy={lm.fovea.y} r={lm.disc_diameter_px} strokeWidth={2} strokeDasharray={lm.fovea.uncertain ? '6 6' : undefined} />
-          <circle cx={lm.fovea.x} cy={lm.fovea.y} r={4} fill="#FFFFFF" />
-        </g>
-      )}
-      {disc && <circle cx={lm.optic_disc.x} cy={lm.optic_disc.y} r={lm.optic_disc.radius_px} stroke={tokens.color.landmark.disc} strokeWidth={2} fill="none" />}
-    </svg>
   )
 }
 
@@ -291,10 +202,10 @@ function FindingsList({ c, mode, name, layers, toggle }: { c: CaseDetail; mode: 
   return (
     <div className="flex flex-col gap-4">
       <table className="w-full text-body">
-        <caption className="sr-only">Lesions found</caption>
+        <caption className="sr-only">Predicted lesion regions</caption>
         <thead>
           <tr className="border-b border-border-default text-caption text-text-secondary">
-            <th scope="col" className="pb-2 text-left font-medium">{mode === 'simple' ? 'What was found (show on image)' : 'Lesion (overlay)'}</th>
+            <th scope="col" className="pb-2 text-left font-medium">{mode === 'simple' ? 'Predicted regions' : 'Lesion (overlay)'}</th>
             <th scope="col" className="pb-2 text-right font-medium">Regions</th>
             <th scope="col" className="pb-2 text-right font-medium">{mode === 'simple' ? 'Areas' : 'Quadrants'}</th>
           </tr>
@@ -341,7 +252,7 @@ function ExplanationList({ sentences, mode, active, onPick }: { sentences: Sente
     <div className="flex flex-col gap-4">
       {sections.map(([s, xs]) => (
         <section key={s}>
-          <h3 className="text-overline font-semibold uppercase text-text-muted">{SECTION_TITLE[s]}</h3>
+          <h3 className="text-secondary font-semibold text-text-secondary">{SECTION_TITLE[s]}</h3>
           <ul className="mt-1 flex flex-col gap-1 text-body">
             {xs.map((x) => {
               const text = mode === 'simple' ? x.simple : x.clinical
@@ -365,25 +276,38 @@ function ExplanationList({ sentences, mode, active, onPick }: { sentences: Sente
 }
 
 function ReviewForm({ c, onSaved }: { c: CaseDetail; onSaved: (c: CaseDetail) => void }) {
-  const [reviewer, setReviewer] = useState('')
-  const [decision, setDecision] = useState<'agree' | 'disagree' | 'ungradable'>('agree')
+  const [dirty, setDirty] = useState(false)
+  useUnsavedChanges(dirty, 'This clinician review has unsaved changes. Leave this case?')
+  const gradable = c.analysis.status === 'ok' && !!c.analysis.grading
+  // Safe default: when the automated quality check failed, start from 'ungradable' (which can never be signed as routine).
+  const [decision, setDecision] = useState<'agree' | 'disagree' | 'ungradable'>(!gradable ? 'disagree' : c.analysis.quality.usable ? 'agree' : 'ungradable')
   const [stage, setStage] = useState('')
   const [dme, setDme] = useState('')
+  const [action, setAction] = useState<NextAction | ''>('')
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
-  const reviewerError = touched && !reviewer.trim() ? 'Enter your name or initials.' : undefined
   const stageError = touched && decision === 'disagree' && stage === '' ? 'Choose the stage you would give.' : undefined
+  const decidedStage = decision === 'disagree' ? (stage === '' ? null : Number(stage)) : decision === 'agree' ? c.analysis.grading?.grade ?? null : null
+  const decidedDme = dme || (decision === 'agree' ? c.analysis.findings?.macular_edema_risk.level ?? null : null)
+  const needsNote = action === 'routine_rescreen' && decision !== 'ungradable' && ((decidedStage ?? 0) >= 2 || decidedDme === 'high')
+  const actionError = touched && !action ? 'Choose the next action.' : touched && decision === 'ungradable' && action === 'routine_rescreen'
+    ? 'An image that cannot be assessed must not be signed as routine: choose a retake or an examination.' : undefined
+  const noteError = touched && needsNote && note.trim().length < 5 ? 'Explain why routine rescreening fits this stage or macular finding.' : undefined
 
   async function save() {
+    if (busy) return
     setTouched(true)
-    if (!reviewer.trim() || (decision === 'disagree' && stage === '')) return
+    const bad = (decision === 'disagree' && stage === '') ? 'stage' : !action || (decision === 'ungradable' && action === 'routine_rescreen') ? 'action-urgent_referral' : needsNote && note.trim().length < 5 ? 'note' : null
+    if (bad) { document.getElementById(bad)?.focus(); return }
     setBusy(true)
     setError(null)
     try {
-      onSaved(await api.review(c.id, { reviewer: reviewer.trim(), decision, corrected_stage: decision === 'disagree' ? Number(stage) : null, corrected_dme: dme || null, note }))
-      setNote('')
+      const saved = await api.review(c.id, { decision, corrected_stage: decision === 'disagree' ? Number(stage) : null, corrected_dme: dme || null, next_action: action || null, note })
+      setDirty(false)
+      onSaved(saved)
+      setNote(''); setAction('')
       setTouched(false)
     } catch (e) {
       setError((e as Error).message)
@@ -394,18 +318,16 @@ function ReviewForm({ c, onSaved }: { c: CaseDetail; onSaved: (c: CaseDetail) =>
 
   return (
     <div className="flex flex-col gap-4">
-      {error && <Alert tone="danger" title="Review not saved">{error}</Alert>}
-      <div className="grid grid-cols-2 gap-2">
-        <Button variant={decision === 'agree' ? 'primary' : 'secondary'} icon={CircleCheck} aria-pressed={decision === 'agree'} onClick={() => setDecision('agree')}>Confirm stage</Button>
-        <Button variant={decision === 'disagree' ? 'primary' : 'secondary'} icon={PencilLine} aria-pressed={decision === 'disagree'} onClick={() => setDecision('disagree')}>Change stage</Button>
+      {error && <Alert tone="danger" title="Decision not signed">{error}</Alert>}
+      <fieldset disabled={busy} className="contents" onChange={() => setDirty(true)}>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+        <Button variant={decision === 'agree' ? 'primary' : 'secondary'} icon={CircleCheck} aria-pressed={decision === 'agree'} disabled={!gradable} title={gradable ? undefined : 'The AI gave no stage to confirm'} onClick={() => { setDecision('agree'); setDirty(true) }}>Confirm AI stage</Button>
+        <Button variant={decision === 'disagree' ? 'primary' : 'secondary'} icon={PencilLine} aria-pressed={decision === 'disagree'} onClick={() => { setDecision('disagree'); setDirty(true) }}>Change stage</Button>
       </div>
-      <button onClick={() => setDecision('ungradable')} aria-pressed={decision === 'ungradable'}
+      <button type="button" onClick={() => { setDecision('ungradable'); setDirty(true) }} aria-pressed={decision === 'ungradable'}
         className={cn('self-start text-secondary underline underline-offset-2', decision === 'ungradable' ? 'font-semibold text-brand-800' : 'text-text-secondary hover:text-text-primary')}>
         Mark the image ungradable instead
       </button>
-      <Field id="reviewer" label="Reviewer" error={reviewerError}>
-        <Input id="reviewer" value={reviewer} invalid={!!reviewerError} onChange={(e) => setReviewer(e.target.value)} placeholder="Name or initials" />
-      </Field>
       {decision === 'disagree' && (
         <Field id="stage" label="Stage you would give" error={stageError}>
           <Select id="stage" value={stage} onChange={(e) => setStage(e.target.value)}>
@@ -420,26 +342,41 @@ function ReviewForm({ c, onSaved }: { c: CaseDetail; onSaved: (c: CaseDetail) =>
           <option value="low">Low</option><option value="possible">Possible</option><option value="high">High</option>
         </Select>
       </Field>
-      <Field id="note" label="Note (optional)">
-        <textarea id="note" value={note} maxLength={1000} rows={3} onChange={(e) => setNote(e.target.value)}
+      <fieldset className="flex flex-col gap-2" aria-describedby={actionError ? 'action-error' : undefined}>
+        <legend className="mb-1 text-secondary font-medium">Next action for this eye</legend>
+        {NEXT_ACTIONS.map((n) => (
+          <label key={n.value} className={cn('flex min-h-[44px] cursor-pointer items-start gap-3 rounded-control border px-3 py-2', action === n.value ? 'border-brand-600 bg-brand-50' : 'border-border-default hover:bg-surface-subtle',
+            decision === 'ungradable' && n.value === 'routine_rescreen' && 'opacity-50')}>
+            <input id={`action-${n.value}`} type="radio" name={`action-${c.id}`} value={n.value} checked={action === n.value} className="mt-1"
+              disabled={decision === 'ungradable' && n.value === 'routine_rescreen'} onChange={() => { setAction(n.value); setDirty(true) }} />
+            <span className="flex flex-col"><span className="text-body font-medium">{n.label}</span><span className="text-caption text-text-secondary">{n.hint}</span></span>
+          </label>
+        ))}
+        {actionError && <p id="action-error" className="text-caption text-status-danger-text">{actionError}</p>}
+      </fieldset>
+      <Field id="note" label={needsNote ? 'Justification (required for this combination)' : 'Note (optional)'} error={noteError}>
+        <textarea id="note" value={note} maxLength={1000} rows={3} onChange={(e) => setNote(e.target.value)} aria-invalid={!!noteError}
           className="w-full rounded-control border border-border-strong bg-surface-card px-3 py-2 text-body text-text-primary hover:border-neutral-400" />
       </Field>
-      <div className="flex justify-end">
-        <Button onClick={save} state={busy ? 'loading' : 'default'}>
-          Save review: {decision === 'agree' ? 'confirm' : decision === 'disagree' ? 'change stage' : 'ungradable'}
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-caption text-text-muted">Signed under your account. Earlier decisions are kept; a new one replaces them.</p>
+        <Button onClick={save} state={busy ? 'loading' : 'default'} icon={ShieldCheck}>Sign decision</Button>
       </div>
+      </fieldset>
       {c.reviews.length > 0 && (
         <div className="border-t border-border-default pt-4">
-          <h3 className="text-overline font-semibold uppercase text-text-muted">Previous reviews</h3>
+          <h3 className="text-secondary font-semibold text-text-secondary">Decision history</h3>
           <ul className="mt-2 flex flex-col gap-2">
             {c.reviews.map((r) => (
               <li key={r.id} className="text-secondary">
-                <span className="font-medium">{r.reviewer}</span> · {when(r.created)} · {r.decision === 'disagree' ? `Changed: stage ${r.corrected_stage}` : r.decision === 'agree' ? 'Confirmed' : 'Ungradable'}
+                {r.authenticated ? <Badge tone="success" icon={ShieldCheck}>Signed</Badge> : <Badge tone="neutral">Historical, not authenticated</Badge>}{' '}
+                <span className="font-medium">{r.reviewer}</span> · {when(r.created)} · {r.decision === 'disagree' ? `Stage ${r.corrected_stage} (AI ${r.ai_stage ?? '—'})` : r.decision === 'agree' ? `Confirmed AI stage ${r.ai_stage ?? '—'}` : 'Ungradable'}
+                {r.next_action_label && <span> · <b>{r.next_action_label}</b></span>}
                 {r.note && <span className="text-text-secondary"> · {r.note}</span>}
               </li>
             ))}
           </ul>
+          {c.reviews.some((r) => !r.authenticated) && <p className="mt-2 text-caption text-text-muted">Historical reviews were recorded before signed accounts existed. They are kept for the record but do not set the next action.</p>}
         </div>
       )}
     </div>
@@ -449,12 +386,12 @@ function ReviewForm({ c, onSaved }: { c: CaseDetail; onSaved: (c: CaseDetail) =>
 function RoutingCard({ c }: { c: CaseDetail }) {
   const r = c.routing
   return (
-    <Card title="Routing for this eye">
+    <Card title="AI-suggested routing (provisional)" subtitle="Orders Specialist Attention. It is not a clinical decision.">
       <div className="mb-3"><Badge tone={ROUTING[r.state].tone} dot>{r.label}</Badge></div>
       <Alert tone={routingAlertTone(r.state)} title={r.state === 'ROUTINE_RESCREEN_ELIGIBLE' ? 'Why it is eligible' : 'Why it needs attention'}>
         <ul className="flex list-disc flex-col gap-1 pl-4">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
         {r.previous && (
-          <p className="mt-2">Previous visit ({r.previous.case_id}, {r.previous.created.slice(0, 10)}): signed by {r.previous.reviewer},{' '}
+          <p className="mt-2">Previous visit ({r.previous.case_id}, {r.previous.created.slice(0, 10)}): {r.previous.authenticated ? 'signed' : 'historical review'} by {r.previous.reviewer},{' '}
             {r.previous.decision === 'disagree' ? `stage ${r.previous.corrected_stage}` : r.previous.decision === 'agree' ? `agreed with AI stage ${r.previous.ai_stage}` : 'ungradable'}
             {r.previous.note && ` · "${r.previous.note}"`}</p>
         )}
@@ -470,22 +407,24 @@ function RoutingCard({ c }: { c: CaseDetail }) {
 function PatientCard({ c, stageName }: { c: CaseDetail; stageName: (g: number) => string }) {
   const p = c.patient
   return (
-    <Card title={`Patient ${c.patient_ref}`} subtitle="Both eyes combined; the worse eye decides"
+    <Card title={`Patient ${c.patient_ref}`} subtitle={p.single_photo ? 'Single photograph (no visit pairing recorded)' : 'This visit: latest photograph of each eye'}
       actions={<a {...linkProps(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)} className="text-secondary font-medium text-text-link">Open report</a>}>
       <div className="flex flex-col gap-3">
         {p.eyes.map((e) => (
           <Row key={e.case_id} current={e.case_id === c.id}>
             <span>{eyeName(e.eye)} {e.case_id !== c.id && <a {...linkProps(`/cases/${e.case_id}`)} className="text-text-link">({e.case_id})</a>}</span>
-            <span className="flex items-center gap-2 text-right">
-              {e.stage == null ? 'Not assessable' : `Stage ${e.stage} · ${stageName(e.stage)}`}
-              <Badge tone={ROUTING[e.state].tone}>{ROUTING[e.state].label}</Badge>
+            <span className="flex flex-wrap items-center justify-end gap-2 text-right">
+              {e.effective?.signed ? <Badge tone={nextActionInfo(e.effective.next_action)?.tone ?? 'neutral'} icon={ShieldCheck}>{nextActionInfo(e.effective.next_action)?.label}</Badge> : <Badge tone="neutral">Not signed</Badge>}
+              <span className="text-caption text-text-muted">AI: {e.stage == null ? 'not assessable' : `stage ${e.stage} · ${stageName(e.stage)}`}</span>
             </span>
           </Row>
         ))}
-        <Alert tone={routingAlertTone(p.state)} title={`Patient: ${p.label}`}>
-          {p.notes.length > 0 && <ul className="flex list-disc flex-col gap-1 pl-4">{p.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
-          <p className="mt-1">{p.note}</p>
-          <p className="mt-1 text-caption">Operating point: {p.operating_point.wording}.{!p.operating_point.valid && ' Routine routing is switched off for the model currently in use.'}</p>
+        <Alert tone={p.effective.state === 'decision_recorded' && ['urgent_referral', 'referral', 'examination'].includes(p.effective.next_action ?? '') ? 'danger' : p.effective.state === 'decision_recorded' ? 'success' : 'info'}
+          title={p.effective.state === 'decision_recorded' ? `Visit next action: ${p.effective.next_action_label}` : VISIT[p.effective.state].label}>
+          {p.effective.missing_eyes.length > 0 && <p>No {p.effective.missing_eyes.join(' or ')}-eye photograph in this visit: screening incomplete.</p>}
+          {p.effective.state === 'decision_recorded' && p.effective.pending_eyes.length > 0 && <p>Still awaiting your review: {p.effective.pending_eyes.join(', ')} eye.</p>}
+          {p.effective.state !== 'decision_recorded' && p.effective.partial && <p>Routine rescreening needs both eyes photographed and signed.</p>}
+          <p className="mt-1 text-caption">{p.ai_label}. {p.note}</p>
         </Alert>
       </div>
     </Card>
@@ -493,14 +432,99 @@ function PatientCard({ c, stageName }: { c: CaseDetail; stageName: (g: number) =
 }
 
 function Row({ children, current }: { children: ReactNode; current: boolean }) {
-  return <div className={cn('flex items-center justify-between gap-4 text-body', current && 'font-medium')}>{children}</div>
+  return <div className={cn('flex flex-wrap items-center justify-between gap-3 text-body', current && 'font-medium')}>{children}</div>
 }
 
 function CaseSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_400px]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
       <Skeleton className="h-[560px] w-full" />
       <div className="flex flex-col gap-4"><Skeleton className="h-[160px] w-full" /><Skeleton className="h-[320px] w-full" /></div>
     </div>
   )
+}
+
+/** The current authoritative state of this eye, above the decision form. */
+function DecisionNow({ c }: { c: CaseDetail }) {
+  const e = c.effective
+  if (!e.signed) {
+    return <div className="mb-4 rounded-control border border-dashed border-border-strong p-3 text-secondary text-text-secondary">
+      <b className="text-text-primary">No signed decision for this photograph.</b> The AI suggestion above is provisional{e.legacy_reviews ? '; a historical review exists but was not made under a signed account' : ''}.
+    </div>
+  }
+  return <div className="mb-4 rounded-control border border-status-success-border bg-status-success-tint p-3 text-secondary">
+    <p className="flex flex-wrap items-center gap-2"><ShieldCheck size={16} aria-hidden /><b>{e.next_action_label}</b>{e.stage != null && <span>· Stage {e.stage} · {STAGE_CLINICAL[e.stage]}</span>}</p>
+    <p className="mt-1 text-caption">Signed by {e.reviewer} · {e.signed_at ? when(e.signed_at) : ''}. AI at signing: stage {e.ai_at_signing?.stage ?? '—'}.</p>
+    {e.reanalysed_since_signing && <p className="mt-1 text-caption">The AI has been re-analysed since you signed. Your decision stands; sign again if you want to change it.</p>}
+  </div>
+}
+
+/** Right / left eye of this visit (encounter), the visit outcome, and the camp-registration link. */
+function VisitStrip({ c, onChange }: { c: CaseDetail; onChange: (e: Encounter) => void }) {
+  const e = c.encounter
+  if (!e) {
+    return <div className="mb-6"><Alert tone="info" title="Single photograph">This case was recorded before visits paired both eyes. It is not combined with any other photograph.</Alert></div>
+  }
+  const byEye = (eye: 'right' | 'left') => e.eyes.find((x) => x.eye === eye)
+  const latestPhoto = (eye: 'right' | 'left') => e.photos.find((p) => p.eye === eye)
+  return (
+    <section aria-label="This visit" className="mb-6 grid gap-3 rounded-card border border-border-default bg-surface-card p-4 shadow-card lg:grid-cols-[1fr_1fr_1.4fr]">
+      {(['right', 'left'] as const).map((eye) => {
+        const x = byEye(eye), photo = latestPhoto(eye)
+        return <div key={eye} className={cn('rounded-control border p-3', photo ? 'border-border-default' : 'border-status-warning-border bg-status-warning-tint')}>
+          <p className="text-caption font-medium uppercase tracking-wide text-text-secondary">{eye === 'right' ? 'Right eye (OD)' : 'Left eye (OS)'}</p>
+          {photo ? <>
+            <p className="mt-1 text-body font-semibold">Captured{photo.id === c.id ? ' · this photo' : ''}</p>
+            <p className="text-caption text-text-secondary">{x?.signed ? `Signed: ${x.next_action_label}` : 'Not yet signed'}{x?.pending && x.signed ? ' · newer photo awaiting review' : ''}{x?.quality_concern && !x.signed ? ' · image quality flagged (provisional)' : ''}</p>
+            {photo.id !== c.id && <a {...linkProps(`/cases/${photo.id}`)} className="mt-1 inline-block text-caption font-medium text-text-link">Open {photo.id}</a>}
+          </> : <>
+            <p className="mt-1 text-body font-semibold text-status-warning-text">Missing</p>
+            <p className="text-caption text-status-warning-text">Screening incomplete. Add this eye from New screening with the same visit.</p>
+          </>}
+        </div>
+      })}
+      <div className="flex flex-col gap-2 rounded-control border border-border-default p-3">
+        <p className="text-caption font-medium uppercase tracking-wide text-text-secondary">Visit {e.id}</p>
+        <p className="text-body font-semibold">{e.outcome.state === 'decision_recorded' ? e.outcome.next_action_label : VISIT[e.outcome.state].label}</p>
+        <RegistrationLink e={e} onChange={onChange} />
+      </div>
+    </section>
+  )
+}
+
+function RegistrationLink({ e, onChange }: { e: Encounter; onChange: (e: Encounter) => void }) {
+  const [open, setOpen] = useState(false)
+  const [ref, setRef] = useState('')
+  const [code, setCode] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [reason, setReason] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  async function run(f: () => Promise<Encounter>) {
+    setBusy(true); setError(null)
+    try { onChange(await f()); setOpen(false); setRef(''); setCode(''); setConsent(false); setReason('') } catch (x) { setError((x as Error).message) } finally { setBusy(false) }
+  }
+  if (e.link) {
+    return <div className="text-caption text-text-secondary">
+      <p className="flex items-center gap-2 text-secondary text-text-primary"><Link2 size={15} aria-hidden />Linked to camp registration <b>{e.link.ref}</b></p>
+      <p>{e.link.name} · {e.link.camp.en}{e.link.camp_is_demo ? ' (demonstration camp)' : ''} · linked by {e.link.linked_by}, {when(e.link.linked_at)}</p>
+      <p>The patient sees only the visit status and the next action you sign, on their receipt's status page.</p>
+      {!open ? <Button compact variant="ghost" icon={Unlink} onClick={() => setOpen(true)} className="mt-1">Unlink</Button> : <div className="mt-2 flex flex-col gap-2">
+        {error && <Alert tone="danger" title="Not unlinked">{error}</Alert>}
+        <Field id={`unlink-${e.id}`} label="Reason (recorded)"><Input id={`unlink-${e.id}`} value={reason} onChange={(x) => setReason(x.target.value)} maxLength={200} /></Field>
+        <div className="flex gap-2"><Button compact variant="secondary" onClick={() => setOpen(false)}>Cancel</Button><Button compact state={busy ? 'loading' : reason.trim().length >= 3 ? 'default' : 'disabled'} onClick={() => run(() => api.unlink(e.id, reason.trim()))}>Unlink</Button></div>
+      </div>}
+    </div>
+  }
+  if (!open) return <Button compact variant="secondary" icon={Link2} onClick={() => setOpen(true)}>Link camp registration</Button>
+  return <form className="flex flex-col gap-2" onSubmit={(x) => { x.preventDefault(); if (ref.trim() && code.trim() && consent) void run(() => api.link(e.id, ref.trim(), code.trim(), consent)) }}>
+    <p className="text-caption text-text-secondary">Enter the reference and code from the receipt the patient shows you. Records are never matched by name, phone or PIN.</p>
+    {error && <Alert tone="danger" title="Not linked">{error}</Alert>}
+    <div className="grid grid-cols-2 gap-2">
+      <Field id={`ref-${e.id}`} label="Reference"><Input id={`ref-${e.id}`} value={ref} onChange={(x) => setRef(x.target.value.toUpperCase())} placeholder="DQN-XXXXXX" maxLength={20} /></Field>
+      <Field id={`code-${e.id}`} label="Code"><Input id={`code-${e.id}`} value={code} onChange={(x) => setCode(x.target.value.toUpperCase())} placeholder="XXXX-XXXX" maxLength={20} /></Field>
+    </div>
+    <Checkbox checked={consent} onChange={setConsent} label="The person agreed to link this screening to their registration." />
+    <div className="flex gap-2"><Button compact variant="secondary" type="button" onClick={() => setOpen(false)}>Cancel</Button><Button compact type="submit" state={busy ? 'loading' : ref.trim() && code.trim() && consent ? 'default' : 'disabled'}>Link</Button></div>
+  </form>
 }

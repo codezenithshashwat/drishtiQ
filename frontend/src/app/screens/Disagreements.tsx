@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Alert, Button, EmptyState, Skeleton, StageBadge, Table, type Column } from '../../design/components'
 import { api, type Disagreement } from '../api'
 import { eyeName, STAGE_CLINICAL, when } from '../format'
-import { navigate } from '../router'
+import { linkProps, navigate } from '../router'
 import { PageHeader } from '../Shell'
 
 // Doctor-feedback view: every case where a clinician changed the AI's stage, with the reason. Nothing retrains
@@ -19,11 +19,11 @@ export function Disagreements() {
 
   const columns: Column<Disagreement>[] = [
     { key: 'case', header: 'Case', render: (d) => (
-      <div><div className="font-medium">{d.patient_ref ?? d.case_id}</div><div className="text-caption text-text-muted">{d.case_id}{d.eye ? ` · ${eyeName(d.eye)}` : ''}</div></div>
+      <div><a {...linkProps('/cases/' + encodeURIComponent(d.case_id))} className="break-words font-semibold no-underline hover:underline">{d.patient_ref ?? d.case_id}<span className="sr-only">, case {d.case_id}</span></a><div className="text-caption text-text-muted">{d.case_id}{d.eye ? ` · ${eyeName(d.eye)}` : ''}</div></div>
     ) },
     { key: 'ai', header: 'AI stage', render: (d) => (d.ai_stage == null ? '—' : <StageBadge stage={d.ai_stage} label={STAGE_CLINICAL[d.ai_stage]} />) },
     { key: 'doctor', header: 'Clinician stage', render: (d) => (d.corrected_stage == null ? '—' : <StageBadge stage={d.corrected_stage} label={STAGE_CLINICAL[d.corrected_stage]} />) },
-    { key: 'reason', header: 'Reason', render: (d) => <span className="block max-w-[420px] text-secondary">{d.note || <span className="text-text-muted">No reason given</span>}</span> },
+    { key: 'reason', header: 'Reason', render: (d) => <span className="block min-w-[160px] max-w-[420px] break-words text-secondary">{d.note || <span className="text-text-muted">No reason given</span>}</span> },
     { key: 'who', header: 'Reviewer', width: '140px', render: (d) => d.reviewer },
     { key: 'when', header: 'When', numeric: true, width: '130px', render: (d) => <span className="whitespace-nowrap text-text-secondary">{when(d.created)}</span> },
   ]
@@ -32,6 +32,7 @@ export function Disagreements() {
     <>
       <PageHeader eyebrow="Doctor feedback" title="Disagreements" subtitle="Cases where a clinician changed the AI's stage. The model does not retrain on its own; these reviews are kept for a planned, pre-registered update."
         actions={<Button variant="secondary" icon={Download} onClick={() => { window.location.href = '/api/feedback.csv' }}>Export all reviews (CSV)</Button>} />
+      <p className="mb-5 rounded-control bg-surface-subtle p-3 text-caption text-text-secondary">These are recorded clinician assessments, not adjudicated ground truth. Signed decisions set the next action in reports and linked patient status. AI suggestions remain labelled as provisional.</p>
       {error && <Alert tone="danger" title="Could not load the disagreements">{error}</Alert>}
       {!data && !error && <Skeleton className="h-[240px] w-full" />}
       {data && rows.length === 0 && (

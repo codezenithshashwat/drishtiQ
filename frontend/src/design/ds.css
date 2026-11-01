@@ -1,7 +1,7 @@
 @import '@fontsource/inter/400.css';
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
-/* Display serif for H1/H2 (SIL Open Font License 1.1), self-hosted so the app stays fully offline. */
+/* Editorial landing and brand face; self-hosted for offline use. */
 @import '@fontsource/dm-serif-display/400.css';
 
 /* With preflight off, `base` only emits the CSS variables that utilities (translate, shadow, ring) rely on. */
@@ -27,26 +27,47 @@ body { margin: 0; background: theme('colors.surface.page'); }
 @tailwind components;
 
 @layer components {
-  /* Warm page: cream background with soft peach glows at the edges (CSS only, no images). */
-  .ds-glow {
-    background:
-      radial-gradient(900px 520px at -8% -10%, theme(colors.accent.glow / 55%), transparent 70%),
-      radial-gradient(760px 520px at 108% 4%, theme(colors.brand.100 / 45%), transparent 70%),
-      radial-gradient(900px 600px at 50% 120%, theme(colors.accent.circle / 60%), transparent 70%),
-      theme('colors.surface.page');
-  }
-  /* Primary actions only: crimson -> coral. White text stays >= 4.5:1 across the whole gradient (tokens contrast check). */
-  .bg-cta { background-image: linear-gradient(100deg, theme('colors.gradient.from'), theme('colors.gradient.to')); }
-  .bg-cta-hover { background-image: linear-gradient(100deg, theme('colors.brand.800'), theme('colors.gradient.from')); }
-  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: theme('colors.accent.text'); }
+  .ds-glow { background: theme('colors.surface.page'); }
+  /* Primary action surface; semantic clinical colours stay independent. */
+  .bg-cta { background: theme('colors.brand.700'); }
+  .bg-cta-hover { background: theme('colors.brand.800'); }
+  .eyebrow { font-size: 13px; font-weight: 500; color: theme('colors.text.secondary'); }
   .font-display { font-weight: 400; letter-spacing: -0.01em; }
 }
 
 @tailwind utilities;
 
-/* No motion anywhere: state changes are instant. */
-.ds *, .ds *::before, .ds *::after { transition: none !important; animation: none !important; }
+.ds :focus:not(:focus-visible) { outline: none; }
+.ds :focus-visible, .ds .force-focus { outline: 3px solid theme('colors.focus'); outline-offset: 3px; }
+.ds :where(h1,h2,h3) { text-wrap: balance; }
+.ds :where(code) { overflow-wrap: anywhere; }
+.ds :where(button) { touch-action: manipulation; }
+.ds :where(input,textarea) { caret-color: theme('colors.brand.700'); }
+.ds ::selection { background: theme('colors.brand.100'); color: theme('colors.brand.800'); }
+.ds * { scrollbar-color: theme('colors.neutral.400') transparent; scrollbar-width: thin; }
+.workspace .font-display { font-family: theme('fontFamily.sans'); font-weight: 600; }
+.workspace .brand-name { font-family: theme('fontFamily.display'); font-weight: 400; }
+.page-title { font-size: clamp(1.5rem,2.2vw,2rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.2; overflow-wrap: anywhere; }
+.skip-link { position: fixed; left: 16px; top: -100px; z-index: 100; padding: 12px 20px; border-radius: 8px; background: white; }
+.skip-link:focus { top: 12px; }
+.ds [data-viewer] :focus-visible { outline-color: #A9C6FF; }
+.ds input[type=range] { accent-color: #A9C6FF; }
+.ds .busy-icon { animation: busy-turn 1s linear infinite; }
+@keyframes busy-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ds *, .ds *::before, .ds *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media (max-width: 639px) { .ds :where(input,select,textarea) { font-size: 16px; } }
 
-/* One focus treatment for every interactive element: 2 px brand ring with 2 px offset. */
-.ds :focus { outline: none; }
-.ds :focus-visible, .ds .force-focus { outline: 2px solid theme('colors.focus'); outline-offset: 2px; }
+/* A rectangular crop of the bundled, licensed example; no new clinical image is generated. */
+.retinal-plate { position: relative; width: 100%; aspect-ratio: 570 / 382; overflow: hidden; background: #000; }
+.ds .retinal-plate img { position: absolute; width: 210.526%; max-width: none; height: auto; left: -42.456%; top: -82.461%; }
+[data-viewer]:fullscreen { overflow: auto; border-radius: 0; }
+[data-viewer]:fullscreen [role=region] { height: 65vh; }
+
+.case-layout { display: grid; gap: 24px; grid-template-areas: "viewer" "assessment" "support"; }
+@media (min-width: 1024px) {
+  .case-layout { grid-template-columns: minmax(0,1fr) 340px; grid-template-areas: "viewer assessment" "support assessment"; align-items: start; grid-template-rows: auto 1fr; }
+}
+@media (min-width: 1536px) { .case-layout { grid-template-columns: minmax(0,1fr) 380px; } }
+@media (pointer: coarse) { .ds [data-viewer] button { min-height: 44px; min-width: 44px; } }

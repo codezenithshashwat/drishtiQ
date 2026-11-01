@@ -8,7 +8,7 @@ import * as RTooltip from '@radix-ui/react-tooltip'
 import {
   AlertTriangle, Check, ChevronLeft, ChevronRight, CircleAlert, CircleCheck, Info, Loader, Minus, X, type LucideIcon,
 } from 'lucide-react'
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
+import { Children, cloneElement, isValidElement, useId, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react'
 
 export type State = 'default' | 'hover' | 'focus' | 'active' | 'disabled' | 'loading'
 export const cn = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ')
@@ -32,12 +32,12 @@ export function Button({ variant = 'primary', compact, icon: Icon, state = 'defa
   const v = BUTTON[variant]
   const disabled = state === 'disabled' || state === 'loading' || rest.disabled
   return (
-    <button {...rest} disabled={disabled} aria-busy={state === 'loading' || undefined}
-      className={cn('inline-flex items-center justify-center gap-2 rounded-full px-4 text-body font-medium whitespace-nowrap',
+    <button type="button" {...rest} disabled={disabled} aria-busy={state === 'loading' || undefined}
+      className={cn('inline-flex items-center justify-center gap-2 rounded-control px-4 text-body font-medium whitespace-nowrap',
         compact ? 'h-control-sm' : 'h-control', v.base, !disabled && v.hoverable, !disabled && v.active,
         state === 'hover' && v.hover, state === 'active' && v.hover, state === 'focus' && 'force-focus',
         disabled && 'opacity-50', className)}>
-      {state === 'loading' ? <Loader {...ICON} aria-hidden /> : Icon && <Icon {...ICON} aria-hidden />}
+      {state === 'loading' ? <Loader {...ICON} aria-hidden className="busy-icon" /> : Icon && <Icon {...ICON} aria-hidden />}
       {children}
     </button>
   )
@@ -54,14 +54,18 @@ export function Field({ label, hint, error, children, id }: { label: string; hin
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-secondary font-medium text-text-primary">{label}</label>
-      {children}
-      {error ? <p className="text-caption text-status-danger-text">{error}</p> : hint && <p className="text-caption text-text-muted">{hint}</p>}
+      {Children.map(children, child => isValidElement<{ id?: string; 'aria-describedby'?: string; 'aria-invalid'?: boolean }>(child) ? cloneElement(child, {
+        id: child.props.id ?? id,
+        'aria-describedby': [child.props['aria-describedby'], error || hint ? `${id}-help` : undefined].filter(Boolean).join(' ') || undefined,
+        'aria-invalid': error ? true : child.props['aria-invalid'],
+      }) : child)}
+      {(error || hint) && <p id={`${id}-help`} role={error ? 'alert' : undefined} className={cn('text-caption', error ? 'text-status-danger-text' : 'text-text-muted')}>{error || hint}</p>}
     </div>
   )
 }
 
 export function Input({ state = 'default', invalid, className, ...rest }: InputHTMLAttributes<HTMLInputElement> & { state?: State; invalid?: boolean }) {
-  return <input {...rest} disabled={state === 'disabled' || rest.disabled} aria-invalid={invalid || undefined}
+  return <input {...rest} disabled={state === 'disabled' || rest.disabled} aria-invalid={invalid || rest['aria-invalid'] || undefined}
     className={cn(FIELD, fieldState(state, invalid), className)} />
 }
 
@@ -72,13 +76,21 @@ export function Select({ state = 'default', children, className, ...rest }: Sele
 export function Segmented<T extends string>({ options, value, onChange, label, state = 'default' }:
   { options: { value: T; label: string }[]; value: T; onChange?: (v: T) => void; label: string; state?: State }) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex h-control-sm rounded-full border border-border-default bg-surface-subtle p-px',
+    <div role="radiogroup" aria-label={label} className={cn('inline-flex flex-wrap gap-1 rounded-control border border-border-default bg-surface-subtle p-1',
       state === 'disabled' && 'opacity-50')}>
       {options.map((o, i) => {
         const on = o.value === value
         return (
-          <button key={o.value} role="radio" aria-checked={on} disabled={state === 'disabled'} onClick={() => onChange?.(o.value)}
-            className={cn('px-4 rounded-full text-secondary font-medium',
+          <button type="button" key={o.value} role="radio" aria-checked={on} tabIndex={on ? 0 : -1} disabled={state === 'disabled'} onClick={() => onChange?.(o.value)}
+            onKeyDown={e => {
+              const direction = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
+              if (!direction && e.key !== 'Home' && e.key !== 'End') return
+              e.preventDefault()
+              const next = e.key === 'Home' ? 0 : e.key === 'End' ? options.length - 1 : (i + direction + options.length) % options.length
+              onChange?.(options[next].value)
+              e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button')[next]?.focus()
+            }}
+            className={cn('min-h-[32px] px-3 py-1 rounded-sm text-secondary font-medium',
               on ? 'bg-surface-card text-brand-800 border border-border-strong shadow-card' : 'text-text-secondary border border-transparent hover:text-text-primary',
               state === 'hover' && !on && i === 1 && 'text-text-primary', state === 'focus' && on && 'force-focus')}>
             {o.label}
@@ -93,7 +105,7 @@ export function Switch({ checked, label, state = 'default', onChange }: { checke
   const disabled = state === 'disabled'
   return (
     <label className={cn('inline-flex items-center gap-2 text-body', disabled && 'opacity-50')}>
-      <button role="switch" aria-checked={checked} disabled={disabled} onClick={() => onChange?.(!checked)}
+      <button type="button" aria-label={label} role="switch" aria-checked={checked} disabled={disabled} onClick={() => onChange?.(!checked)}
         className={cn('relative h-6 w-8 rounded-full border', checked ? 'bg-brand-700 border-brand-700' : 'bg-neutral-200 border-border-strong',
           state === 'hover' && (checked ? 'bg-brand-800' : 'bg-neutral-300'), state === 'focus' && 'force-focus')}>
         <span className={cn('absolute top-px h-[20px] w-[20px] rounded-full bg-surface-card border border-border-strong', checked ? 'left-[10px]' : 'left-px')} />
@@ -106,16 +118,17 @@ export function Switch({ checked, label, state = 'default', onChange }: { checke
 export function Checkbox({ checked, indeterminate, label, state = 'default', swatch, onChange }:
   { checked: boolean; indeterminate?: boolean; label: ReactNode; state?: State; swatch?: string; onChange?: (v: boolean) => void }) {
   const disabled = state === 'disabled'
+  const labelId = useId()
   return (
     <label className={cn('inline-flex items-center gap-2 text-body select-none', disabled ? 'opacity-50' : 'cursor-pointer')}>
-      <button role="checkbox" aria-checked={indeterminate ? 'mixed' : checked} disabled={disabled} onClick={() => onChange?.(!checked)}
+      <button type="button" aria-labelledby={labelId} role="checkbox" aria-checked={indeterminate ? 'mixed' : checked} disabled={disabled} onClick={() => onChange?.(!checked)}
         className={cn('grid h-4 w-4 place-items-center rounded-[4px] border',
           checked || indeterminate ? 'bg-brand-700 border-brand-700 text-white' : 'bg-surface-card border-border-strong',
           state === 'hover' && !checked && 'border-neutral-500', state === 'focus' && 'force-focus')}>
         {indeterminate ? <Minus size={12} strokeWidth={2.5} /> : checked && <Check size={12} strokeWidth={2.5} />}
       </button>
       {swatch && <span aria-hidden className="h-3 w-3 rounded-[3px]" style={{ background: swatch }} />}
-      <span>{label}</span>
+      <span id={labelId}>{label}</span>
     </label>
   )
 }
@@ -123,6 +136,12 @@ export function Checkbox({ checked, indeterminate, label, state = 'default', swa
 /* ---------- Tabs (underline) ---------- */
 export function Tabs({ tabs, value, onChange, children, forceHover }:
   { tabs: { value: string; label: string; count?: number }[]; value: string; onChange?: (v: string) => void; children?: ReactNode; forceHover?: string }) {
+  if (!children) return <div role="group" aria-label="Filter results" className="flex flex-wrap gap-1 border-b border-border-default">
+    {tabs.map(t => <button type="button" key={t.value} aria-pressed={t.value === value} onClick={() => onChange?.(t.value)}
+      className={cn('inline-flex min-h-control items-center gap-2 border-b-2 px-3 text-secondary font-medium', t.value === value ? 'border-brand-700 text-brand-800' : 'border-transparent text-text-secondary hover:text-text-primary')}>
+      {t.label}{t.count !== undefined && <span className="rounded-sm bg-surface-subtle px-2 text-caption tabular-nums">{t.count}</span>}
+    </button>)}
+  </div>
   return (
     <RTabs.Root value={value} onValueChange={onChange}>
       <RTabs.List className="flex flex-wrap gap-2">
@@ -188,7 +207,7 @@ export function IconCircle({ icon: Icon, size = 'md' }: { icon: LucideIcon; size
 }
 
 export function ConfidenceBadge({ level }: { level: 'high' | 'moderate' | 'low' }) {
-  const map = { high: ['success', CircleCheck, 'High confidence'], moderate: ['info', Info, 'Moderate confidence'], low: ['warning', AlertTriangle, 'Low confidence'] } as const
+  const map = { high: ['slate', Info, 'High confidence'], moderate: ['info', Info, 'Moderate confidence'], low: ['warning', AlertTriangle, 'Low confidence'] } as const
   const [tone, icon, label] = map[level]
   return <Badge tone={tone} icon={icon}>{label}</Badge>
 }
@@ -233,7 +252,7 @@ export function Popover({ trigger, children }: { trigger: ReactNode; children: R
 export function ModalPanel({ title, description, children, footer, onClose }:
   { title: string; description?: string; children?: ReactNode; footer?: ReactNode; onClose?: () => void }) {
   return (
-    <div className="w-[480px] rounded-card border border-border-default bg-surface-card shadow-overlay">
+    <div className="w-[480px] max-w-[calc(100vw-32px)] max-h-[85dvh] overflow-y-auto rounded-card bg-surface-card shadow-overlay">
       <div className="flex items-start justify-between gap-4 px-6 pt-6">
         <div>
           <h2 className="text-section font-semibold">{title}</h2>
@@ -251,8 +270,8 @@ export function Modal({ open, onOpenChange, ...panel }: Parameters<typeof ModalP
   return (
     <RDialog.Root open={open} onOpenChange={onOpenChange}>
       <RDialog.Portal>
-        <RDialog.Overlay className="fixed inset-0 bg-neutral-900/40" />
-        <RDialog.Content aria-describedby={undefined} className="ds fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent">
+        <RDialog.Overlay className="fixed inset-0 z-40 bg-neutral-900/40" />
+        <RDialog.Content aria-describedby={undefined} className="ds fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent">
           <RDialog.Title className="sr-only">{panel.title}</RDialog.Title>
           <ModalPanel {...panel} onClose={() => onOpenChange(false)} />
         </RDialog.Content>
@@ -267,7 +286,7 @@ const ICON_TONE = { info: 'text-status-info-icon', warning: 'text-status-warning
 export function Toast({ tone = 'success', title, action }: { tone?: keyof typeof ALERT_ICON; title: string; action?: ReactNode }) {
   const Icon = ALERT_ICON[tone]
   return (
-    <div role="status" className="flex w-[360px] items-center gap-3 rounded-card border border-border-default bg-surface-card px-4 py-3 shadow-overlay">
+    <div role="status" className="flex w-[360px] max-w-[calc(100vw-32px)] items-center gap-3 rounded-card border border-border-default bg-surface-card px-4 py-3 shadow-overlay">
       <Icon size={16} strokeWidth={1.75} className={cn(ICON_TONE[tone], 'shrink-0')} aria-hidden />
       <span className="flex-1 text-body">{title}</span>
       {action}
@@ -377,12 +396,12 @@ export function Table<T>({ columns, rows, rowKey, selected, hovered, onRowClick,
           {rows.map((r) => {
             const k = rowKey(r), sel = selected?.has(k)
             return (
-              <tr key={k} onClick={() => onRowClick?.(r)} aria-selected={sel || undefined}
+              <tr key={k} onClick={e => { if (!(e.target as HTMLElement).closest('a,button,input,select,textarea')) onRowClick?.(r) }} aria-selected={sel || undefined}
                 className={cn('border-b border-border-default last:border-0', onRowClick && 'cursor-pointer',
                   sel ? 'bg-brand-50' : hovered === k ? 'bg-neutral-50' : 'hover:bg-brand-50')}>
                 {selectable && <td className="px-4"><Checkbox checked={!!sel} label={<span className="sr-only">Select {k}</span>} /></td>}
                 {columns.map((c) => (
-                  <td key={c.key} className={cn('h-16 px-4 align-middle', c.numeric && 'text-right')}>{c.render(r)}</td>
+                  <td key={c.key} className={cn('h-16 px-4 py-3 align-middle', c.numeric && 'text-right')}>{c.render(r)}</td>
                 ))}
               </tr>
             )
@@ -412,7 +431,7 @@ export function Breadcrumb({ items }: { items: string[] }) {
 export function Pagination({ page, pages, total, perPage, onPage }: { page: number; pages: number; total: number; perPage: number; onPage?: (p: number) => void }) {
   const from = (page - 1) * perPage + 1, to = Math.min(total, page * perPage)
   return (
-    <div className="flex items-center justify-between text-secondary text-text-secondary">
+    <div className="flex flex-wrap items-center justify-between gap-3 text-secondary text-text-secondary">
       <span>{from}–{to} of {total}</span>
       <div className="flex items-center gap-2">
         <Button variant="secondary" compact icon={ChevronLeft} state={page === 1 ? 'disabled' : 'default'} onClick={() => onPage?.(page - 1)}>Previous</Button>
