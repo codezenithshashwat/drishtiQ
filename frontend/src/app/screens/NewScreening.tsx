@@ -1,19 +1,25 @@
 import { Aperture, CircleCheck, Crosshair, Eye as EyeIcon, FileText, ImageUp, ListChecks, ScanEye, Sun, Trash2 } from 'lucide-react'
-import { useRef, useState, type DragEvent } from 'react'
-import { Alert, Badge, Button, Card, Checkbox, Field, IconCircle, Input, Progress, Segmented, Skeleton, StageBadge, cn } from '../../design/components'
+import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { Alert, Badge, Button, Card, Checkbox, Field, IconCircle, Input, Progress, Segmented, StageBadge, cn } from '../../design/components'
 import { api, type CaseDetail, type Eye } from '../api'
 import { ROUTING, STAGE_CLINICAL, eyeName } from '../format'
 import { linkProps, navigate } from '../router'
 import { PageHeader } from '../Shell'
+import { useUnsavedChanges } from '../useUnsavedChanges'
 
 const MAX_MB = 25
 type Slot = { file: File; preview: string }
 type Done = { eye: Eye; case?: CaseDetail; error?: string }
 
-const STEPS = ['Patient details', 'Upload photographs', 'AI analysis', 'Results']
+const STEPS = ['Prepare screening', 'Analyse photographs', 'Review results']
 
 export function NewScreening() {
   const [patient, setPatient] = useState('')
+  const [uploadMode, setUploadMode] = useState<'individual' | 'batch'>('individual')
+  const [fileMessage, setFileMessage] = useState<string | null>(null)
+  const previewUrls = useRef(new Set<string>())
+  const inFlight = useRef(false)
+  useEffect(() => { const urls = previewUrls.current; return () => { urls.forEach(url => URL.revokeObjectURL(url)) } }, [])
   // ADR-040: at most two optional intake questions; either one sends the case to clinician review.
   const [intake, setIntake] = useState({ vision_problems: false, prior_treatment: false })
   const [eyeUnknown, setEyeUnknown] = useState(false)
@@ -25,28 +31,34 @@ export function NewScreening() {
 
   const eyes: Eye[] = eyeUnknown ? ['unknown'] : ['right', 'left']
   const chosen = eyes.filter((e) => slots[e])
+  useUnsavedChanges(uploadMode === 'individual' && !batch && !done && (!!patient || chosen.length > 0 || !!busy || intake.vision_problems || intake.prior_treatment || eyeUnknown), busy ? 'Analysis is in progress. Leaving may hide its results; check the worklist before retrying. Leave this screen?' : 'This screening has unsaved details. Leave this screen?')
   const patientError = touched && !patient.trim() ? 'Enter a patient ID.' : undefined
   const fileError = touched && chosen.length === 0 ? 'Add a fundus photograph of at least one eye.' : undefined
   const tooBig = chosen.filter((e) => slots[e]!.file.size > MAX_MB * 2 ** 20)
-  const step = done ? 4 : busy ? 3 : chosen.length ? 2 : 1
+  const step = done ? 3 : busy ? 2 : 1
 
   function choose(eye: Eye, files: FileList | null | undefined) {
     const list = files ? Array.from(files) : []
-    if (list.length > 1) { setBatch(list); return }  // screening camp: one single-eye case per file
+    if (list.length > 1) { setFileMessage('Choose one photograph for this eye. Use Batch screening to upload multiple photographs.'); return }
     const f = list[0]
     if (!f) return
-    setSlots((s) => {
-      if (s[eye]) URL.revokeObjectURL(s[eye]!.preview)
-      return { ...s, [eye]: { file: f, preview: URL.createObjectURL(f) } }
-    })
+    setFileMessage(null)
+    const preview = URL.createObjectURL(f)
+    previewUrls.current.add(preview)
+    if (slots[eye]) { URL.revokeObjectURL(slots[eye]!.preview); previewUrls.current.delete(slots[eye]!.preview) }
+    setSlots(s => ({ ...s, [eye]: { file: f, preview } }))
   }
+
   function clear(eye: Eye) {
-    setSlots((s) => { if (s[eye]) URL.revokeObjectURL(s[eye]!.preview); const n = { ...s }; delete n[eye]; return n })
+    if (slots[eye]) { URL.revokeObjectURL(slots[eye]!.preview); previewUrls.current.delete(slots[eye]!.preview) }
+    setSlots((s) => { const n = { ...s }; delete n[eye]; return n })
   }
 
   async function submit() {
+    if (inFlight.current) return
     setTouched(true)
-    if (!patient.trim() || chosen.length === 0 || tooBig.length) return
+    if (!patient.trim() || chosen.length === 0 || tooBig.length) { document.getElementById(!patient.trim() ? 'patient' : 'photographs')?.focus(); return }
+    inFlight.current = true
     const out: Done[] = []
     for (const eye of chosen) {
       setBusy(`Analysing the ${eyeName(eye).toLowerCase()}…`)
@@ -57,25 +69,29 @@ export function NewScreening() {
       }
     }
     setBusy(null)
+    inFlight.current = false
     setDone(out)
   }
 
   function restart() {
     Object.values(slots).forEach((s) => s && URL.revokeObjectURL(s.preview))
+    previewUrls.current.clear()
+    setFileMessage(null)
     setSlots({}); setDone(null); setPatient(''); setTouched(false); setIntake({ vision_problems: false, prior_treatment: false })
   }
 
+  if (uploadMode === 'batch' && !batch) return <BatchPicker onFiles={setBatch} onBack={() => setUploadMode('individual')} />
   if (batch) return <BatchUpload files={batch} onCancel={() => setBatch(null)} />
 
   return (
     <>
-      <PageHeader eyebrow="Screening" title="New screening" subtitle="One colour fundus photograph per eye, right and left." />
-      <ol aria-label="Progress" className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <PageHeader title="New screening" subtitle="Start with a patient reference and a photograph of each eye." actions={<Segmented label="Upload mode" value={uploadMode} state={busy ? 'disabled' : 'default'} onChange={setUploadMode} options={[{value: 'individual', label: 'Individual'}, {value: 'batch', label: 'Batch screening'}]} />} />
+      <ol aria-label="Progress" className="screening-progress mb-6 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {STEPS.map((label, i) => {
           const n = i + 1, current = n === step, past = n < step
           return (
             <li key={label} aria-current={current ? 'step' : undefined}
-              className={cn('flex items-center gap-3 rounded-full border px-3 py-2', current ? 'border-brand-100 bg-surface-card shadow-card' : 'border-transparent')}>
+              className={cn('flex items-center gap-3 rounded-control border px-3 py-2', current ? 'border-brand-100 bg-surface-card shadow-card' : 'border-transparent')}>
               <span className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-full text-secondary font-semibold',
                 current ? 'bg-cta text-text-onBrand' : past ? 'bg-brand-50 text-brand-800' : 'bg-surface-subtle text-text-secondary')}>
                 {past ? <CircleCheck size={16} strokeWidth={2} aria-hidden /> : n}
@@ -87,14 +103,14 @@ export function NewScreening() {
       </ol>
 
       {done ? <Results patient={patient.trim()} done={done} onRestart={restart} /> : (
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-          <Card title="Patient details" subtitle="Use the clinic's ID, not a name.">
-            <div className="flex flex-col gap-5">
+        <div className="screening-layout grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <Card className="screening-intake" title="Patient details" subtitle="Use the clinic's ID, not a name.">
+            <fieldset disabled={!!busy} className="m-0 flex min-w-0 flex-col gap-5 border-0 p-0">
               <Field id="patient" label="Patient ID / reference" error={patientError}>
-                <Input id="patient" value={patient} maxLength={40} invalid={!!patientError} onChange={(e) => setPatient(e.target.value)} placeholder="e.g. CLN-20417" />
+                <Input id="patient" name="patient-reference" autoComplete="off" spellCheck={false} value={patient} maxLength={40} invalid={!!patientError} onChange={(e) => setPatient(e.target.value)} placeholder="e.g. CLN-20417" />
               </Field>
               <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-                <legend className="mb-1 text-secondary font-medium">Optional intake (either one sends the case to clinician review)</legend>
+                <legend className="mb-1 text-secondary font-medium">Optional intake</legend>
                 <Checkbox checked={intake.vision_problems} label="Patient reports vision problems" onChange={(v) => setIntake((i) => ({ ...i, vision_problems: v }))} />
                 <Checkbox checked={intake.prior_treatment} label="Previous eye treatment / laser" onChange={(v) => setIntake((i) => ({ ...i, prior_treatment: v }))} />
               </fieldset>
@@ -102,23 +118,17 @@ export function NewScreening() {
               <div className="rounded-control bg-surface-subtle p-3 text-caption text-text-secondary">
                 Both eyes are needed for a complete screening. With one eye only, the patient's result says the screening is incomplete.
               </div>
-            </div>
+            </fieldset>
           </Card>
 
           <div className="flex flex-col gap-6">
-            <Card title="Upload fundus photographs" subtitle="Drop a photograph on each eye, or choose a file. Dropping several photographs starts a screening-camp upload.">
-              {busy ? (
-                <div className="flex flex-col items-center gap-3 py-8 text-center">
-                  <Skeleton className="h-[160px] w-full max-w-[320px]" />
-                  <p className="text-body font-medium" role="status">{busy}</p>
-                  <p className="text-secondary text-text-secondary">Quality check, grading, lesion segmentation and landmarks. This usually takes 2 to 15 seconds per eye.</p>
-                </div>
-              ) : (
-                <div className={cn('grid grid-cols-1 gap-4', eyes.length === 2 && 'md:grid-cols-2')}>
-                  {eyes.map((eye) => <EyeSlot key={eye} eye={eye} slot={slots[eye]} error={!!fileError} onChoose={(f) => choose(eye, f)} onClear={() => clear(eye)} />)}
-                </div>
-              )}
-              {fileError && <p className="mt-2 text-caption text-status-danger-text">{fileError}</p>}
+            <Card title="Upload fundus photographs" subtitle="One image per eye. JPEG, PNG, TIFF or BMP; up to 25 MB each.">
+              <fieldset id="photographs" tabIndex={-1} disabled={!!busy} aria-label="Fundus photographs" className={cn('m-0 grid min-w-0 grid-cols-1 gap-4 border-0 p-0', eyes.length === 2 && 'md:grid-cols-2')}>
+                {eyes.map(eye => <EyeSlot key={eye} eye={eye} slot={slots[eye]} disabled={!!busy} error={!!fileError} onChoose={f => choose(eye, f)} onClear={() => clear(eye)} />)}
+              </fieldset>
+              {busy && <div className="mt-4 rounded-control bg-brand-50 p-4" role="status"><p className="font-medium text-brand-800">{busy}</p><p className="mt-1 text-secondary text-text-secondary">Checking quality and preparing AI grading and image overlays. Keep this screen open.</p></div>}
+              {fileMessage && <p role="alert" className="mt-3 text-secondary text-status-danger-text">{fileMessage}</p>}
+              {fileError && <p role="alert" className="mt-2 text-caption text-status-danger-text">{fileError}</p>}
               {tooBig.length > 0 && <p className="mt-2 text-caption text-status-danger-text">The photograph of the {tooBig.map((e) => eyeName(e).toLowerCase()).join(' and ')} is larger than {MAX_MB} MB.</p>}
               <div className="mt-5 flex flex-wrap justify-end gap-2">
                 <Button variant="secondary" onClick={() => navigate('/worklist')} state={busy ? 'disabled' : 'default'}>Cancel</Button>
@@ -148,19 +158,22 @@ export function NewScreening() {
   )
 }
 
-function EyeSlot({ eye, slot, error, onChoose, onClear }: { eye: Eye; slot?: Slot; error: boolean; onChoose: (f: FileList | null) => void; onClear: () => void }) {
+function EyeSlot({ eye, slot, error, disabled, onChoose, onClear }: { eye: Eye; slot?: Slot; error: boolean; disabled?: boolean; onChoose: (f: FileList | null) => void; onClear: () => void }) {
   const input = useRef<HTMLInputElement>(null)
-  const onDrop = (e: DragEvent) => { e.preventDefault(); onChoose(e.dataTransfer.files) }
+  const [dragging, setDragging] = useState(false)
+  const [previewFailed, setPreviewFailed] = useState(false)
+  useEffect(() => setPreviewFailed(false), [slot?.preview])
+  const onDrop = (e: DragEvent) => { e.preventDefault(); setDragging(false); if (!disabled) onChoose(e.dataTransfer.files) }
   const title = eye === 'unknown' ? 'Photograph (eye not recorded)' : eyeName(eye)
   return (
-    <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop}
-      className={cn('flex min-h-[260px] flex-col items-center justify-center gap-3 rounded-card border-2 border-dashed p-4 text-center',
+    <div data-dragging={dragging} data-invalid={error && !slot} data-filled={!!slot} onDragOver={(e) => { e.preventDefault(); if (!disabled) setDragging(true) }} onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false) }} onDrop={onDrop}
+      className={cn('eye-dropzone flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-card border border-dashed p-4 text-center',
         error && !slot ? 'border-status-danger-border bg-status-danger-tint' : slot ? 'border-border-default bg-surface-card' : 'border-border-strong bg-surface-subtle')}>
       <p className="text-section font-semibold">{title}</p>
       {slot ? (
         <>
-          <img src={slot.preview} alt={`Selected photograph, ${title.toLowerCase()}`} className="max-h-[180px] rounded-control bg-surface-viewer" />
-          <p className="text-caption text-text-secondary">{slot.file.name} · {(slot.file.size / 2 ** 20).toFixed(1)} MB</p>
+          {previewFailed ? <p className="rounded-control bg-surface-subtle p-3 text-caption text-text-secondary">A browser preview is unavailable for this file. The screening service will check the image when you analyse it.</p> : <img src={slot.preview} alt={`Selected photograph, ${title.toLowerCase()}`} onError={() => setPreviewFailed(true)} className="max-h-[180px] rounded-control bg-surface-viewer" />}
+          <p className="max-w-full break-all text-caption text-text-secondary">{slot.file.name} · {(slot.file.size / 2 ** 20).toFixed(1)} MB</p>
           <div className="flex gap-2">
             <Button variant="secondary" compact onClick={() => input.current?.click()}>Replace</Button>
             <Button variant="ghost" compact icon={Trash2} onClick={onClear} aria-label={`Remove the ${title.toLowerCase()} photograph`}>Remove</Button>
@@ -174,7 +187,7 @@ function EyeSlot({ eye, slot, error, onChoose, onClear }: { eye: Eye; slot?: Slo
           <Button variant="secondary" compact onClick={() => input.current?.click()}>Choose file</Button>
         </>
       )}
-      <input ref={input} type="file" multiple accept="image/jpeg,image/png,image/tiff,image/bmp" className="sr-only" aria-label={`Fundus photograph, ${title.toLowerCase()}`}
+      <input ref={input} type="file" tabIndex={-1} disabled={disabled} accept="image/jpeg,image/png,image/tiff,image/bmp" className="sr-only" aria-label={`Fundus photograph, ${title.toLowerCase()}`}
         onChange={(e) => { onChoose(e.target.files); e.target.value = '' }} />
     </div>
   )
@@ -225,7 +238,7 @@ function Results({ patient, done, onRestart }: { patient: string; done: Done[]; 
         <Button variant="secondary" icon={ListChecks} onClick={() => navigate('/worklist')}>Go to the worklist</Button>
         {done.some((d) => d.case) && (
           <a {...linkProps(`/patients/${encodeURIComponent(patient)}/report`)}
-            className="inline-flex h-control items-center gap-2 rounded-full bg-cta px-4 text-body font-medium text-text-onBrand no-underline shadow-card hover:bg-cta-hover">
+            className="inline-flex h-control items-center gap-2 rounded-control bg-cta px-4 text-body font-medium text-text-onBrand no-underline shadow-card hover:bg-cta-hover">
             <FileText size={16} strokeWidth={1.75} aria-hidden />Patient report
           </a>
         )}
@@ -247,16 +260,19 @@ function BatchUpload({ files, onCancel }: { files: File[]; onCancel: () => void 
   const done = items.filter((i) => i.state === 'done' || i.state === 'failed').length
   const finished = done === items.length && items.length > 0
   const failed = items.filter((i) => i.state === 'failed').length
+  useUnsavedChanges(!finished, running ? 'Batch analysis is still running. Leave this screen? Check the worklist before retrying any photographs.' : 'This batch contains photographs that have not finished processing. Leave this screen?')
 
   async function runAll() {
+    if (running) return
     setRunning(true)
     for (let k = 0; k < items.length; k++) {
       if (items[k].state === 'done') continue
       setItems((xs) => xs.map((x, i) => (i === k ? { ...x, state: 'analysing', message: undefined } : x)))
       const it = items[k]
       try {
+        if (!it.patient.trim()) throw new Error('Enter a patient reference before analysing this photograph.')
         if (it.file.size > MAX_MB * 2 ** 20) throw new Error(`The file is larger than ${MAX_MB} MB.`)
-        const c = await api.createCase(it.file, it.patient, eye)
+        const c = await api.createCase(it.file, it.patient.trim(), eye)
         setItems((xs) => xs.map((x, i) => (i === k ? { ...x, state: 'done', caseId: c.id } : x)))
       } catch (e) {
         setItems((xs) => xs.map((x, i) => (i === k ? { ...x, state: 'failed', message: (e as Error).message } : x)))
@@ -285,8 +301,8 @@ function BatchUpload({ files, onCancel }: { files: File[]; onCancel: () => void 
           )}
         </>
       }>
-        <div className="mb-4"><Progress value={(100 * done) / items.length} label={`${done} of ${items.length} processed`} /></div>
-        <table className="w-full text-body">
+        <div className="mb-4"><Progress value={items.length ? (100 * done) / items.length : 0} label={`${done} of ${items.length} processed`} /></div>
+        <div className="overflow-x-auto" role="region" aria-label="Batch photographs" tabIndex={0}><table className="w-full text-body">
           <caption className="sr-only">Photographs in this upload</caption>
           <thead>
             <tr className="border-b border-border-default text-caption text-text-secondary">
@@ -310,11 +326,28 @@ function BatchUpload({ files, onCancel }: { files: File[]; onCancel: () => void 
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         {finished && items.some((i) => i.state === 'failed') && (
-          <p className="mt-3 text-caption text-text-secondary">Failed photographs were not added. Retrying sends only those; added ones are skipped.</p>
+          <p className="mt-3 text-caption text-text-secondary">Check the worklist before retrying a network failure: a case may already have been saved. Retry skips photographs confirmed as added.</p>
         )}
       </Card>
     </>
   )
+}
+
+function BatchPicker({ onFiles, onBack }: { onFiles: (files: File[]) => void; onBack: () => void }) {
+  const input = useRef<HTMLInputElement>(null)
+  return <>
+    <PageHeader title="Batch screening" subtitle="Prepare a group of photographs before starting analysis." actions={<Button variant="secondary" onClick={onBack}>Individual screening</Button>} />
+    <Card title="Choose fundus photographs" subtitle="Each file creates a single-eye case. You can check patient references and eye labels before analysis.">
+      <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-control border-2 border-dashed border-border-strong bg-surface-subtle p-6 text-center"
+        onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (e.dataTransfer.files.length) onFiles(Array.from(e.dataTransfer.files)) }}>
+        <ImageUp size={40} strokeWidth={1.25} aria-hidden className="text-brand-700" />
+        <p className="text-section font-medium">Drop your photographs here</p>
+        <p className="max-w-measure text-secondary text-text-secondary">JPEG, PNG, TIFF or BMP. Up to 25 MB per image. Patient references initially come from file names.</p>
+        <Button icon={ImageUp} onClick={() => input.current?.click()}>Choose photographs</Button>
+        <input ref={input} tabIndex={-1} aria-label="Batch fundus photographs" type="file" multiple accept="image/jpeg,image/png,image/tiff,image/bmp" className="sr-only" onChange={e => { if (e.target.files?.length) onFiles(Array.from(e.target.files)) }} />
+      </div>
+    </Card>
+  </>
 }

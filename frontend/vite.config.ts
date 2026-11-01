@@ -22,5 +22,5 @@ const buildInfo: Plugin = { name: 'build-info', generateBundle() { this.emitFile
 export default defineConfig({
   plugins: [react(), buildInfo],
   define: { __BUILD_COMMIT__: JSON.stringify(commit) },
-  server: { port: 5173, proxy: { '/api': 'http://127.0.0.1:8000' } },
+  server: { port: 5173, proxy: { '/api': 'http://127.0.0.1:8000', '/report-fonts': 'http://127.0.0.1:8000' } },
 })

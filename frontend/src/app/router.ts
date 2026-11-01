@@ -44,6 +44,7 @@ export function parse(fullPath: string, search = ''): Route {
 }
 
 export function navigate(to: string) {
+  if (!window.dispatchEvent(new CustomEvent('drishtiq:before-navigate', { cancelable: true }))) return
   window.history.pushState({}, '', href(to))
   window.dispatchEvent(new PopStateEvent('popstate'))
   window.scrollTo(0, 0)
@@ -64,7 +65,7 @@ export function linkProps(to: string) {
   return {
     href: href(to),
     onClick: (e: React.MouseEvent) => {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
       e.preventDefault()
       navigate(to)
     },

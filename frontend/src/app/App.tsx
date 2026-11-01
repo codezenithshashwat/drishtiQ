@@ -49,21 +49,26 @@ export default function App() {
     crumbs = [{ label: route.name === 'worklist' ? worklistTitle : titles[route.name] }]
   }
   useEffect(() => { document.title = `${crumbs[crumbs.length - 1].label} · ${BRAND}` })
+  const routePath = window.location.pathname
+  useEffect(() => {
+    document.getElementById('main-content')?.focus({ preventScroll: true })
+  }, [routePath])
 
   if (route.name === 'landing') return <Landing />
 
   return (
     <Shell route={route} crumbs={crumbs} version={version}>
       {stale && (
-        <div className="mb-6"><Alert tone="danger" title="Backend is outdated: restart the app">
-          {stale} Saving cases or reviews may fail until the app is restarted with start.bat.
+        <div className="mb-6"><Alert tone="danger" title="The screening service needs attention">
+          Saving cases or reviews may be unavailable. Check the local service before continuing.
+          <details className="mt-2"><summary className="cursor-pointer">Technical details</summary>{stale}</details>
         </Alert></div>
       )}
       <ErrorBoundary resetKey={window.location.pathname}>
       {route.name === 'worklist' && <Worklist key={`${route.tab}|${route.q}`} initialTab={route.tab} initialQuery={route.q} />}
       {route.name === 'new' && <NewScreening />}
-      {route.name === 'case' && <CaseView id={route.id} glossary={glossary} onLoaded={onCase} />}
-      {route.name === 'report' && <Report patient={route.patient} caseId={route.caseId} />}
+      {route.name === 'case' && <CaseView key={route.id} id={route.id} glossary={glossary} onLoaded={onCase} />}
+      {route.name === 'report' && <Report key={route.patient} patient={route.patient} caseId={route.caseId} />}
       {route.name === 'about' && <About />}
       {route.name === 'disagreements' && <Disagreements />}
       {route.name === 'notFound' && (

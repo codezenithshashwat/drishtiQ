@@ -3,7 +3,7 @@ import {
   ArrowRight, Calendar, ClipboardList, Eye, FileText, Inbox, Info, Search, Trash2, Upload, ZoomIn,
 } from 'lucide-react'
 import { useState } from 'react'
-import tokens from '../../../design/tokens.json'
+import tokens from './theme'
 import {
   Alert, Avatar, Badge, Breadcrumb, Button, Card, Checkbox, ConfidenceBadge, EmptyState, Field, Input, KeyValue, ModalPanel,
   Pagination, Popover, PopoverPanel, Progress, Segmented, Select, Skeleton, StageBadge, Switch, Table, Tabs, Toast, Tooltip, TooltipPanel, cn, type State,
@@ -31,7 +31,7 @@ function Section({ id, title, note, children }: { id: string; title: string; not
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2 text-overline font-medium uppercase text-text-muted">{children}</p>
+  return <p className="mb-2 text-secondary font-medium text-text-muted">{children}</p>
 }
 
 function Swatch({ name, hex, on = '#FFFFFF' }: { name: string; hex: string; on?: string }) {
@@ -69,13 +69,12 @@ export default function DesignSystem() {
   const [tab, setTab] = useState('urgent')
   const c = tokens.color
   return (
-    <div className="ds min-h-screen">
-      <div className="mx-auto max-w-content px-8 py-8">
-        <header className="flex items-end justify-between gap-6 pb-6">
+    <div className="ds workspace min-h-screen">
+      <div className="mx-auto max-w-content px-4 py-6 sm:px-8 sm:py-8">
+        <header className="flex flex-wrap items-end justify-between gap-6 pb-6">
           <div>
-            <p className="text-overline font-medium uppercase text-text-muted">RetinaScreen</p>
-            <h1 className="mt-1 text-page font-semibold">Design system</h1>
-            <p className="mt-1 max-w-measure text-body text-text-secondary">Tokens from <code>design/tokens.json</code>. Every component in every state. Nothing animates: hover and focus change colour or border instantly.</p>
+            <h1 className="mt-1 text-page font-semibold">DrishtiQ design system</h1>
+            <p className="mt-1 max-w-measure text-body text-text-secondary">Tokens from <code>frontend/src/design/theme.json + shared clinical tokens</code>. Every component in every state. Clinical Instrument with editorial display typography. Loading indicators respect reduced-motion preferences.</p>
           </div>
           <Segmented label="Wording" value={mode} onChange={setMode} options={[{ value: 'simple', label: 'Simple' }, { value: 'clinical', label: 'Clinical' }]} />
         </header>
@@ -83,14 +82,14 @@ export default function DesignSystem() {
         <Section id="colour" title="Colour" note="Neutrals and one brand accent. Severity is always text + colour. Lesion colours (Okabe–Ito) are shown on the viewer surface, the only dark surface. Ratios are contrast against white (or the viewer for lesion colours).">
           <Label>Neutrals</Label>
           <div className="flex flex-wrap gap-4">{Object.entries(c.neutral).map(([k, v]) => <Swatch key={k} name={`neutral ${k}`} hex={v} />)}</div>
-          <div className="mt-6 grid grid-cols-2 gap-8">
+          <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-2">
             <div><Label>Brand (sparingly: primary action, active nav, focus, links)</Label>
               <div className="flex flex-wrap gap-4">{Object.entries(c.brand).map(([k, v]) => <Swatch key={k} name={`brand ${k}`} hex={v} />)}</div></div>
             <div><Label>Text</Label>
               <div className="flex flex-wrap gap-4">{['primary', 'secondary', 'muted', 'link'].map((k) => <Swatch key={k} name={k} hex={(c.text as Record<string, string>)[k]} />)}</div></div>
           </div>
           <div className="mt-6"><Label>Severity — stage 0 to 4 (tint · text · solid)</Label>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               {c.stage.map((s, i) => (
                 <div key={i} className="rounded-card border p-3" style={{ background: s.tint, borderColor: s.border }}>
                   <p className="text-secondary font-semibold" style={{ color: s.text }}>Stage {i}</p>
@@ -100,7 +99,7 @@ export default function DesignSystem() {
               ))}
             </div>
           </div>
-          <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8">
+          <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-2">
             <div><Label>Status</Label>
               <div className="flex flex-wrap gap-2">{(['info', 'warning', 'danger', 'success'] as const).map((t) => <Badge key={t} tone={t}>{t[0].toUpperCase() + t.slice(1)}</Badge>)}</div></div>
             <div><Label>Lesion overlays on the viewer surface</Label>
@@ -115,27 +114,27 @@ export default function DesignSystem() {
           </div>
         </Section>
 
-        <Section id="type" title="Typography" note="Inter, tabular numbers, weights 400/500/600, sentence case. Overline labels are the only uppercase text.">
+        <Section id="type" title="Typography" note="Inter, tabular numbers, weights 400/500/600, sentence case. Use sentence case; serif display typography is reserved for the landing page and brand.">
           <div className="grid grid-cols-[160px_minmax(0,1fr)] items-baseline gap-y-3">
-            {[['Stage number · 28/600', 'text-stage font-semibold', 'Stage 3'], ['Page title · 20/600', 'text-page font-semibold', 'Worklist'],
-              ['Section title · 16/600', 'text-section font-semibold', 'Why this stage'], ['Body · 14/400', 'text-body', 'We found 20 bleeding spots in 4 of 4 areas of the retina.'],
+            {[['Stage number · 28/600', 'text-stage font-semibold', 'Stage 3'], ['Page title · 26/600', 'text-page font-semibold', 'Worklist'],
+              ['Section title · 17/600', 'text-section font-semibold', 'Why this stage'], ['Body · 15/400', 'text-body', 'We found 20 bleeding spots in 4 of 4 areas of the retina.'],
               ['Secondary · 13/400', 'text-secondary text-text-secondary', 'Uploaded 12 min ago · left eye'], ['Caption · 12/400', 'text-caption text-text-muted', 'Model v0.2 · research prototype'],
-              ['Overline · 11/500', 'text-overline font-medium uppercase text-text-muted', 'Stage of eye damage']].map(([k, cls, ex]) => (
+              ['Label · 13/500', 'text-secondary font-medium text-text-muted', 'Stage of eye damage']].map(([k, cls, ex]) => (
               <div key={k} className="contents"><span className="text-caption text-text-muted">{k}</span><span className={cls}>{ex}</span></div>
             ))}
           </div>
         </Section>
 
-        <Section id="space" title="Spacing, radius, elevation" note="4 px grid; only 4, 8, 12, 16, 24, 32, 48, 64. Depth comes from 1 px borders; the single shadow is for popovers, toasts and modals.">
-          <div className="flex items-end gap-6">
+        <Section id="space" title="Spacing, radius, elevation" note="A 4 px spacing scale. Ordinary panels use borders; elevation is reserved for overlays.">
+          <div className="flex flex-wrap items-end gap-6">
             {Object.entries(tokens.space).map(([k, v]) => (
               <div key={k} className="text-center"><div className="bg-brand-100" style={{ width: v, height: v }} /><p className="mt-1 text-caption text-text-muted">{v}</p></div>
             ))}
-            <div className="ml-12 flex gap-6">
+            <div className="flex flex-wrap gap-6">
               <div className="h-12 w-24 rounded-control border border-border-strong bg-surface-card" /><div className="h-12 w-24 rounded-card border border-border-strong bg-surface-card" />
               <div className="h-12 w-24 rounded-card border border-border-default bg-surface-card shadow-overlay" />
             </div>
-            <p className="text-caption text-text-muted">control 6 · card 8 · overlay shadow</p>
+            <p className="text-caption text-text-muted">control 8 · card 12 · overlay shadow</p>
           </div>
         </Section>
 

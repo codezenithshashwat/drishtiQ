@@ -1,6 +1,8 @@
-// Theme generated from the single token source (design/tokens.json). The spacing, type, radius and shadow scales
-// REPLACE Tailwind's defaults, so only approved values exist (e.g. p-5 does not compile).
-import tokens from '../design/tokens.json' with { type: 'json' }
+// Frontend appearance overrides shared tokens. Keep clinical overlay/severity values unchanged.
+// Explicit spacing and typography scales replace the Tailwind defaults.
+import shared from '../design/tokens.json' with { type: 'json' }
+import appearance from './src/design/theme.json' with { type: 'json' }
+const tokens = { ...shared, ...appearance, font: { ...shared.font, ...appearance.font }, color: { ...shared.color, ...appearance.color } }
 
 const px = (v) => `${v}px`
 const c = tokens.color
@@ -31,7 +33,7 @@ export default {
     borderRadius: { none: '0px', sm: '6px', control: px(tokens.radius.control), card: px(tokens.radius.card), xl: '24px', full: '9999px' },
     boxShadow: { none: 'none', overlay: tokens.shadow.overlay, card: tokens.shadow.card, lift: tokens.shadow.lift },
     colors: {
-      transparent: 'transparent', current: 'currentColor', white: '#FFFFFF',
+      transparent: 'transparent', current: 'currentColor', white: '#FFFFFF', black: '#000000',
       neutral: c.neutral, brand: c.brand, text: c.text, surface: c.surface, border: c.border, focus: c.focus,
       stage, status: c.status, lesion, accent: c.accent, gradient: c.gradient,
     },

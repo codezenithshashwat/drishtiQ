@@ -18,7 +18,8 @@ export function About() {
   const a2 = m.decisions.a2_ensemble?.verdict.passed ? m.decisions.a2_ensemble : m.decisions.a2_swap
   return (
     <>
-      <PageHeader eyebrow="Model card" title="About the model" subtitle={m.version} />
+      <PageHeader title="Model information" subtitle="Understand the active system, its recorded evaluation and its limitations." />
+      <nav aria-label="Model information sections" className="mb-6 flex flex-wrap gap-4 text-secondary"><a href="#locked-evaluation">Locked evaluation</a><a href="#development-evidence">Development evidence</a><a href="#clinical-limits">Limitations</a><a href="#model-settings">Routing settings</a></nav>
       <div className="flex flex-col gap-6">
         <Alert tone="warning" title="Research prototype for screening decision support">
           Not a diagnosis and not validated for clinical use. Every result needs a qualified clinician’s decision. Development numbers come from held-out
@@ -52,6 +53,8 @@ export function About() {
           </Card>
         </div>
 
+        <div id="locked-evaluation" className="scroll-mt-24"><LockedResults /></div>
+        <div id="development-evidence" className="scroll-mt-24"><h2 className="text-page font-semibold">Development evidence</h2><p className="mt-2 text-secondary text-text-secondary">Validation results used during development; interpret separately from the locked tests.</p></div>
         <Card title="Grading performance" subtitle="ICDR stage against specialist grades; 95% bootstrap intervals in brackets">
           {m.agreement.idrid_val && m.agreement.aptos_val && <AgreementSummary a={m.agreement.idrid_val} b={m.agreement.aptos_val} />}
           {g.idrid_val && g.aptos_val ? <GradingTable a={g.idrid_val} b={g.aptos_val} /> : <p className="text-body text-text-secondary">No validation run is registered for the current grader.</p>}
@@ -65,13 +68,13 @@ export function About() {
           )}
         </Card>
 
-        <Card title="Models we compared" subtitle="Same training data within each pair; quadratic weighted kappa on the validation sets (registry)">
+        <details><summary className="cursor-pointer py-3 text-section font-semibold">Training comparisons</summary><div className="mt-2">        <Card title="Models we compared" subtitle="Same training data within each pair; quadratic weighted kappa on the validation sets (registry)">
           <T head={['Model', 'Training', 'IDRiD-val', 'APTOS-val', 'Decision']} rows={m.compared.map((c) => [
             <span className="font-medium text-text-primary">{c.model}</span>, c.setting,
             c.idrid_val ? c.idrid_val.qwk.toFixed(3) : '—', c.aptos_val ? c.aptos_val.qwk.toFixed(3) : '—',
             <span className="block max-w-[360px] text-left text-secondary">{c.decision} <span className="text-text-muted">({c.ref})</span></span>,
           ])} />
-        </Card>
+        </Card></div></details>
 
         <Card title="Benchmarks and external validation" subtitle="Locked sets are evaluated once, after the release candidate is frozen">
           <T label="Benchmarks and external validation datasets" head={['Dataset', 'Role', 'Status']} rows={[
@@ -82,7 +85,6 @@ export function About() {
           ]} />
         </Card>
 
-        <LockedResults />
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           {g.idrid_val && <Card title="Confusion matrix · IDRiD-val" subtitle="Rows: specialist grade · columns: AI stage"><Confusion m={g.idrid_val.confusion} label="Confusion matrix, IDRiD-val" /></Card>}
@@ -110,7 +112,7 @@ export function About() {
           </Card>
         </div>
 
-        {m.coverage && <Coverage c={m.coverage} />}
+        <div id="model-settings" className="scroll-mt-24">{m.coverage ? <Coverage c={m.coverage} /> : <Alert title="Routing settings unavailable">No coverage configuration was returned for this system.</Alert>}</div>
 
         {m.experiments.length > 0 && (
           <Card title="What we tested before adding it" subtitle="Pre-registered experiments on development data (ADR-041). Only signals marked adopt may change the routing; none changes it today.">
@@ -136,16 +138,17 @@ export function About() {
           </div>
         </Card>
 
-        <Card title="Known limitations">
+        <div id="clinical-limits" className="scroll-mt-24"><Card title="Known limitations">
           <ul className="flex list-disc flex-col gap-1 pl-4 text-body text-text-secondary">
             <li>Stage 1 (mild) is often missed: recall is low on both validation sets (see table). Microaneurysms are tiny and the training labels disagree most here.</li>
             <li>Validation data come from two public datasets (India); performance on other cameras and populations is unknown.</li>
             <li>The fovea and optic disc are found by image heuristics; when uncertain, the macula ring is dashed and the macular-edema rule is less reliable.</li>
             <li>Grad-CAM shows where the grader looked. It is not a lesion map and can highlight irrelevant areas.</li>
-            <li>No external evaluation yet: Messidor-2 will be evaluated once, at the end, under a locked protocol.</li>
+            <li>DeepDRiD was evaluated as a locked external test. Messidor-2 evaluation remains pending; rural deployment has not been validated.</li>
           </ul>
         </Card>
 
+        </div>
         <Card title="Data sources and licences" subtitle="Thank you to the teams who collected, graded and shared these images">
           <T label="Data sources and licences" head={['Dataset', 'Used for', 'Licence']} rows={[
             ['IDRiD (Porwal et al., 2018; IEEE DataPort)', 'Grading training and validation; lesion masks', 'CC BY 4.0'],
@@ -156,7 +159,7 @@ export function About() {
           <p className="mt-3 text-caption text-text-muted">Because DDR is licensed for non-commercial use only, this prototype is for research and education. The external Messidor-2 evaluation has not been run yet.</p>
         </Card>
 
-        <Card title="Version and checkpoints" subtitle="SHA-256 of every file the app loads">
+        <details><summary className="cursor-pointer py-3 text-section font-semibold">Technical version details</summary><div className="mt-2">        <Card title="Version and checkpoints" subtitle="SHA-256 of every file the app loads">
           <table className="w-full text-secondary">
             <caption className="sr-only">Checkpoint hashes</caption>
             <tbody>
@@ -170,7 +173,7 @@ export function About() {
           {m.history.length > 0 && (
             <p className="mt-3 text-caption text-text-muted">Previous configurations: {m.history.map((h) => `${h.grader ?? 'segmenter'} (replaced ${h.replaced.slice(0, 10)}, ${h.reason})`).join('; ')}.</p>
           )}
-        </Card>
+        </Card></div></details>
       </div>
     </>
   )
@@ -345,13 +348,20 @@ type LockedSet = {
 /** Locked evaluation of rc-1 (ADR-043/046): run once, reported as measured, kept apart from the development numbers. */
 function LockedResults() {
   const [d, setD] = useState<{ sets: Record<string, LockedSet> } | null>(null)
-  useEffect(() => { fetch('/locked_results.json').then((r) => (r.ok ? r.json() : null)).then(setD, () => setD(null)) }, [])
-  if (!d || !Object.keys(d.sets).length) return null
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/locked_results.json', { signal: controller.signal }).then(r => { if (!r.ok) throw new Error('Unavailable'); return r.json() }).then(setD, e => { if (e.name !== 'AbortError') setFailed(true) })
+    return () => controller.abort()
+  }, [])
+  if (failed) return <Alert tone="warning" title="Locked evaluation could not be loaded">Recorded test results are unavailable. Reload to try again.</Alert>
+  if (!d) return <div role="status"><p className="mb-3 text-secondary text-text-muted">Loading locked evaluation…</p><Skeleton className="h-[160px] w-full" /></div>
+  if (!Object.keys(d.sets).length) return <Alert title="No locked results available">No evaluation sets were returned.</Alert>
   const rows = Object.values(d.sets)
   const ci = (v: [number, number], digits = 1) => `[${pct(v[0], digits)}–${pct(v[1], digits)}]`
   return (
     <Card title="Locked evaluation of the release candidate (run once)"
-      subtitle={`Frozen system rc-1 (commit ${rows[0].commit}); nothing was changed after these results. Development numbers above are not comparable one-to-one.`}>
+      subtitle={`Frozen system rc-1 (commit ${rows[0].commit}); recorded evaluation of the frozen clinical system. Development numbers below are not comparable one-to-one.`}>
       <div className="flex flex-col gap-4">
         <T label="Locked evaluation results" head={['Set', 'Agreement (QWK)', 'Referable sens. / spec.', 'Routed to routine at 2.5%', 'Referable routed to routine']} rows={rows.map((r) => [
           <span key="s" className="block text-left">{r.set}<span className="block text-caption text-text-muted">{r.n_images} images{r.n_patients ? `, ${r.n_patients} patients` : ''}</span></span>,

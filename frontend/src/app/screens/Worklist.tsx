@@ -1,9 +1,9 @@
 import { AlertTriangle, BarChart3, Inbox, ListChecks, RefreshCcw, Search, Upload, type LucideIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Badge, Button, ConfidenceBadge, EmptyState, IconCircle, Input, Pagination, Skeleton, StageBadge, Table, Tabs, cn, type Column } from '../../design/components'
+import { Alert, Badge, Button, ConfidenceBadge, EmptyState, Input, Pagination, Skeleton, StageBadge, Table, Tabs, cn, type Column } from '../../design/components'
 import { api, type CaseRow, type ModelCard, type Settings } from '../api'
 import { DME_LABEL, ROUTING, eyeName, STAGE_CLINICAL, isValidation, pct, when } from '../format'
-import { navigate } from '../router'
+import { href, linkProps, navigate } from '../router'
 import { PageHeader } from '../Shell'
 
 type Data = Awaited<ReturnType<typeof api.cases>>
@@ -17,10 +17,12 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
   const [page, setPage] = useState(1)
   const [agreement, setAgreement] = useState<ModelCard['agreement'] | null>(null)
   const [settings, setSettings] = useState<Settings | null>(null)
+  const [details, setDetails] = useState(false)
+  const [signError, setSignError] = useState<string | null>(null)
   const [signer, setSigner] = useState('')
   const [signing, setSigning] = useState<string | null>(null)
 
-  const load = () => api.cases().then(setData, (e) => setError(e.message))
+  const load = () => api.cases().then(d => { setData(d); setError(null) }, e => setError(e.message))
   useEffect(() => {
     load()
     api.settings().then(setSettings, () => setSettings(null))
@@ -37,6 +39,13 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
       .filter((c) => !q || c.patient_ref.toLowerCase().includes(q) || c.id.toLowerCase().includes(q))
   }, [data, tab, query])
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    params.set('tab', tab)
+    if (query) params.set('q', query); else params.delete('q')
+    window.history.replaceState({}, '', href('/worklist?' + params.toString()))
+  }, [query, tab])
+
   // 50 rows per page keeps a camp-sized list (hundreds of cases) responsive; order and search span all cases.
   const pages = Math.max(1, Math.ceil(rows.length / PER_PAGE))
   const current = Math.min(page, pages)
@@ -50,23 +59,32 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
 
   // Batch sign-off of the routine-rescreening pile: one review ("agree") per case, by a named clinician.
   async function signOff() {
-    for (const c of routinePile) {
-      setSigning(`Signing off ${c.id}…`)
-      await api.review(c.id, { reviewer: signer.trim(), decision: 'agree', corrected_stage: null, corrected_dme: null, note: 'Batch sign-off of the routine-rescreening pile' })
+    if (signing || !signer.trim()) return
+    setSignError(null)
+    let saved = 0
+    try {
+      for (const c of routinePile) {
+        setSigning('Saving review ' + (saved + 1) + ' of ' + routinePile.length)
+        await api.review(c.id, { reviewer: signer.trim(), decision: 'agree', corrected_stage: null, corrected_dme: null, note: 'Batch sign-off of the routine-rescreening pile' })
+        saved++
+      }
+    } catch (e) {
+      setSignError(saved + ' reviews confirmed saved. ' + (e as Error).message + ' Refresh and check the remaining cases before retrying.')
+    } finally {
+      setSigning(null)
+      await load()
     }
-    setSigning(null)
-    load()
   }
 
   const allColumns: Column<CaseRow>[] = [
-    { key: 'routing', header: 'Routing', width: '170px', render: (c) => (
+    { key: 'routing', header: 'AI-suggested priority', width: '170px', render: (c) => (
       <span title={c.routing.reasons.join(' ')}><Badge tone={ROUTING[c.routing.state].tone} dot>{ROUTING[c.routing.state].label}</Badge></span>
     ) },
     { key: 'patient', header: 'Patient', width: '250px', render: (c) => (
       <div className="flex items-center gap-3">
-        {c.thumbnail ? <img src={c.thumbnail} alt="" loading="lazy" className="h-12 w-12 rounded-control bg-surface-viewer object-cover" /> : <span className="h-12 w-12 rounded-control bg-neutral-200" />}
+        {c.thumbnail ? <img src={c.thumbnail} alt="" loading="lazy" width={48} height={48} className="h-12 w-12 rounded-control bg-surface-viewer object-cover" /> : <span className="h-12 w-12 rounded-control bg-neutral-200" />}
         <div className="min-w-0">
-          <div className="flex items-center gap-2 whitespace-nowrap font-medium">{c.patient_ref}{isValidation(c.source) && <Badge tone="info">Validation image</Badge>}</div>
+          <a {...linkProps('/cases/' + encodeURIComponent(c.id))} className="block min-w-[120px] break-words font-semibold text-text-primary no-underline hover:underline">{c.patient_ref}<span className="sr-only">, {eyeName(c.eye)}, case {c.id}</span></a>{isValidation(c.source) && <span className="text-caption text-text-muted">Validation image</span>}
           <div className="flex items-center gap-2 whitespace-nowrap text-caption text-text-muted">
             <span aria-hidden className={cn('grid h-5 w-5 place-items-center rounded-full text-[11px] font-semibold', c.eye === 'unknown' ? 'bg-neutral-100 text-text-secondary' : 'bg-accent-circle text-accent-text')}>
               {c.eye === 'right' ? 'R' : c.eye === 'left' ? 'L' : '?'}
@@ -86,19 +104,19 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
   ]
 
   // The status column only adds information on the All tab.
-  const columns = tab === 'all' ? allColumns : allColumns.filter((c) => c.key !== 'status')
+  const columns = allColumns.filter(c => (details || !['lesions', 'conf', 'dme'].includes(c.key)) && (tab === 'all' || c.key !== 'status')).sort((a, b) => a.key === 'patient' ? -1 : b.key === 'patient' ? 1 : 0)
 
   return (
     <>
-      <PageHeader eyebrow="AI-assisted prioritisation" title={tab === 'reviewed' ? 'History' : 'Worklist'}
-        subtitle="Expedited review first, then clinician review, referable cases and retakes; the routine-rescreening pile last."
-        actions={<Button icon={Upload} onClick={() => navigate('/new')}>New screening</Button>} />
+      <PageHeader eyebrow="AI-assisted prioritisation" title={tab === 'reviewed' ? 'Review history' : 'Clinical worklist'}
+        subtitle="Prioritised by AI-suggested routing. Every case requires clinical judgment."
+        actions={<><Button variant="secondary" icon={RefreshCcw} onClick={() => { void load() }}>Refresh</Button><Button icon={Upload} onClick={() => navigate('/new')}>New screening</Button></>} />
 
-      {error && <Alert tone="danger" title="Could not load the worklist">{error}</Alert>}
+      {error && <Alert tone="danger" title="Could not load the worklist" action={<Button variant="secondary" onClick={() => { void load() }}>Try again</Button>}>{error}</Alert>}
 
       {data && !data.calibration.available && (
         <div className="mb-4"><Alert tone="info" title="Calibration pending for this grader">
-          Probabilities and confidence appear once the calibration job has run for the current grader. Until then the list is ordered by case age.
+          Probabilities and confidence appear once the calibration job has run for the current grader. Review the routing reasons in each case.
         </Alert></div>
       )}
       {data?.reanalysis && data.reanalysis.done < data.reanalysis.total && (
@@ -107,15 +125,15 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
         </Alert></div>
       )}
 
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 divide-x divide-border-default rounded-card border border-border-default bg-surface-card lg:grid-cols-4">
         <Stat icon={AlertTriangle} label="Expedited review" value={data ? count('URGENT_REVIEW') : undefined} hint="Suspected severe disease or central-vision concern" />
-        <Stat icon={ListChecks} label="Clinician review, referable or retake" value={data ? count('CLINICIAN_REVIEW', 'REFERABLE', 'RETAKE') : undefined} hint="Each with its reason" />
+        <Stat icon={ListChecks} label="Review, refer or retake" value={data ? count('CLINICIAN_REVIEW', 'REFERABLE', 'RETAKE') : undefined} hint="Each with its reason" />
         <Stat icon={RefreshCcw} label="Routine rescreening eligible" value={counts?.routine} hint={settings ? settings.wording : 'Operating point loading'} />
-        <Stat icon={BarChart3} label="Total screenings" value={counts?.all} hint={counts ? `${counts.reviewed} reviewed by a clinician` : undefined} />
+        <Stat icon={BarChart3} label="Eye images" value={counts?.all} hint={counts ? `${counts.reviewed} reviewed by a clinician` : undefined} />
       </div>
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-        <Tabs value={tab} onChange={setTab} tabs={[
+        <Tabs value={tab} onChange={value => { setTab(value); navigate('/worklist?tab=' + value + (query ? '&q=' + encodeURIComponent(query) : '')) }} tabs={[
           { value: 'review', label: 'Needs review', count: counts?.review },
           { value: 'routine', label: 'Routine rescreening', count: counts?.routine },
           { value: 'reviewed', label: 'Reviewed', count: counts?.reviewed },
@@ -123,10 +141,11 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
         ]} />
         <div className="relative w-full md:w-[280px]">
           <Search size={16} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-          <Input aria-label="Search by patient or case ID" placeholder="Search patient or case ID" value={query} onChange={(e) => setQuery(e.target.value)} className="rounded-full pl-10" />
+          <Input aria-label="Search by patient or case ID" placeholder="Search patient or case ID" value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10" />
         </div>
       </div>
 
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><p className="text-caption text-text-muted" role="status">{data ? rows.length + ' case' + (rows.length === 1 ? '' : 's') + ' in this view' : 'Loading cases…'}</p><Button compact variant="ghost" aria-pressed={details} onClick={() => setDetails(v => !v)}>{details ? 'Hide additional columns' : 'Show additional columns'}</Button></div>
       {!data && !error && (
         <div className="rounded-card border border-border-default bg-surface-card p-4">
           {Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="mb-3 h-8 w-full" />)}
@@ -139,15 +158,16 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
             action={!query && <Button icon={Upload} onClick={() => navigate('/new')}>New screening</Button>} />
         </div>
       )}
+      {signError && <div className="mb-4"><Alert tone="danger" title="Some reviews could not be confirmed">{signError}</Alert></div>}
       {tab === 'routine' && routinePile.length > 0 && (
         <div className="mb-4 flex flex-wrap items-end gap-3 rounded-card border border-border-default bg-surface-card p-5 shadow-card">
           <div className="min-w-[240px] flex-1">
-            <p className="text-body font-medium">Batch sign-off</p>
+            <p className="text-body font-medium">Batch sign-off · {routinePile.length} filtered cases across all pages</p>
             <p className="text-caption text-text-secondary">
               "No referable diabetic retinopathy detected by AI in gradable images." Open any case to check it first; signing records your agreement for each case.
             </p>
           </div>
-          <Input aria-label="Reviewer name for batch sign-off" placeholder="Your name or initials" value={signer} onChange={(e) => setSigner(e.target.value)} className="md:w-[220px]" />
+          <Input aria-label="Reviewer name for batch sign-off" placeholder="Your name or initials" disabled={!!signing} value={signer} onChange={(e) => setSigner(e.target.value)} className="md:w-[220px]" />
           <Button onClick={signOff} state={signing ? 'loading' : signer.trim() ? 'default' : 'disabled'}>{signing ?? `Sign off ${routinePile.length} case${routinePile.length === 1 ? '' : 's'}`}</Button>
         </div>
       )}
@@ -168,15 +188,10 @@ export function Worklist({ initialTab, initialQuery }: { initialTab?: string | n
   )
 }
 
-function Stat({ icon, label, value, hint }: { icon: LucideIcon; label: string; value?: number; hint?: string }) {
-  return (
-    <div className="flex gap-4 rounded-card border border-border-default bg-surface-card p-5 shadow-card">
-      <IconCircle icon={icon} />
-      <div className="min-w-0">
-        {value === undefined ? <Skeleton className="h-8 w-12" /> : <p className="font-display text-display-sm leading-none tabular-nums">{value}</p>}
-        <p className="mt-1 text-secondary font-medium text-text-primary">{label}</p>
-        {hint && <p className="mt-1 text-caption text-text-muted">{hint}</p>}
-      </div>
-    </div>
-  )
+function Stat({ icon: Icon, label, value, hint }: { icon: LucideIcon; label: string; value?: number; hint?: string }) {
+  return <div className="min-w-0 p-4" title={hint}>
+    <div className="mb-2 flex items-center justify-between gap-2"><span className="text-caption text-text-secondary">{label}</span><Icon size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-muted" /></div>
+    {value === undefined ? <Skeleton className="h-8 w-12" /> : <p className="text-stage font-semibold leading-none tabular-nums">{value}</p>}
+    {hint && <p className="sr-only">{hint}</p>}
+  </div>
 }
