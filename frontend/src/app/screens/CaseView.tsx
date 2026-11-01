@@ -1,9 +1,9 @@
-import { ArrowRight, CircleCheck, FileText, PencilLine } from 'lucide-react'
+import { ArrowRight, CircleCheck, FileText, Link2, PencilLine, ShieldCheck, Unlink } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import tokens from '../../../../design/tokens.json'
 import { Alert, Badge, Button, Card, Checkbox, ConfidenceBadge, Field, Input, Segmented, Select, Skeleton, Toast, cn } from '../../design/components'
-import { api, type CaseDetail, type Glossary, type LesionKey, type Mode, type Sentence } from '../api'
-import { DME_LABEL, ROUTING, eyeName, STAGE_CLINICAL, isValidation, num, routingAlertTone, validationSource, pct, when } from '../format'
+import { api, type CaseDetail, type Encounter, type Glossary, type LesionKey, type Mode, type NextAction, type Sentence } from '../api'
+import { DME_LABEL, NEXT_ACTIONS, ROUTING, VISIT, eyeName, STAGE_CLINICAL, isValidation, nextActionInfo, num, routingAlertTone, validationSource, pct, when } from '../format'
 import { linkProps, navigate } from '../router'
 import { ImageViewer, type Layer } from './ImageViewer'
 import { useUnsavedChanges } from '../useUnsavedChanges'
@@ -35,9 +35,9 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
   // Next case still waiting for review, in worklist order.
   useEffect(() => {
     let active = true
-    api.cases().then((d) => { if (active) setNextId(d.cases.find((x) => x.status === 'new' && x.id !== id)?.id ?? null) }, () => { if (active) setNextId(null) })
+    api.cases().then((d) => { if (active) setNextId(d.cases.find((x) => x.queue !== 'signed' && x.id !== id)?.id ?? null) }, () => { if (active) setNextId(null) })
     return () => { active = false }
-  }, [id, c?.status])
+  }, [id, c?.effective.signed])
   useEffect(() => {
     if (!toast) return
     const t = window.setTimeout(() => setToast(null), 4000)
@@ -79,10 +79,10 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
             <span className="flex flex-wrap items-center gap-2 font-sans">
               {a.status === 'ok' ? <Badge tone="brand" dot>Analysis complete</Badge> : <Badge tone="danger" dot>Not gradable</Badge>}
               {isValidation(c.source) && <Badge tone="info">Validation image</Badge>}
-              {c.status === 'reviewed' ? <Badge tone="success">Reviewed</Badge> : <Badge tone="neutral">Awaiting review</Badge>}
+              {c.effective.signed ? <Badge tone="success" icon={ShieldCheck}>Signed: {nextActionInfo(c.effective.next_action)?.label}</Badge> : <Badge tone="neutral">Not yet signed</Badge>}
             </span>
           </h1>
-          <div className="mt-3"><Badge tone={ROUTING[c.routing.state].tone} dot>{c.routing.label}</Badge></div>
+          <div className="mt-3"><Badge tone={ROUTING[c.routing.state].tone} dot>AI-suggested: {c.routing.label}</Badge></div>
           <p className="mt-2 text-secondary text-text-secondary">Case {c.id} · Added {when(c.created)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -94,6 +94,8 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
           </Button>
         </div>
       </div>
+
+      <VisitStrip c={c} onChange={(e) => setCase({ ...c, encounter: e })} />
 
       <div className="case-layout">
         <div className="min-w-0 [grid-area:viewer]">
@@ -138,7 +140,7 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
           {ok && (
             <Card>
               <div className="flex flex-wrap items-start justify-between gap-2">
-                <p className="text-secondary font-medium text-text-secondary">AI-suggested stage</p>
+                <p className="text-secondary font-medium text-text-secondary">AI severity suggestion <span className="text-text-muted">(provisional)</span></p>
                 {c.assist.confidence_level ? <ConfidenceBadge level={c.assist.confidence_level} /> : <Badge>Confidence not calibrated</Badge>}
               </div>
               <div className={cn('mt-3 inline-flex flex-col rounded-card border px-4 py-3', STAGE_BOX[a.grading!.grade])}>
@@ -146,6 +148,7 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
                 <span className="mt-1 text-secondary font-medium">{STAGE_CLINICAL[a.grading!.grade]}</span>
               </div>
               {mode === 'simple' && <p className="mt-2 text-body text-text-secondary">{stagePlain(a.grading!.grade)}</p>}
+              {!a.quality.usable && <p className="mt-2 rounded-control bg-status-warning-tint p-2 text-caption text-status-warning-text">The image failed the automated quality check, so this stage is not reliable. It must never be read as the eye being free of disease.</p>}
               <dl className="mt-4 flex flex-col divide-y divide-border-default border-t border-border-default text-body">
                 {[
                   [mode === 'simple' ? 'Chance it needs an eye specialist' : 'P(referable DR), calibrated', c.assist.available ? pct(c.assist.p_referable) : '—'],
@@ -162,19 +165,25 @@ export function CaseView({ id, glossary, onLoaded }: { id: string; glossary: Glo
             </Card>
           )}
 
-          {(ok || a.status === 'rejected') && (
-            <Card title="Clinician review" subtitle={a.status === 'rejected' ? 'Record the image as ungradable and arrange a retake.' : 'Record your assessment independently of the AI suggestion.'}>
-              <ReviewForm key={c.id} c={c} onSaved={(d) => { setCase(d); setToast('Review saved. It is stored with the case for model feedback.') }} />
-              <p className="mt-4 rounded-control bg-surface-subtle p-3 text-caption text-text-secondary">Saved corrections are recorded here. They do not currently update the generated report or its routing.</p>
+          {ok && (
+            <Card title="Clinician decision" subtitle="Your signed decision governs this eye's next action, the report and the patient's status.">
+              <DecisionNow c={c} />
+              <ReviewForm key={c.id} c={c} onSaved={(d) => { setCase(d); setToast('Decision signed. Specialist Attention, the report and the patient status now follow it.') }} />
               <Button variant="secondary" icon={FileText} className="mt-4 w-full"
-                onClick={() => navigate(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)}>View detailed report</Button>
+                onClick={() => navigate(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)}>View report</Button>
+            </Card>
+          )}
+          {!ok && (
+            <Card title="Clinician decision" subtitle="The AI could not grade this photograph. You can still record what you see, or request a retake.">
+              <DecisionNow c={c} />
+              <ReviewForm key={c.id} c={c} onSaved={(d) => { setCase(d); setToast('Decision signed.') }} />
             </Card>
           )}
 
           <RoutingCard c={c} />
 
           {ok && (
-            <Card title="Predicted lesion regions" subtitle="Connected regions, not clinically verified lesion counts.">
+            <Card title="Candidate lesion regions (AI)" subtitle="Segmentation model output: candidate regions, not confirmed lesions. A separate model from the severity grader.">
               <FindingsList c={c} mode={mode} name={lesionName} layers={layers} toggle={toggle} />
             </Card>
           )}
@@ -266,32 +275,39 @@ function ExplanationList({ sentences, mode, active, onPick }: { sentences: Sente
   )
 }
 
-export function ReviewForm({ c, onSaved }: { c: Pick<CaseDetail, 'analysis' | 'id' | 'reviews'>; onSaved: (c: CaseDetail) => void }) {
+export function ReviewForm({ c, onSaved }: { c: Pick<CaseDetail, 'id' | 'analysis' | 'reviews'>; onSaved: (c: CaseDetail) => void }) {
   const [dirty, setDirty] = useState(false)
   useUnsavedChanges(dirty, 'This clinician review has unsaved changes. Leave this case?')
-  const [reviewer, setReviewer] = useState('')
-  const rejected = c.analysis.status === 'rejected'
-  const [decision, setDecision] = useState<'agree' | 'disagree' | 'ungradable'>(rejected ? 'ungradable' : 'agree')
+  const gradable = c.analysis.status === 'ok' && !!c.analysis.grading
+  // Safe default: when the automated quality check failed, start from 'ungradable' (which can never be signed as routine).
+  const [decision, setDecision] = useState<'agree' | 'disagree' | 'ungradable'>(gradable && c.analysis.quality.usable ? 'agree' : 'ungradable')
   const [stage, setStage] = useState('')
   const [dme, setDme] = useState('')
+  const [action, setAction] = useState<NextAction | ''>('')
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
-  const reviewerError = touched && !reviewer.trim() ? 'Enter your name or initials.' : undefined
   const stageError = touched && decision === 'disagree' && stage === '' ? 'Choose the stage you would give.' : undefined
+  const decidedStage = decision === 'disagree' ? (stage === '' ? null : Number(stage)) : decision === 'agree' ? c.analysis.grading?.grade ?? null : null
+  const decidedDme = dme || (decision === 'agree' ? c.analysis.findings?.macular_edema_risk.level ?? null : null)
+  const needsNote = action === 'routine_rescreen' && decision !== 'ungradable' && ((decidedStage ?? 0) >= 2 || decidedDme === 'high')
+  const actionError = touched && !action ? 'Choose the next action.' : touched && decision === 'ungradable' && action === 'routine_rescreen'
+    ? 'An image that cannot be assessed must not be signed as routine: choose a retake or an examination.' : undefined
+  const noteError = touched && needsNote && note.trim().length < 5 ? 'Explain why routine rescreening fits this stage or macular finding.' : undefined
 
   async function save() {
     if (busy) return
     setTouched(true)
-    if (!reviewer.trim() || (decision === 'disagree' && stage === '')) { document.getElementById(!reviewer.trim() ? 'reviewer' : 'stage')?.focus(); return }
+    const bad = (decision === 'disagree' && stage === '') ? 'stage' : !action || (decision === 'ungradable' && action === 'routine_rescreen') ? 'action-urgent_referral' : needsNote && note.trim().length < 5 ? 'note' : null
+    if (bad) { document.getElementById(bad)?.focus(); return }
     setBusy(true)
     setError(null)
     try {
-      const saved = await api.review(c.id, { reviewer: reviewer.trim(), decision, corrected_stage: decision === 'disagree' ? Number(stage) : null, corrected_dme: decision === 'ungradable' ? null : dme || null, note })
+      const saved = await api.review(c.id, { decision, corrected_stage: decision === 'disagree' ? Number(stage) : null, corrected_dme: decision === 'ungradable' ? null : dme || null, next_action: action || null, note })
       setDirty(false)
       onSaved(saved)
-      setNote('')
+      setNote(''); setAction('')
       setTouched(false)
     } catch (e) {
       setError((e as Error).message)
@@ -302,19 +318,16 @@ export function ReviewForm({ c, onSaved }: { c: Pick<CaseDetail, 'analysis' | 'i
 
   return (
     <div className="flex flex-col gap-4">
-      {error && <Alert tone="danger" title="Review not saved">{error}</Alert>}
+      {error && <Alert tone="danger" title="Decision not signed">{error}</Alert>}
       <fieldset disabled={busy} className="contents" onChange={() => setDirty(true)}>
-      {!rejected && <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
-        <Button variant={decision === 'agree' ? 'primary' : 'secondary'} icon={CircleCheck} aria-pressed={decision === 'agree'} onClick={() => { setDecision('agree'); setDirty(true) }}>Confirm stage</Button>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+        <Button variant={decision === 'agree' ? 'primary' : 'secondary'} icon={CircleCheck} aria-pressed={decision === 'agree'} disabled={!gradable} title={gradable ? undefined : 'The AI gave no stage to confirm'} onClick={() => { setDecision('agree'); setDirty(true) }}>Confirm AI stage</Button>
         <Button variant={decision === 'disagree' ? 'primary' : 'secondary'} icon={PencilLine} aria-pressed={decision === 'disagree'} onClick={() => { setDecision('disagree'); setDirty(true) }}>Change stage</Button>
-      </div>}
-      {!rejected && <button type="button" onClick={() => { setDecision('ungradable'); setDirty(true) }} aria-pressed={decision === 'ungradable'}
+      </div>
+      <button type="button" onClick={() => { setDecision('ungradable'); setDirty(true) }} aria-pressed={decision === 'ungradable'}
         className={cn('self-start text-secondary underline underline-offset-2', decision === 'ungradable' ? 'font-semibold text-brand-800' : 'text-text-secondary hover:text-text-primary')}>
         Mark the image ungradable instead
-      </button>}
-      <Field id="reviewer" label="Reviewer" error={reviewerError}>
-        <Input id="reviewer" autoComplete="name" maxLength={60} disabled={busy} value={reviewer} invalid={!!reviewerError} onChange={(e) => setReviewer(e.target.value)} placeholder="Name or initials" />
-      </Field>
+      </button>
       {decision === 'disagree' && (
         <Field id="stage" label="Stage you would give" error={stageError}>
           <Select id="stage" value={stage} onChange={(e) => setStage(e.target.value)}>
@@ -329,27 +342,41 @@ export function ReviewForm({ c, onSaved }: { c: Pick<CaseDetail, 'analysis' | 'i
           <option value="low">Low</option><option value="possible">Possible</option><option value="high">High</option>
         </Select>
       </Field>}
-      <Field id="note" label="Note (optional)">
-        <textarea id="note" value={note} maxLength={1000} rows={3} onChange={(e) => setNote(e.target.value)}
+      <fieldset className="flex flex-col gap-2" aria-describedby={actionError ? 'action-error' : undefined}>
+        <legend className="mb-1 text-secondary font-medium">Next action for this eye</legend>
+        {NEXT_ACTIONS.map((n) => (
+          <label key={n.value} className={cn('flex min-h-[44px] cursor-pointer items-start gap-3 rounded-control border px-3 py-2', action === n.value ? 'border-brand-600 bg-brand-50' : 'border-border-default hover:bg-surface-subtle',
+            decision === 'ungradable' && n.value === 'routine_rescreen' && 'opacity-50')}>
+            <input id={`action-${n.value}`} type="radio" name={`action-${c.id}`} value={n.value} checked={action === n.value} className="mt-1"
+              disabled={decision === 'ungradable' && n.value === 'routine_rescreen'} onChange={() => { setAction(n.value); setDirty(true) }} />
+            <span className="flex flex-col"><span className="text-body font-medium">{n.label}</span><span className="text-caption text-text-secondary">{n.hint}</span></span>
+          </label>
+        ))}
+        {actionError && <p id="action-error" className="text-caption text-status-danger-text">{actionError}</p>}
+      </fieldset>
+      <Field id="note" label={needsNote ? 'Justification (required for this combination)' : 'Note (optional)'} error={noteError}>
+        <textarea id="note" value={note} maxLength={1000} rows={3} onChange={(e) => setNote(e.target.value)} aria-invalid={!!noteError}
           className="w-full rounded-control border border-border-strong bg-surface-card px-3 py-2 text-body text-text-primary hover:border-neutral-400" />
       </Field>
-      <div className="flex justify-end">
-        <Button onClick={save} state={busy ? 'loading' : 'default'}>
-          Save review: {decision === 'agree' ? 'confirm' : decision === 'disagree' ? 'change stage' : 'ungradable'}
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-caption text-text-muted">Signed under your account. Earlier decisions are kept; a new one replaces them.</p>
+        <Button onClick={save} state={busy ? 'loading' : 'default'} icon={ShieldCheck}>Sign decision</Button>
       </div>
       </fieldset>
       {c.reviews.length > 0 && (
         <div className="border-t border-border-default pt-4">
-          <h3 className="text-secondary font-semibold text-text-secondary">Previous reviews</h3>
+          <h3 className="text-secondary font-semibold text-text-secondary">Decision history</h3>
           <ul className="mt-2 flex flex-col gap-2">
             {c.reviews.map((r) => (
               <li key={r.id} className="text-secondary">
-                <span className="font-medium">{r.reviewer}</span> · {when(r.created)} · {r.decision === 'disagree' ? `Changed: stage ${r.corrected_stage}` : r.decision === 'agree' ? 'Confirmed' : 'Ungradable'}
+                {r.authenticated ? <Badge tone="success" icon={ShieldCheck}>Signed</Badge> : <Badge tone="neutral">Historical, not authenticated</Badge>}{' '}
+                <span className="font-medium">{r.reviewer}</span> · {when(r.created)} · {r.decision === 'disagree' ? `Stage ${r.corrected_stage} (AI ${r.ai_stage ?? '—'})` : r.decision === 'agree' ? `Confirmed AI stage ${r.ai_stage ?? '—'}` : 'Ungradable'}
+                {r.next_action_label && <span> · <b>{r.next_action_label}</b></span>}
                 {r.note && <span className="text-text-secondary"> · {r.note}</span>}
               </li>
             ))}
           </ul>
+          {c.reviews.some((r) => !r.authenticated) && <p className="mt-2 text-caption text-text-muted">Historical reviews were recorded before signed accounts existed. They are kept for the record but do not set the next action.</p>}
         </div>
       )}
     </div>
@@ -359,12 +386,12 @@ export function ReviewForm({ c, onSaved }: { c: Pick<CaseDetail, 'analysis' | 'i
 function RoutingCard({ c }: { c: CaseDetail }) {
   const r = c.routing
   return (
-    <Card title="AI-suggested routing">
+    <Card title="AI-suggested routing (provisional)" subtitle="Orders Specialist Attention. It is not a clinical decision.">
       <div className="mb-3"><Badge tone={ROUTING[r.state].tone} dot>{r.label}</Badge></div>
       <Alert tone={routingAlertTone(r.state)} title={r.state === 'ROUTINE_RESCREEN_ELIGIBLE' ? 'Why it is eligible' : 'Why it needs attention'}>
         <ul className="flex list-disc flex-col gap-1 pl-4">{r.reasons.map((x) => <li key={x}>{x}</li>)}</ul>
         {r.previous && (
-          <p className="mt-2">Previous visit ({r.previous.case_id}, {r.previous.created.slice(0, 10)}): signed by {r.previous.reviewer},{' '}
+          <p className="mt-2">Previous visit ({r.previous.case_id}, {r.previous.created.slice(0, 10)}): {r.previous.authenticated ? 'signed' : 'historical review'} by {r.previous.reviewer},{' '}
             {r.previous.decision === 'disagree' ? `stage ${r.previous.corrected_stage}` : r.previous.decision === 'agree' ? `agreed with AI stage ${r.previous.ai_stage}` : 'ungradable'}
             {r.previous.note && ` · "${r.previous.note}"`}</p>
         )}
@@ -380,22 +407,24 @@ function RoutingCard({ c }: { c: CaseDetail }) {
 function PatientCard({ c, stageName }: { c: CaseDetail; stageName: (g: number) => string }) {
   const p = c.patient
   return (
-    <Card title={`Patient ${c.patient_ref}`} subtitle="AI summary across recorded eyes; clinician review required"
+    <Card title={`Patient ${c.patient_ref}`} subtitle={p.single_photo ? 'Single photograph (no visit pairing recorded)' : 'This visit: latest photograph of each eye'}
       actions={<a {...linkProps(`/patients/${encodeURIComponent(c.patient_ref)}/report?case=${c.id}`)} className="text-secondary font-medium text-text-link">Open report</a>}>
       <div className="flex flex-col gap-3">
         {p.eyes.map((e) => (
           <Row key={e.case_id} current={e.case_id === c.id}>
             <span>{eyeName(e.eye)} {e.case_id !== c.id && <a {...linkProps(`/cases/${e.case_id}`)} className="text-text-link">({e.case_id})</a>}</span>
-            <span className="flex flex-wrap items-center gap-2 text-right">
-              {e.stage == null ? 'Not assessable' : `Stage ${e.stage} · ${stageName(e.stage)}`}
-              <Badge tone={ROUTING[e.state].tone}>{ROUTING[e.state].label}</Badge>
+            <span className="flex flex-wrap items-center justify-end gap-2 text-right">
+              {e.effective?.signed ? <Badge tone={nextActionInfo(e.effective.next_action)?.tone ?? 'neutral'} icon={ShieldCheck}>{nextActionInfo(e.effective.next_action)?.label}</Badge> : <Badge tone="neutral">Not signed</Badge>}
+              <span className="text-caption text-text-muted">AI: {e.stage == null ? 'not assessable' : `stage ${e.stage} · ${stageName(e.stage)}`}</span>
             </span>
           </Row>
         ))}
-        <Alert tone={routingAlertTone(p.state)} title={`Patient: ${p.label}`}>
-          {p.notes.length > 0 && <ul className="flex list-disc flex-col gap-1 pl-4">{p.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
-          <p className="mt-1">{p.note}</p>
-          <p className="mt-1 text-caption">Operating point: {p.operating_point.wording}.{!p.operating_point.valid && ' Routine routing is switched off for the model currently in use.'}</p>
+        <Alert tone={p.effective.state === 'decision_recorded' && ['urgent_referral', 'referral', 'examination'].includes(p.effective.next_action ?? '') ? 'danger' : p.effective.state === 'decision_recorded' ? 'success' : 'info'}
+          title={p.effective.state === 'decision_recorded' ? `Visit next action: ${p.effective.next_action_label}` : VISIT[p.effective.state].label}>
+          {p.effective.missing_eyes.length > 0 && <p>No {p.effective.missing_eyes.join(' or ')}-eye photograph in this visit: screening incomplete.</p>}
+          {p.effective.state === 'decision_recorded' && p.effective.pending_eyes.length > 0 && <p>Still awaiting your review: {p.effective.pending_eyes.join(', ')} eye.</p>}
+          {p.effective.state !== 'decision_recorded' && p.effective.partial && <p>Routine rescreening needs both eyes photographed and signed.</p>}
+          <p className="mt-1 text-caption">{p.ai_label}. {p.note}</p>
         </Alert>
       </div>
     </Card>
@@ -413,4 +442,89 @@ function CaseSkeleton() {
       <div className="flex flex-col gap-4"><Skeleton className="h-[160px] w-full" /><Skeleton className="h-[320px] w-full" /></div>
     </div>
   )
+}
+
+/** The current authoritative state of this eye, above the decision form. */
+function DecisionNow({ c }: { c: CaseDetail }) {
+  const e = c.effective
+  if (!e.signed) {
+    return <div className="mb-4 rounded-control border border-dashed border-border-strong p-3 text-secondary text-text-secondary">
+      <b className="text-text-primary">No signed decision for this photograph.</b> The AI suggestion above is provisional{e.legacy_reviews ? '; a historical review exists but was not made under a signed account' : ''}.
+    </div>
+  }
+  return <div className="mb-4 rounded-control border border-status-success-border bg-status-success-tint p-3 text-secondary">
+    <p className="flex flex-wrap items-center gap-2"><ShieldCheck size={16} aria-hidden /><b>{e.next_action_label}</b>{e.stage != null && <span>· Stage {e.stage} · {STAGE_CLINICAL[e.stage]}</span>}</p>
+    <p className="mt-1 text-caption">Signed by {e.reviewer} · {e.signed_at ? when(e.signed_at) : ''}. AI at signing: stage {e.ai_at_signing?.stage ?? '—'}.</p>
+    {e.reanalysed_since_signing && <p className="mt-1 text-caption">The AI has been re-analysed since you signed. Your decision stands; sign again if you want to change it.</p>}
+  </div>
+}
+
+/** Right / left eye of this visit (encounter), the visit outcome, and the camp-registration link. */
+function VisitStrip({ c, onChange }: { c: CaseDetail; onChange: (e: Encounter) => void }) {
+  const e = c.encounter
+  if (!e) {
+    return <div className="mb-6"><Alert tone="info" title="Single photograph">This case was recorded before visits paired both eyes. It is not combined with any other photograph.</Alert></div>
+  }
+  const byEye = (eye: 'right' | 'left') => e.eyes.find((x) => x.eye === eye)
+  const latestPhoto = (eye: 'right' | 'left') => e.photos.find((p) => p.eye === eye)
+  return (
+    <section aria-label="This visit" className="mb-6 grid gap-3 rounded-card border border-border-default bg-surface-card p-4 shadow-card lg:grid-cols-[1fr_1fr_1.4fr]">
+      {(['right', 'left'] as const).map((eye) => {
+        const x = byEye(eye), photo = latestPhoto(eye)
+        return <div key={eye} className={cn('rounded-control border p-3', photo ? 'border-border-default' : 'border-status-warning-border bg-status-warning-tint')}>
+          <p className="text-caption font-medium uppercase tracking-wide text-text-secondary">{eye === 'right' ? 'Right eye (OD)' : 'Left eye (OS)'}</p>
+          {photo ? <>
+            <p className="mt-1 text-body font-semibold">Captured{photo.id === c.id ? ' · this photo' : ''}</p>
+            <p className="text-caption text-text-secondary">{x?.signed ? `Signed: ${x.next_action_label}` : 'Not yet signed'}{x?.pending && x.signed ? ' · newer photo awaiting review' : ''}{x?.quality_concern && !x.signed ? ' · image quality flagged (provisional)' : ''}</p>
+            {photo.id !== c.id && <a {...linkProps(`/cases/${photo.id}`)} className="mt-1 inline-block text-caption font-medium text-text-link">Open {photo.id}</a>}
+          </> : <>
+            <p className="mt-1 text-body font-semibold text-status-warning-text">Missing</p>
+            <p className="text-caption text-status-warning-text">Screening incomplete. Add this eye from New screening with the same visit.</p>
+          </>}
+        </div>
+      })}
+      <div className="flex flex-col gap-2 rounded-control border border-border-default p-3">
+        <p className="text-caption font-medium uppercase tracking-wide text-text-secondary">Visit {e.id}</p>
+        <p className="text-body font-semibold">{e.outcome.state === 'decision_recorded' ? e.outcome.next_action_label : VISIT[e.outcome.state].label}</p>
+        <RegistrationLink e={e} onChange={onChange} />
+      </div>
+    </section>
+  )
+}
+
+function RegistrationLink({ e, onChange }: { e: Encounter; onChange: (e: Encounter) => void }) {
+  const [open, setOpen] = useState(false)
+  const [ref, setRef] = useState('')
+  const [code, setCode] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [reason, setReason] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  async function run(f: () => Promise<Encounter>) {
+    setBusy(true); setError(null)
+    try { onChange(await f()); setOpen(false); setRef(''); setCode(''); setConsent(false); setReason('') } catch (x) { setError((x as Error).message) } finally { setBusy(false) }
+  }
+  if (e.link) {
+    return <div className="text-caption text-text-secondary">
+      <p className="flex items-center gap-2 text-secondary text-text-primary"><Link2 size={15} aria-hidden />Linked to camp registration <b>{e.link.ref}</b></p>
+      <p>{e.link.name} · {e.link.camp.en}{e.link.camp_is_demo ? ' (demonstration camp)' : ''} · linked by {e.link.linked_by}, {when(e.link.linked_at)}</p>
+      <p>The patient sees only the visit status and the next action you sign, on their receipt's status page.</p>
+      {!open ? <Button compact variant="ghost" icon={Unlink} onClick={() => setOpen(true)} className="mt-1">Unlink</Button> : <div className="mt-2 flex flex-col gap-2">
+        {error && <Alert tone="danger" title="Not unlinked">{error}</Alert>}
+        <Field id={`unlink-${e.id}`} label="Reason (recorded)"><Input id={`unlink-${e.id}`} value={reason} onChange={(x) => setReason(x.target.value)} maxLength={200} /></Field>
+        <div className="flex gap-2"><Button compact variant="secondary" onClick={() => setOpen(false)}>Cancel</Button><Button compact state={busy ? 'loading' : reason.trim().length >= 3 ? 'default' : 'disabled'} onClick={() => run(() => api.unlink(e.id, reason.trim()))}>Unlink</Button></div>
+      </div>}
+    </div>
+  }
+  if (!open) return <Button compact variant="secondary" icon={Link2} onClick={() => setOpen(true)}>Link camp registration</Button>
+  return <form className="flex flex-col gap-2" onSubmit={(x) => { x.preventDefault(); if (ref.trim() && code.trim() && consent) void run(() => api.link(e.id, ref.trim(), code.trim(), consent)) }}>
+    <p className="text-caption text-text-secondary">Enter the reference and code from the receipt the patient shows you. Records are never matched by name, phone or PIN.</p>
+    {error && <Alert tone="danger" title="Not linked">{error}</Alert>}
+    <div className="grid grid-cols-2 gap-2">
+      <Field id={`ref-${e.id}`} label="Reference"><Input id={`ref-${e.id}`} value={ref} onChange={(x) => setRef(x.target.value.toUpperCase())} placeholder="DQN-XXXXXX" maxLength={20} /></Field>
+      <Field id={`code-${e.id}`} label="Code"><Input id={`code-${e.id}`} value={code} onChange={(x) => setCode(x.target.value.toUpperCase())} placeholder="XXXX-XXXX" maxLength={20} /></Field>
+    </div>
+    <Checkbox checked={consent} onChange={setConsent} label="The person agreed to link this screening to their registration." />
+    <div className="flex gap-2"><Button compact variant="secondary" type="button" onClick={() => setOpen(false)}>Cancel</Button><Button compact type="submit" state={busy ? 'loading' : ref.trim() && code.trim() && consent ? 'default' : 'disabled'}>Link</Button></div>
+  </form>
 }

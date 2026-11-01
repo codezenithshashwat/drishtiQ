@@ -34,15 +34,17 @@ test('compact navigation branding omits the tagline and keeps wordmark line heig
   assert.equal(html.includes(TAGLINE), false)
 })
 
-test('rejected photographs can be reviewed as ungradable without a stage or macular risk', () => {
+test('rejected photographs default to ungradable and cannot confirm an absent AI stage', () => {
   const html = renderToStaticMarkup(<ReviewForm c={{ id: 'QA', reviews: [], analysis: { ...analysis, status: 'rejected', grading: undefined, findings: undefined } }} onSaved={() => {}} />)
-  assert.match(html, /Save review: ungradable/); assert.match(html, /Reviewer/)
-  assert.doesNotMatch(html, /Confirm stage|Change stage|Macular-edema risk/)
+  assert.match(html, /Sign decision/); assert.match(html, /disabled=""[^>]*>.*?Confirm AI stage/)
+  assert.match(html, /aria-pressed="true"[^>]*>Mark the image ungradable instead/)
+  assert.doesNotMatch(html, /Macular-edema risk|label for="reviewer"/)
 })
 
 test('gradable photographs retain stage confirmation and correction controls', () => {
   const html = renderToStaticMarkup(<ReviewForm c={{ id: 'QA', reviews: [], analysis }} onSaved={() => {}} />)
-  assert.match(html, /Confirm stage/); assert.match(html, /Change stage/); assert.match(html, /maxlength="60"/i)
+  assert.match(html, /Confirm AI stage/); assert.match(html, /Change stage/); assert.match(html, /Signed under your account/)
+  assert.match(html, /Next action for this eye/)
 })
 
 test('fit preserves aspect ratio and centers the photograph', () => {
@@ -143,9 +145,11 @@ test('screening and review requests retain the backend contract (mock fetch only
     assert.equal(requests[0].url,'/api/cases'); assert.equal(requests[0].init?.method,'POST')
     const body=requests[0].init?.body as FormData
     assert.equal(body.get('patient_ref'),'TEST-ONLY'); assert.equal(body.get('eye'),'left'); assert.equal(body.get('vision_problems'),'true'); assert.equal(body.get('prior_treatment'),'false')
-    const review={reviewer:'Test',decision:'disagree',corrected_stage:3,corrected_dme:null,note:'Fixture'}
+    const review={decision:'disagree',corrected_stage:3,corrected_dme:null,next_action:'urgent_referral' as const,note:'Fixture'}
     await api.review('CASE/1',review)
     assert.equal(requests[1].url,'/api/cases/CASE%2F1/review'); assert.deepEqual(JSON.parse(requests[1].init?.body as string),review)
+    for (const request of requests) assert.equal(new Headers(request.init?.headers).get('X-Requested-With'),'dqn')
+    assert.equal(requests[1].init?.credentials,'same-origin')
   } finally { globalThis.fetch=original }
 })
 test('production assets stay local, including display fonts', () => {

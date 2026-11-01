@@ -20,7 +20,7 @@ export function Landing() {
   const [study, setStudy] = useState(0)
   const [section, setSection] = useState('')
   useEffect(() => {
-    document.title = BRAND + ' · AI-assisted retinal screening'
+    document.title = BRAND + ' · For eye specialists'
     const controller = new AbortController()
     fetch('/locked_results.json', { signal: controller.signal }).then(r => { if (!r.ok) throw new Error('Unavailable'); return r.json() }).then(data => { setLocked(data); setEvidenceState('ready') }, error => { if (error.name !== 'AbortError') setEvidenceState('error') })
     const observer = new IntersectionObserver(entries => {
@@ -35,11 +35,11 @@ export function Landing() {
   return <div id="top" className="ds landing landing-cinematic">
     <a href="#main-content" className="skip-link">Skip to content</a>
     <header className="landing-header">
-      <a {...linkProps('/')} aria-label={BRAND + ' home'} className="landing-brand"><BrandLockup /></a>
+      <a {...linkProps('/specialists')} aria-label={BRAND + ' for eye specialists'} className="landing-brand"><BrandLockup /></a>
       <nav aria-label="Sections">
         {[['workflow', 'The experience'], ['evidence', 'The evidence'], ['access', 'The purpose']].map(([id, label]) => <a key={id} href={'#' + id} aria-current={section === id ? 'location' : undefined}>{label}</a>)}
       </nav>
-      <a {...linkProps('/worklist')} className="landing-workspace">Open workspace<ArrowUpRight size={17} aria-hidden /></a>
+      <span className="landing-header-links"><a {...linkProps('/')} className="landing-patients">For patients</a><a {...linkProps('/worklist')} className="landing-workspace">Specialist workspace<ArrowUpRight size={17} aria-hidden /></a></span>
     </header>
     <main id="main-content" tabIndex={-1}>
       <section className="vision-hero" aria-labelledby="hero-title" data-landing-section id="vision">
@@ -105,7 +105,7 @@ export function Landing() {
     </main>
     <footer className="landing-footer">
       <div><BrandLockup /><p>Research prototype, not a medical device. Not validated for clinical use. A qualified clinician makes the final decision.</p></div>
-      <div className="footer-links"><a {...linkProps('/about')}>Model, data & licences<ArrowUpRight size={14} aria-hidden /></a><a href="#top">Back to top<ArrowUpRight size={14} aria-hidden /></a></div>
+      <div className="footer-links"><a {...linkProps('/')}>For patients: Saathi and eye camps<ArrowUpRight size={14} aria-hidden /></a><a {...linkProps('/about')}>Model, data & licences<ArrowUpRight size={14} aria-hidden /></a><a href="#top">Back to top<ArrowUpRight size={14} aria-hidden /></a></div>
     </footer>
   </div>
 }

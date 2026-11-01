@@ -1,4 +1,37 @@
-import type { Assist, Eye, RoutingState } from './api'
+import type { Assist, Eye, NextAction, Queue, RoutingState, VisitState } from './api'
+
+/** Next actions a clinician signs, most urgent first (same order and wording as backend/clinical_state.py). */
+export const NEXT_ACTIONS: { value: NextAction; label: string; hint: string; tone: 'danger' | 'orange' | 'warning' | 'info' | 'slate' }[] = [
+  { value: 'urgent_referral', label: 'Urgent referral', hint: 'See an eye specialist as soon as possible', tone: 'danger' },
+  { value: 'referral', label: 'Referral', hint: 'Book a visit with an eye specialist', tone: 'orange' },
+  { value: 'examination', label: 'In-person examination', hint: 'Cannot be assessed from the photograph', tone: 'orange' },
+  { value: 'recapture', label: 'Retake photograph', hint: 'The photograph must be taken again', tone: 'info' },
+  { value: 'follow_up', label: 'Follow-up', hint: 'Follow-up with the eye-care team', tone: 'warning' },
+  { value: 'routine_rescreen', label: 'Routine rescreening', hint: 'Next routine screening', tone: 'slate' },
+]
+export const nextActionInfo = (a: NextAction | null | undefined) => NEXT_ACTIONS.find((x) => x.value === a)
+
+/** Visit (encounter) states before and after sign-off. Objective process facts only until a clinician signs. */
+export const VISIT: Record<VisitState, { label: string; tone: 'danger' | 'warning' | 'info' | 'slate' | 'success' }> = {
+  in_progress: { label: 'Screening in progress', tone: 'info' },
+  incomplete: { label: 'Screening incomplete', tone: 'warning' },
+  quality_check: { label: 'Image quality to be checked (automated, provisional)', tone: 'warning' },
+  awaiting_review: { label: 'Awaiting clinician review', tone: 'info' },
+  decision_recorded: { label: 'Clinician decision recorded', tone: 'success' },
+}
+
+/** Specialist Attention queues. */
+export const QUEUES: { value: Queue | 'all'; label: string }[] = [
+  { value: 'attention', label: 'Needs attention' },
+  { value: 'awaiting', label: 'Awaiting review' },
+  { value: 'retake', label: 'Retake / cannot assess' },
+  { value: 'routine', label: 'Routine' },
+  { value: 'signed', label: 'Signed' },
+  { value: 'all', label: 'All' },
+]
+/** Older links used ?tab=review / ?tab=reviewed. */
+export const queueFromTab = (tab: string | null | undefined): Queue | 'all' =>
+  tab === 'review' ? 'attention' : tab === 'reviewed' ? 'signed' : (QUEUES.find((q) => q.value === tab)?.value ?? 'attention')
 
 export const STAGE_CLINICAL = ['No apparent DR', 'Mild NPDR', 'Moderate NPDR', 'Severe NPDR', 'Proliferative DR']
 export const EYE_LABEL: Record<Eye, string> = { right: 'Right', left: 'Left', unknown: 'Not recorded' }

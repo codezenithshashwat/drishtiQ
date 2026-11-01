@@ -9,6 +9,7 @@ import copy
 import csv
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -27,19 +28,26 @@ FORBIDDEN = ("normal", "healthy", "cleared")
 def env(tmp_path_factory):
     from backend import store
     from backend.app import app, state
-    old = store.DIR, store.IMAGES
+    old = store.DIR, store.IMAGES, os.environ.get("RS_DATA_DIR")
     tmp = tmp_path_factory.mktemp("store")
     store.DIR, store.IMAGES = tmp, tmp / "images"
+    os.environ["RS_DATA_DIR"] = str(tmp)  # the Network database (accounts) is throwaway too
     with open(ROOT / "data/interim/manifests/idrid_grading_train_clean.csv", newline="") as f:
         image = (ROOT / next(csv.DictReader(f))["filepath"]).read_bytes()
-    with TestClient(app) as c:
+    with TestClient(app, headers={"X-Requested-With": "dqn"}) as c:
+        # V3: clinical endpoints need a signed-in ophthalmologist (the demo clinician seeded in demo mode).
+        assert c.post("/api/network/auth/login", json={"identifier": "9000000004", "password": "Demo@Eye-Doctor1"}).status_code == 200
         r = c.post("/api/cases", files={"file": ("f.jpg", image, "image/jpeg")},
                    data={"patient_ref": "INTAKE-1", "eye": "left", "prior_treatment": "true"})
         assert r.status_code == 200
         template = r.json()
         assert template["analysis"]["status"] == "ok" and state["calibration"] is not None
-        yield dict(client=c, state=state, store=store, image=image, template=template)
-    store.DIR, store.IMAGES = old
+        yield dict(client=c, state=state, store=store, image=image, template=template, encounters={})
+    store.DIR, store.IMAGES = old[:2]
+    if old[2] is None:
+        os.environ.pop("RS_DATA_DIR", None)
+    else:
+        os.environ["RS_DATA_DIR"] = old[2]
 
 
 def variant(t, *, grade=0, score=None, usable=True, dme="low", side="left"):
@@ -61,7 +69,10 @@ def variant(t, *, grade=0, score=None, usable=True, dme="low", side="left"):
 
 
 def add(env, ref, eye, analysis, intake=None):
-    return env["store"].add_case(env["state"]["db"], ref, eye, "upload", env["image"], "jpg", analysis, env["state"]["signature"], intake=intake)
+    """Photos of one patient reference belong to one screening encounter (V3), so the visit summary pairs right and left."""
+    db = env["state"]["db"]
+    eid = env["encounters"].get(ref) or env["encounters"].setdefault(ref, env["store"].create_encounter(db, ref)["id"])
+    return env["store"].add_case(db, ref, eye, "upload", env["image"], "jpg", analysis, env["state"]["signature"], intake=intake, encounter_id=eid)
 
 
 def patient(env, cid):
@@ -162,7 +173,7 @@ def test_laterality_mismatch_goes_to_clinician_review(env, valid):
 def test_repeat_visit_never_downgrades_a_signed_referral(env, valid):
     add(env, "P-REPEAT", "right", variant(env["template"], side="right"))
     old = add(env, "P-REPEAT", "left", variant(env["template"]))
-    r = env["client"].post(f"/api/cases/{old}/review", json={"reviewer": "Dr T", "decision": "disagree", "corrected_stage": 2, "note": "IRMA"})
+    r = env["client"].post(f"/api/cases/{old}/review", json={"decision": "disagree", "corrected_stage": 2, "note": "IRMA", "next_action": "referral"})
     assert r.status_code == 200
     new = add(env, "P-REPEAT", "left", variant(env["template"]))
     c = patient(env, new)

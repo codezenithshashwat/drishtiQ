@@ -40,7 +40,11 @@ $built = if (Test-Path $build) { (Get-Content $build -Raw | ConvertFrom-Json).co
 if ($built -ne $head) {
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-Host "Rebuilding the page (built from $built, code at $head)..."
-        Push-Location (Join-Path $root "frontend"); npm run build | Out-Null; Pop-Location
+        Push-Location (Join-Path $root "frontend")
+        try {
+            & npm.cmd run build | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Frontend build failed. See the build errors above." }
+        } finally { Pop-Location }
     } else {
         Write-Host "The page was built from $built but the code is at $head, and npm is not installed to rebuild it." -ForegroundColor Yellow
     }

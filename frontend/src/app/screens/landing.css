@@ -196,3 +196,8 @@
   .eye-film-picture,.eye-film-shade { display: none; }
   .vision-hero,.landing-closing,.workflow-stage { background: Canvas; color: CanvasText; }
 }
+.landing-header-links { display: inline-flex; align-items: center; flex-wrap: wrap; gap: clamp(12px,2vw,24px); }
+.landing-patients { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.landing-patients:hover { color: var(--ink); }
+@media (max-width: 420px) { .landing-header-links { gap: 10px; } .landing-patients { font-size: 11px; } }
+@media (forced-colors: active) { .vision-button,.study-tabs button[aria-pressed=true] { border: 1px solid ButtonText; } }

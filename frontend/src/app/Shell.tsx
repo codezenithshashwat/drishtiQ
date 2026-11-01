@@ -4,13 +4,14 @@ import { useState, type ReactNode } from 'react'
 import { Badge, Button, cn } from '../design/components'
 import { BrandLockup } from './BrandMark'
 import { BRAND } from './brand'
+import type { Clinician } from './api'
 import { linkProps, type Route } from './router'
 
 type NavItem = { to: string; label: string; icon: LucideIcon; active: (r: Route) => boolean }
 const NAV: NavItem[] = [
   { to: '/new', label: 'New screening', icon: Upload, active: r => r.name === 'new' },
-  { to: '/worklist', label: 'Clinical worklist', icon: ListChecks, active: r => (r.name === 'worklist' && r.tab !== 'reviewed') || r.name === 'case' || r.name === 'report' },
-  { to: '/worklist?tab=reviewed', label: 'Review history', icon: History, active: r => r.name === 'worklist' && r.tab === 'reviewed' },
+  { to: '/worklist', label: 'Specialist Attention', icon: ListChecks, active: r => (r.name === 'worklist' && r.tab !== 'signed' && r.tab !== 'reviewed') || r.name === 'case' || r.name === 'report' },
+  { to: '/worklist?tab=signed', label: 'Signed decisions', icon: History, active: r => r.name === 'worklist' && (r.tab === 'signed' || r.tab === 'reviewed') },
   { to: '/disagreements', label: 'Disagreements', icon: MessageSquareWarning, active: r => r.name === 'disagreements' },
   { to: '/about', label: 'Model & settings', icon: Info, active: r => r.name === 'about' },
 ]
@@ -30,17 +31,18 @@ function Navigation({ route, onNavigate, compact = false }: { route: Route; onNa
   </nav>
 }
 
-export function Shell({ route, crumbs, actions, version, children }: { route: Route; crumbs: Crumb[]; actions?: ReactNode; version?: string; children: ReactNode }) {
+export function Shell({ route, crumbs, actions, version, clinician, onSignOut, children }: { route: Route; crumbs: Crumb[]; actions?: ReactNode; version?: string; clinician?: Clinician; onSignOut?: () => void; children: ReactNode }) {
   const [menu, setMenu] = useState(false)
   const back = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null
   return <div className="ds workspace flex min-h-screen text-text-primary">
     <a className="skip-link" href="#main-content">Skip to content</a>
     <aside className="workspace-sidebar sticky top-0 hidden h-screen w-rail shrink-0 flex-col md:flex xl:w-sidebar">
-      <a {...linkProps('/')} aria-label={`${BRAND}: home`} className="workspace-brand flex min-h-[84px] shrink-0 items-center px-4 py-4 no-underline xl:px-5"><BrandLockup compact inverse /></a>
+      <a {...linkProps('/specialists')} aria-label={`${BRAND}: specialist home`} className="workspace-brand flex min-h-[84px] shrink-0 items-center px-4 py-4 no-underline xl:px-5"><BrandLockup compact inverse /></a>
       <div className="min-h-0 flex-1 overflow-y-auto pt-3"><Navigation route={route} compact /></div>
       <div className="workspace-sidebar-note hidden shrink-0 border-t p-5 xl:block">
         <p className="text-secondary font-medium">Human judgment. AI assistance.</p>
         <p className="mt-2 text-caption text-text-muted">Research prototype. Every clinical decision requires a clinician.</p>
+        <a {...linkProps('/')} className="mt-3 inline-block text-caption text-neutral-200">Patient site: Saathi and eye camps</a>
         <details className="mt-4 text-caption text-text-muted"><summary className="cursor-pointer">System information</summary><p className="mt-2 break-words">{version ?? 'Model information unavailable'}</p></details>
       </div>
     </aside>
@@ -67,7 +69,11 @@ export function Shell({ route, crumbs, actions, version, children }: { route: Ro
             </li>)}
           </ol></nav>
         </div>
-        <div className="flex shrink-0 items-center gap-3">{actions}<Badge tone="slate">Research prototype</Badge><span className="hidden border-l border-border-default pl-3 text-caption text-text-muted lg:inline">Demo workspace</span></div>
+        <div className="flex shrink-0 items-center gap-3">{actions}<span className="hidden sm:inline-flex"><Badge tone="slate">Research prototype</Badge></span>
+          {clinician && <span className="flex items-center gap-2 border-l border-border-default pl-3">
+            <span className="hidden max-w-[180px] truncate text-caption text-text-secondary lg:block" title={`Signed in as ${clinician.name}`}>{clinician.name}</span>
+            <Button variant="ghost" compact onClick={onSignOut} aria-label={`Sign out ${clinician.name}`}>Sign out</Button>
+          </span>}</div>
       </header>
       <main id="main-content" tabIndex={-1} className="workspace-content mx-auto w-full max-w-content flex-1 px-4 py-6 sm:px-6 lg:py-8">{children}</main>
     </div>

@@ -73,19 +73,21 @@
   </header>
 
   <div class="callout {{ summary.follow_up.level }}">
-    <div class="overline">Routing suggestion</div>
+    <div class="overline">Visit outcome · the signed clinician decision governs</div>
     <div class="title">{{ summary.follow_up.title }}</div>
-    <p>{{ summary.follow_up.text }} {{ summary.note }}</p>
+    <p>{{ summary.follow_up.text }}{% if summary.effective.missing_eyes %} Screening incomplete: no {{ summary.effective.missing_eyes|join(' or ') }}-eye photograph in this visit.{% endif %}</p>
+    <p class="small">AI-suggested routing (provisional): {{ summary.label }}. {{ summary.note }}</p>
   </div>
 
   <h2>Result by eye</h2>
   <table>
-    <thead><tr><th>Eye</th><th>ICDR stage</th><th>Routing</th><th class="num">P(referable)</th><th>Confidence</th><th>Macular-edema risk</th>
+    <thead><tr><th>Eye</th><th>Clinician decision</th><th>AI stage (suggestion)</th><th>AI routing (provisional)</th><th class="num">P(referable)</th><th>Confidence</th><th>Macular-edema risk</th>
       <th class="num">MA</th><th class="num">HE</th><th class="num">EX</th><th class="num">SE</th></tr></thead>
     <tbody>
     {% for e in eyes %}
       <tr>
         <td>{{ e.eye|capitalize }}</td>
+        <td>{% if e.eff and e.eff.signed %}<b>{{ e.eff.next_action_label }}</b>{% if e.eff.stage is not none %}<br>Stage {{ e.eff.stage }}{% endif %}{% if e.eff.pending %}<br><span class="muted">Newer photo awaiting review</span>{% endif %}{% else %}<span class="muted">Not yet signed</span>{% endif %}</td>
         {% if e.ok %}
         <td><span class="stage"><span class="dot" style="background: {{ stage_solid[e.stage] }}"></span>{{ e.stage }} · {{ e.stage_label }}</span></td>
         <td>{{ e.route.label if e.route else '—' }}</td>
@@ -94,13 +96,14 @@
         <td>{{ e.dme.level|capitalize }}{% if e.dme.nearest_exudate_dd is not none %} <span class="muted">(nearest exudate {{ '%.1f'|format(e.dme.nearest_exudate_dd) }} DD)</span>{% endif %}</td>
         <td class="num">{{ e.lesions.MA }}</td><td class="num">{{ e.lesions.HE }}</td><td class="num">{{ e.lesions.EX }}</td><td class="num">{{ e.lesions.SE }}</td>
         {% else %}
-        <td>{{ e.route.label if e.route else '—' }}</td><td colspan="8" class="muted">Image rejected: not assessable.</td>
+        <td class="muted">Not assessable</td><td>{{ e.route.label if e.route else '—' }}</td><td colspan="7" class="muted">Image rejected: not assessable.</td>
         {% endif %}
       </tr>
     {% endfor %}
+    {% for m in missing %}<tr><td>{{ m|capitalize }}</td><td colspan="10" class="muted">Not photographed in this visit: screening incomplete.</td></tr>{% endfor %}
     </tbody>
   </table>
-  <p class="small muted">Lesion columns count segmented regions (microaneurysms, haemorrhages, hard exudates, soft exudates). P(referable) and confidence are calibrated on held-out data (ADR-019).</p>
+  <p class="small muted">The AI stage, routing, lesion regions and Grad-CAM attribution are model outputs, not clinical findings. Lesion columns count segmented regions (microaneurysms, haemorrhages, hard exudates, soft exudates). P(referable) and confidence are calibrated on held-out data (ADR-019).</p>
 
   <h2>Images and findings</h2>
   <div class="eyes">
@@ -115,14 +118,16 @@
       {% for f in e.flags %}<p class="small"><b>Flag:</b> {{ f.clinical }}</p>{% endfor %}
       {% endif %}
       {% if e.quality.issues %}<p class="small"><b>Image quality:</b> {{ e.quality.issues|join(' ') }}</p>{% endif %}
-      {% if e.review %}<p class="small"><b>Clinician review ({{ e.review.created[:10] }}):</b> {{ e.review.decision }}{% if e.review.corrected_stage is not none %}, stage {{ e.review.corrected_stage }}{% endif %}{% if e.review.note %}: {{ e.review.note }}{% endif %}</p>{% endif %}
+      {% if e.eff and e.eff.signed %}<p class="small"><b>Clinician decision</b> (signed by {{ e.eff.reviewer }}, {{ e.eff.signed_at[:10] }}): {{ e.eff.next_action_label }}{% if e.eff.stage is not none %}; stage {{ e.eff.stage }}{% endif %}{% if e.eff.note %}: {{ e.eff.note }}{% endif %}{% if e.eff.reanalysed_since_signing %} <span class="muted">(the AI was re-analysed after signing; the signed decision stands)</span>{% endif %}</p>
+      {% else %}<p class="small"><b>No authenticated clinician decision yet.</b></p>{% endif %}
+      {% if e.eff and e.eff.legacy_reviews %}<p class="small muted">{{ e.eff.legacy_reviews }} historical review(s) without authenticated sign-off are kept in the case record; they do not set the next action.</p>{% endif %}
     </div>
   {% endfor %}
   </div>
 
   <footer class="doc">
     Research prototype for screening decision support ({{ model_version }}). Not a diagnosis and not validated for clinical use.
-    Routing: AI-assisted prioritisation with a routine-rescreening pile ({{ summary.operating_point.wording }}). Categories follow the structure of the ICO Guidelines for Diabetic Eye Care (2017); timing follows the local programme. A qualified clinician makes the final decision.
+    AI routing is a provisional prioritisation ({{ summary.operating_point.wording }}); the next action is the one signed by the reviewing clinician. Categories follow the structure of the ICO Guidelines for Diabetic Eye Care (2017); timing follows the local programme.
   </footer>
 {% else %}
   <header class="doc">
@@ -137,6 +142,7 @@
   <div class="callout {{ summary.follow_up.level }}">
     <div class="overline">{{ t.next_step }}</div>
     <p class="res" style="color: {{ c.text.primary }}">{{ t.follow_up[summary.follow_up.level] }}</p>
+    {% if missing and summary.follow_up.level != 'incomplete' %}<p>{{ t.follow_up.incomplete }}</p>{% endif %}
   </div>
 
   <h2>{{ t.result }}</h2>
@@ -145,11 +151,13 @@
     {% for e in eyes %}
       <tr>
         <th style="width: 30%">{{ t[e.eye] }}</th>
-        <td>{% if e.ok and e.route and e.route.state not in ('RETAKE',) %}<span class="stage"><span class="dot" style="background: {{ stage_solid[e.stage] }}"></span>{{ t.stage[e.stage][0] }}</span><br><span class="muted">{{ t.stage[e.stage][1] }}</span>
-            <br>{{ t.swelling }}: {{ t.risk[e.dme.level] }}
-            {% else %}{{ t.not_assessed }}{% endif %}</td>
+        <td>{% if e.eff and e.eff.signed and e.eff.stage is not none %}<span class="stage"><span class="dot" style="background: {{ stage_solid[e.eff.stage] }}"></span>{{ t.stage[e.eff.stage][0] }}</span><br><span class="muted">{{ t.stage[e.eff.stage][1] }}</span>
+            {% if e.eff.dme %}<br>{{ t.swelling }}: {{ t.risk[e.eff.dme] }}{% endif %}
+            {% elif e.eff and e.eff.signed %}{{ t.not_assessed }}
+            {% else %}{{ t.eye_pending }}{% endif %}</td>
       </tr>
     {% endfor %}
+    {% for m in missing %}<tr><th style="width: 30%">{{ t[m] }}</th><td>{{ t.eye_missing }}</td></tr>{% endfor %}
     </tbody>
   </table>
 

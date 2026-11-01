@@ -38,12 +38,15 @@ def composite(analysis, width=520):
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def eye_rows(cases):
+def eye_rows(cases, summary=None):
+    """One row per photographed eye of the visit. `eff` is the effective (clinician-authoritative) state of that eye from
+    backend/clinical_state.py; the AI fields stay labelled as suggestions in the template."""
+    eff = {e["eye"]: e.get("effective") for e in (summary or {}).get("eyes", [])}
     rows = []
     for c in cases:
         a, s = c["analysis"], c["assist"]
         row = dict(id=c["id"], eye=c["eye"], ok=a.get("status") == "ok", assist=s, route=c.get("routing"), image=composite(a) if a.get("display_image") else None,
-                   quality=a.get("quality", {}), review=c.get("review"))
+                   quality=a.get("quality", {}), review=c.get("review"), eff=eff.get(c["eye"]))
         if row["ok"]:
             f = a["findings"]
             row.update(stage=a["grading"]["grade"], stage_label=GRADE_SHORT[a["grading"]["grade"]], dme=f["macular_edema_risk"],
@@ -59,8 +62,9 @@ def render(kind, lang, patient_ref, cases, summary, model_version, font_base="/r
         raise ValueError(f"unsupported language {lang}")
     tpl = env.get_template("report.html")
     return tpl.render(kind=kind, lang=lang if kind == "patient" else "en", t=PATIENT[lang if kind == "patient" else "en"],
-                      c=TOKENS["color"], patient_ref=patient_ref, today=date.today().isoformat(), eyes=eye_rows(cases),
-                      summary=summary, model_version=model_version, font_base=font_base, brand=TOKENS["brand_identity"])
+                      c=TOKENS["color"], patient_ref=patient_ref, today=date.today().isoformat(), eyes=eye_rows(cases, summary),
+                      summary=summary, model_version=model_version, font_base=font_base, brand=TOKENS["brand_identity"],
+                      missing=(summary.get("effective") or {}).get("missing_eyes", []) if not summary.get("single_photo") else [])
 
 
 def edge_path():

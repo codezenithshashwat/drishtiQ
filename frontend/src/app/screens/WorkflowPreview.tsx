@@ -38,7 +38,7 @@ export function WorkflowPreview() {
         </div> : active === 3 ? <div className="report-preview">
           <FileText size={40} strokeWidth={1.25} aria-hidden /><h3>One case.<br />Two conversations.</h3>
           <div><p><strong>For the clinician</strong>Grading, image quality and predicted findings.</p><p><strong>For the patient</strong>A plain-language summary in English or Hindi.</p></div>
-          <p className="preview-note">Clinician corrections are stored separately. They do not currently update generated reports or routing.</p>
+          <p className="preview-note">Signed clinician decisions set the next action in reports. The original AI suggestion stays visible for comparison.</p>
         </div> : <>
           <figure className="example-retina">
             <div className="example-retina-crop"><div className="retinal-plate" style={{ transform: `scale(${zoom})` }}><img src={heroShot} width={1200} height={750} loading="lazy" alt="Recorded IDRiD example with predicted lesion regions already drawn on the retinal photograph" /></div></div>
@@ -48,7 +48,7 @@ export function WorkflowPreview() {
           {active === 1 ? <div className="example-legend">{(['MA', 'HE', 'EX', 'SE'] as const).map(k => <span key={k}><i style={{ background: tokens.color.lesion[k] }} aria-hidden />{k}</span>)}<span>Predicted regions</span></div> : <p className="example-review-note"><Stethoscope size={20} aria-hidden />An AI suggestion is a starting point for review. It is not a final diagnosis.</p>}
         </>}
       </div>
-      <p className="workflow-footnote">{active === 1 ? 'This recorded example has fixed overlays, not live inference. Grad-CAM in the case viewer shows model attribution, not proof of disease.' : active === 2 ? 'Corrections are saved with a case but do not currently change generated reports or routing.' : 'Product overview. No patient data is submitted from this preview.'}</p>
+      <p className="workflow-footnote">{active === 1 ? 'This recorded example has fixed overlays, not live inference. Grad-CAM in the case viewer shows model attribution, not proof of disease.' : active === 2 ? 'Signed clinician decisions govern the next action in reports and linked patient status. AI suggestions stay provisional.' : 'Product overview. No patient data is submitted from this preview.'}</p>
     </div>
   </div>
 }

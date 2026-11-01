@@ -136,5 +136,5 @@ def test_patient_summary_strings_complete():
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from backend.report_text import PATIENT, REQUIRED
-    assert set(PATIENT) == {"en", "hi"} and len(REQUIRED) == 36
+    assert set(PATIENT) == {"en", "hi"} and len(REQUIRED) == 40  # V3 added follow_up.follow_up, follow_up.pending, eye_pending, eye_missing
     assert all(any("ऀ" <= ch <= "ॿ" for ch in PATIENT["hi"]["stage"][s][0]) for s in range(5))  # Devanagari

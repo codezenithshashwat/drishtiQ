@@ -43,7 +43,10 @@ def server(tmp_path_factory):
             time.sleep(1)
         else:
             pytest.fail("backend did not start within 300 s")
-        yield httpx.Client(base_url=base, timeout=120)
+        c = httpx.Client(base_url=base, timeout=120, headers={"X-Requested-With": "dqn"})
+        # V3: clinical endpoints need a signed-in ophthalmologist (the demo clinician seeded in demo mode; throwaway data dir).
+        assert c.post("/api/network/auth/login", json={"identifier": "9000000004", "password": "Demo@Eye-Doctor1"}).status_code == 200
+        yield c
     finally:
         proc.terminate()
         proc.wait(timeout=30)
@@ -79,10 +82,10 @@ def test_full_flow(server):
     listed = server.get("/api/cases").json()["cases"]
     assert [c["id"] for c in listed] == [cid] and listed[0]["status"] == "new"
 
-    r = server.post(f"/api/cases/{cid}/review", json={"reviewer": "E2E", "decision": "agree", "note": ""})
+    r = server.post(f"/api/cases/{cid}/review", json={"decision": "agree", "note": "", "next_action": "follow_up"})
     assert r.status_code == 200 and r.json()["status"] == "reviewed"
     new_stage = (ai_stage + 1) % 5
-    r = server.post(f"/api/cases/{cid}/review", json={"reviewer": "E2E", "decision": "disagree", "corrected_stage": new_stage,
+    r = server.post(f"/api/cases/{cid}/review", json={"decision": "disagree", "corrected_stage": new_stage, "next_action": "referral",
                                                       "note": "More haemorrhages than the AI counted."})
     assert r.status_code == 200
     assert set(r.json()) == shape

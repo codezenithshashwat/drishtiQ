@@ -1,6 +1,7 @@
 """API contract tests. Run: .venv\\Scripts\\python -m pytest backend -q"""
 import csv
 import io
+import os
 
 import numpy as np
 import pytest
@@ -11,15 +12,25 @@ from backend import store
 from backend.app import ROOT, app
 
 
+H = {"X-Requested-With": "dqn"}
+
+
 @pytest.fixture(scope="module")
 def client(tmp_path_factory):
-    # Cases go to a throwaway store, never the local worklist.
+    # Cases AND the Network database go to a throwaway directory, never the local worklist or accounts.
     tmp = tmp_path_factory.mktemp("store")
-    old = store.DIR, store.IMAGES
+    old = store.DIR, store.IMAGES, os.environ.get("RS_DATA_DIR")
     store.DIR, store.IMAGES = tmp, tmp / "images"
-    with TestClient(app) as c:
+    os.environ["RS_DATA_DIR"] = str(tmp)
+    with TestClient(app, headers=H) as c:
+        # Clinical endpoints need a signed-in ophthalmologist (V3): the demo clinician seeded in demo mode.
+        assert c.post("/api/network/auth/login", json={"identifier": "9000000004", "password": "Demo@Eye-Doctor1"}).status_code == 200
         yield c
-    store.DIR, store.IMAGES = old
+    store.DIR, store.IMAGES = old[:2]
+    if old[2] is None:
+        os.environ.pop("RS_DATA_DIR", None)
+    else:
+        os.environ["RS_DATA_DIR"] = old[2]
 
 
 def encode(arr, fmt="PNG"):
@@ -74,11 +85,12 @@ def test_case_review_report_flow(client):
     assert case["id"].startswith("RS-") and case["analysis"]["status"] == "ok" and "defer" in case["assist"]
     rows = client.get("/api/cases").json()["cases"]
     assert [c["id"] for c in rows] == [case["id"]]
-    assert client.post(f"/api/cases/{case['id']}/review", json={"reviewer": "T", "decision": "disagree"}).status_code == 422
-    r = client.post(f"/api/cases/{case['id']}/review", json={"reviewer": "T", "decision": "disagree", "corrected_stage": 2, "note": "x"})
+    assert client.post(f"/api/cases/{case['id']}/review", json={"decision": "disagree", "next_action": "referral"}).status_code == 422
+    r = client.post(f"/api/cases/{case['id']}/review", json={"decision": "disagree", "corrected_stage": 2, "note": "x", "next_action": "referral"})
     assert r.status_code == 200 and r.json()["status"] == "reviewed" and r.json()["reviews"][0]["corrected_stage"] == 2
+    assert r.json()["reviews"][0]["authenticated"] and r.json()["effective"]["next_action"] == "referral"
     detail = client.get(f"/api/cases/{case['id']}").json()
-    assert detail["patient"]["follow_up"]["level"] in {"routine", "refer", "urgent", "human", "retake", "incomplete"}
+    assert detail["patient"]["follow_up"]["level"] == "refer"
     for kind, lang, needle in (("doctor", "en", "Screening report"), ("patient", "en", "Your eye screening result"), ("patient", "hi", "आपकी आँखों")):
         h = client.get(f"/api/patients/TEST-1/report.html?kind={kind}&lang={lang}")
         assert h.status_code == 200 and needle in h.text

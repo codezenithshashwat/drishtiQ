@@ -16,13 +16,13 @@ export function Report({ patient, caseId }: { patient: string; caseId: string | 
   const [retry, setRetry] = useState(0)
   const frame = useRef<HTMLIFrameElement>(null)
   const effectiveLang = kind === 'doctor' ? 'en' : lang
-  const src = api.reportUrl(patient, kind, effectiveLang, 'html')
+  const src = api.reportUrl(patient, kind, effectiveLang, 'html', caseId)
   const current = preview?.src === src ? preview : null
   const ready = !!current?.html && loadedSrc === src
   useEffect(() => {
     const controller = new AbortController()
     setPreview(null); setLoadedSrc(null)
-    fetch(src, { signal: controller.signal }).then(async r => { if (!r.ok) throw new Error(`Report unavailable (${r.status}). Check that this patient has saved cases.`); return r.text() })
+    fetch(src, { signal: controller.signal, credentials: 'same-origin' }).then(async r => { if (!r.ok) throw new Error(`Report unavailable (${r.status}). Check that this patient has saved cases.`); return r.text() })
       .then(html => setPreview({ src, html }), error => { if (error.name !== 'AbortError') setPreview({ src, error: error.message }) })
     return () => controller.abort()
   }, [src, retry])
@@ -32,7 +32,7 @@ export function Report({ patient, caseId }: { patient: string; caseId: string | 
   async function download() {
     setBusy(true); setNote(null)
     try {
-      const r = await fetch(api.reportUrl(patient, kind, effectiveLang, 'pdf'))
+      const r = await fetch(api.reportUrl(patient, kind, effectiveLang, 'pdf', caseId), { credentials: 'same-origin' })
       if (!r.ok) { const detail = await r.json().catch(() => null); throw new Error(detail?.detail ?? `PDF export failed (${r.status})`) }
       const url = URL.createObjectURL(await r.blob())
       const a = document.createElement('a')
@@ -44,10 +44,10 @@ export function Report({ patient, caseId }: { patient: string; caseId: string | 
     } finally { setBusy(false) }
   }
   return <>
-    <PageHeader title={`Report · ${patient}`} subtitle="Latest recorded photograph of each eye. Generated from the AI analysis and existing routing rules."
+    <PageHeader title={`Report · ${patient}`} subtitle="One screening visit: the latest photograph of each eye. Signed clinician decisions set the next action; AI output is labelled as a suggestion."
       actions={<>{caseId && <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(`/cases/${caseId}`)}>Back to case</Button>}<Button variant="secondary" icon={Printer} disabled={!ready} onClick={print}>Print</Button><Button icon={Download} disabled={!ready} onClick={download} state={busy ? 'loading' : 'default'}>Download PDF</Button></>} />
-    <div className="mb-6 rounded-control border border-status-warning-border bg-status-warning-tint px-4 py-3 text-secondary text-status-warning-text">
-      <strong className="font-semibold">Report provenance:</strong> saved clinician corrections do not currently update this report or its routing. Review the case record before using or sharing the report.
+    <div className="mb-6 rounded-control border border-border-default bg-surface-subtle px-4 py-3 text-secondary text-text-secondary">
+      <strong className="font-semibold text-text-primary">Report provenance:</strong> the next action comes from the signed clinician decision for each eye. Eyes without a signed decision appear as awaiting review; the patient summary never shows an unsigned AI stage.
     </div>
     <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
       <Tabs value={kind} onChange={v => { setKind(v as 'doctor' | 'patient'); setNote(null) }} tabs={[{ value: 'doctor', label: 'Doctor report' }, { value: 'patient', label: 'Patient summary' }]} />

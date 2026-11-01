@@ -19,7 +19,7 @@ import traceback
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
@@ -30,7 +30,14 @@ sys.path.insert(0, str(ROOT / "src"))
 os.environ.setdefault("HF_HUB_OFFLINE", "1")  # every weight file is local; the app never downloads at run time
 from inference import Pipeline, assist, findings, routing  # noqa: E402
 
-from . import experiments, report, store  # noqa: E402
+from . import clinical_auth, clinical_state, experiments, report, store  # noqa: E402
+from .network import config as network_config, db as network_db, seed as network_seed, services as network_services  # noqa: E402
+from .network import security as network_security  # noqa: E402
+from .network.router import router as network_router  # noqa: E402
+
+# Clinical access control. Every /api route is clinician-only except these, which carry no patient data.
+CLIN = [Depends(clinical_auth.need_clinician)]
+PUBLIC_API = {"/api/health", "/api/glossary", "/api/version", "/api/model"}
 
 MAX_BYTES = 25 * 1024 * 1024
 MIN_SIDE = 256
@@ -80,6 +87,11 @@ def pipeline():
 @asynccontextmanager
 async def lifespan(app):
     state["commit"] = git_commit()
+    # DrishtiQ Network has its own database and does not depend on the models, so open it first.
+    network_db.connect()
+    network_services.purge_expired()
+    if network_config.DEMO_MODE:
+        network_seed.seed_demo()
     try:
         state["pipeline"] = Pipeline()
     except Exception as e:  # missing or corrupt model file, broken config: report it instead of crashing
@@ -89,6 +101,7 @@ async def lifespan(app):
         state.update(db=store.connect(), signature="", calibration=None)  # the worklist stays readable
         yield
         state.clear()
+        network_db.close()
         return
     state["signature"] = signature(state["pipeline"])
     state["db"] = store.connect()
@@ -100,9 +113,12 @@ async def lifespan(app):
     threading.Thread(target=reanalyse_stale, daemon=True).start()
     yield
     state.clear()
+    network_db.close()
 
 
 app = FastAPI(title="DR Screening Decision Support (prototype)", version="0.2.0", lifespan=lifespan)
+clinical_state.set_db_provider(lambda: state.get("db"))  # read-only access for the Network next-action bridge
+app.include_router(network_router)  # DrishtiQ Network: /api/network/*, registered before the /api catch-all below
 
 
 @app.get("/api/health")
@@ -171,13 +187,15 @@ def run(data):
     return result
 
 
-@app.post("/api/analyze")
+@app.post("/api/analyze", dependencies=CLIN)
 async def analyze(file: UploadFile = File(...)):
     data, _ = await read_image(file)
     return run(data)
 
 
-# ---- cases (worklist, case view, reviews) -------------------------------------------------------------------------
+# ---- cases (Specialist Attention, case view, reviews) ---------------------------------------------------------------
+# Every endpoint in this section requires a signed-in ophthalmologist (CLIN). The public allowlist is PUBLIC_API below;
+# backend/test_clinical_p0.py fails if any other /api route is reachable without the clinician dependency.
 THUMBS = {}
 
 
@@ -197,15 +215,19 @@ def target():
 
 
 def signed_referral(review):
-    """A signed review that refers the eye: corrected stage >= 2, or agreement with an AI stage >= 2."""
+    """A previous review that referred the eye. Authenticated reviews: an explicit referral/examination action or a decided
+    stage >= 2. Historical (pre-V3) reviews still count here, because this signal can only ESCALATE a later visit."""
     if not review:
         return False
-    stage = review["corrected_stage"] if review["decision"] == "disagree" else review["ai_stage"] if review["decision"] == "agree" else None
+    if clinical_state.is_signed(review) and review["next_action"] in ("referral", "urgent_referral", "examination"):
+        return True
+    stage = clinical_state.decided_stage(review) if review["decision"] in ("agree", "disagree") else None
     return stage is not None and stage >= 2
 
 
 def eye_routing(r, a, s):
-    """Eye state + reasons (routing.eye_state) and the previous signed result for this patient's eye."""
+    """AI routing of one photo (routing.eye_state) and the previous review for this patient's eye. Provisional: it orders
+    the worklist and explains priority; it is never a clinical decision."""
     previous, prior_referral, retakes = None, None, 0
     for e in store.earlier_cases(state["db"], r):
         ea = json.loads(e["analysis"])
@@ -214,7 +236,8 @@ def eye_routing(r, a, s):
         rev = store.reviews(state["db"], e["id"])
         if rev and previous is None:
             previous = dict(case_id=e["id"], created=e["created"], reviewer=rev[0]["reviewer"], decision=rev[0]["decision"],
-                            ai_stage=rev[0]["ai_stage"], corrected_stage=rev[0]["corrected_stage"], note=rev[0]["note"])
+                            ai_stage=rev[0]["ai_stage"], corrected_stage=rev[0]["corrected_stage"], note=rev[0]["note"],
+                            authenticated=rev[0].get("reviewer_user_id") is not None, next_action=rev[0].get("next_action"))
             if signed_referral(rev[0]):
                 prior_referral = f"case {e['id']}, {e['created'][:10]}"
     intake = dict(vision_problems=bool(r["vision_problems"]), prior_treatment=bool(r["prior_treatment"]))
@@ -223,83 +246,185 @@ def eye_routing(r, a, s):
     return dict(**out, label=routing.LABEL[out["state"]], previous=previous, intake=intake)
 
 
-def summary_row(r):
+# Specialist Attention queues. Signed cases leave the active queues; everything else is ordered by AI-suggested priority.
+QUEUE_LABEL = {"attention": "Needs attention", "awaiting": "Awaiting review", "retake": "Retake / cannot assess", "routine": "Routine pile",
+               "signed": "Signed"}
+
+
+def queue_of(route, effective, analysis):
+    if effective["signed"]:
+        return "signed", f"Signed by {effective['reviewer']}: {effective['next_action_label']}."
+    if effective["legacy_reviews"]:
+        return "awaiting", "A historical review exists without an authenticated sign-off. Review and sign this case."
+    if clinical_state.quality_concern(analysis) or route["state"] == routing.RETAKE:
+        return "retake", route["reasons"][0] if route["reasons"] else "The photograph could not be assessed."
+    if route["state"] in (routing.URGENT, routing.REFERABLE):
+        return "attention", route["reasons"][0]
+    if route["state"] == routing.ROUTINE:
+        return "routine", "AI-suggested routine rescreening candidate. A clinician must still sign it."
+    return "awaiting", route["reasons"][0] if route["reasons"] else "Clinician review."
+
+
+def review_dto(rv):
+    return dict(rv, authenticated=rv.get("reviewer_user_id") is not None,
+                next_action_label=clinical_state.NEXT_ACTIONS.get(rv.get("next_action") or "", {}).get("label"))
+
+
+def summary_row(r, completeness=None):
     a = json.loads(r["analysis"])
     s = assist.annotate(a, state["calibration"])
     route = eye_routing(r, a, s)
     ok = a.get("status") == "ok"
+    eff = clinical_state.eye_decision(r, a, store.reviews(state["db"], r["id"]))
+    queue, reason = queue_of(route, eff, a)
     return dict(id=r["id"], created=r["created"], patient_ref=r["patient_ref"], eye=r["eye"], status=r["status"], source=r["source"],
                 stale=r["analysed_with"] != state["signature"], assist=s, thumbnail=thumbnail(r["id"], a),
                 stage=a["grading"]["grade"] if ok else None, stage_label=a["grading"]["label"] if ok else None,
                 dme=a["findings"]["macular_edema_risk"]["level"] if ok else None, quality_usable=a["quality"]["usable"],
-                lesion_regions=sum(l["components"] for l in a.get("lesions", [])), flags=a.get("consistency_flags", []), routing=route)
+                lesion_regions=sum(l["components"] for l in a.get("lesions", [])), flags=a.get("consistency_flags", []), routing=route,
+                effective=eff, queue=queue, queue_label=QUEUE_LABEL[queue], queue_reason=reason, encounter_id=r["encounter_id"],
+                completeness=completeness)
 
 
-@app.get("/api/cases")
+def completeness_index():
+    """encounter_id -> {right, left: bool} for the whole store, in one query."""
+    out = {}
+    for row in state["db"].execute("SELECT encounter_id, eye FROM cases WHERE encounter_id IS NOT NULL"):
+        out.setdefault(row["encounter_id"], {"right": False, "left": False})[row["eye"]] = True
+    return out
+
+
+@app.get("/api/cases", dependencies=CLIN)
 def list_cases():
-    rows = [summary_row(r) for r in store.cases(state["db"])]
-    # ADR-040 order: URGENT_REVIEW -> CLINICIAN_REVIEW -> REFERABLE -> RETAKE -> ROUTINE; within a group, higher P(referable) first.
-    rows.sort(key=lambda x: (x["status"] == "reviewed", routing.ORDER[x["routing"]["state"]], -(x["assist"].get("p_referable") or 0.0)))
-    return dict(cases=rows, calibration=dict(available=state["calibration"] is not None, tau=(state["calibration"] or {}).get("tau")),
+    idx = completeness_index()
+    rows = [summary_row(r, idx.get(r["encounter_id"])) for r in store.cases(state["db"])]
+    # Active queues first in ADR-040 AI order (URGENT -> CLINICIAN -> REFERABLE -> RETAKE -> ROUTINE), higher P(referable)
+    # first; signed cases last, newest signature first.
+    active = sorted((x for x in rows if x["queue"] != "signed"),
+                    key=lambda x: (routing.ORDER[x["routing"]["state"]], -(x["assist"].get("p_referable") or 0.0)))
+    signed = sorted((x for x in rows if x["queue"] == "signed"), key=lambda x: x["effective"]["signed_at"], reverse=True)
+    return dict(cases=active + signed, calibration=dict(available=state["calibration"] is not None, tau=(state["calibration"] or {}).get("tau")),
                 reanalysis=state.get("reanalysis"))
 
 
 def full_case(r):
     a = json.loads(r["analysis"])
     s = assist.annotate(a, state["calibration"])
+    revs = store.reviews(state["db"], r["id"])
     return dict(id=r["id"], created=r["created"], patient_ref=r["patient_ref"], eye=r["eye"], status=r["status"], source=r["source"],
                 stale=r["analysed_with"] != state["signature"], analysis=a, assist=s, routing=eye_routing(r, a, s),
-                reviews=store.reviews(state["db"], r["id"]))
+                reviews=[review_dto(x) for x in revs], effective=clinical_state.eye_decision(r, a, revs), encounter_id=r["encounter_id"])
 
 
-@app.post("/api/cases")
-async def create_case(file: UploadFile = File(...), patient_ref: str = Form(..., min_length=1, max_length=40),
-                      eye: str = Form(..., pattern="^(right|left|unknown)$"), vision_problems: bool = Form(False),
-                      prior_treatment: bool = Form(False)):
-    data, ext = await read_image(file)
-    result = run(data)
-    cid = store.add_case(state["db"], patient_ref.strip(), eye, "upload", data, ext, result, state["signature"],
-                         intake=dict(vision_problems=vision_problems, prior_treatment=prior_treatment))
-    return case_payload(cid)
+def encounter_payload(eid):
+    e = store.encounter(state["db"], eid)
+    if e is None:
+        raise HTTPException(404, f"No screening encounter {eid}.")
+    eyes = clinical_state.encounter_eyes(state["db"], eid)
+    return dict(id=e["id"], patient_ref=e["patient_ref"], created=e["created"], created_by=e["created_by_name"],
+                eyes=eyes, outcome=clinical_state.aggregate(eyes), link=network_services.link_for_encounter(eid),
+                photos=[dict(id=c["id"], eye=c["eye"], created=c["created"]) for c in store.encounter_all_cases(state["db"], eid)])
 
 
 def case_payload(cid):
-    """The complete case record (with the patient-level summary) that every case endpoint returns."""
+    """The complete case record with its visit (encounter) summary that every case endpoint returns."""
     r = store.case(state["db"], cid)
     if not r:
         raise HTTPException(404, f"No case {cid}.")
     out = full_case(r)
-    out["patient"] = patient_payload(r["patient_ref"])["summary"]
+    out["patient"] = outcome_payload(r)["summary"]
+    out["encounter"] = encounter_payload(r["encounter_id"]) if r["encounter_id"] else None
     return out
 
 
+@app.get("/api/clinician/me")
+def clinician_me(user=Depends(clinical_auth.need_clinician)):
+    return {"user": user}
+
+
 @app.get("/api/cases/{cid}")
-def get_case(cid: str):
+def get_case(cid: str, user=Depends(clinical_auth.need_clinician)):
+    out = case_payload(cid)
+    network_security.audit({"id": user["id"], "role": "ophthalmologist"}, "clinical.case.open", "case", cid)
+    return out
+
+
+class EncounterIn(BaseModel):
+    patient_ref: str = Field(min_length=1, max_length=40)
+    client_key: str | None = Field(default=None, max_length=64)
+
+
+@app.post("/api/encounters")
+def create_encounter(body: EncounterIn, user=Depends(clinical_auth.need_clinician)):
+    e = store.create_encounter(state["db"], body.patient_ref.strip(), user["id"], user["name"], (body.client_key or "").strip() or None)
+    if e["patient_ref"] != body.patient_ref.strip():
+        raise HTTPException(409, "This request key already belongs to another patient's screening.")
+    return encounter_payload(e["id"])
+
+
+@app.get("/api/encounters/{eid}", dependencies=CLIN)
+def get_encounter(eid: str):
+    return encounter_payload(eid)
+
+
+@app.post("/api/cases", dependencies=CLIN)
+async def create_case(file: UploadFile = File(...), patient_ref: str = Form(..., min_length=1, max_length=40),
+                      eye: str = Form(..., pattern="^(right|left|unknown)$"), vision_problems: bool = Form(False),
+                      prior_treatment: bool = Form(False), encounter_id: str | None = Form(None, max_length=20)):
+    ref = patient_ref.strip()
+    if encounter_id:
+        e = store.encounter(state["db"], encounter_id)
+        if e is None:
+            raise HTTPException(422, "Unknown screening encounter.")
+        if e["patient_ref"] != ref:
+            raise HTTPException(422, "This photograph's patient reference does not match the screening encounter.")
+        if eye not in ("right", "left"):
+            raise HTTPException(422, "A photograph in a screening encounter must be recorded as the right or the left eye.")
+    data, ext = await read_image(file)
+    result = run(data)
+    cid = store.add_case(state["db"], ref, eye, "upload", data, ext, result, state["signature"],
+                         intake=dict(vision_problems=vision_problems, prior_treatment=prior_treatment), encounter_id=encounter_id or None)
     return case_payload(cid)
 
 
 class Review(BaseModel):
-    reviewer: str = Field(min_length=1, max_length=60)
+    # A legacy client may still send "reviewer"; it is ignored. The reviewer is always the signed-in account.
     decision: str = Field(pattern="^(agree|disagree|ungradable)$")
     corrected_stage: int | None = Field(default=None, ge=0, le=4)
     corrected_dme: str | None = Field(default=None, pattern="^(low|possible|high)$")
+    next_action: str | None = Field(default=None, max_length=30)
     note: str = Field(default="", max_length=1000)
 
 
 @app.post("/api/cases/{cid}/review")
-def review_case(cid: str, body: Review):
+def review_case(cid: str, body: Review, user=Depends(clinical_auth.need_clinician)):
     r = store.case(state["db"], cid)
     if not r:
         raise HTTPException(404, f"No case {cid}.")
     a = json.loads(r["analysis"])
+    ok = a.get("status") == "ok"
     if body.decision == "disagree" and body.corrected_stage is None:
         raise HTTPException(422, "A disagreement needs the corrected stage.")
-    store.add_review(state["db"], cid, body.reviewer, body.decision, body.corrected_stage, body.corrected_dme, body.note,
-                     a["grading"]["grade"] if a.get("status") == "ok" else None, pipeline().grader_spec)
+    if body.decision == "agree" and not ok:
+        raise HTTPException(422, "The AI gave no stage for this photograph, so there is nothing to confirm. Record the stage you see or mark it ungradable.")
+    ai_stage = a["grading"]["grade"] if ok else None
+    ai_dme = a["findings"]["macular_edema_risk"]["level"] if ok else None
+    stage = body.corrected_stage if body.decision == "disagree" else ai_stage if body.decision == "agree" else None
+    dme = body.corrected_dme or (ai_dme if body.decision == "agree" else None)
+    try:
+        clinical_state.validate_decision(body.decision, stage, dme, body.next_action, body.note)
+    except clinical_state.DecisionError as e:
+        raise HTTPException(422, str(e))
+    s = assist.annotate(a, state["calibration"])
+    route = eye_routing(r, a, s)
+    rid = store.add_review(state["db"], cid, user["name"], body.decision, body.corrected_stage, body.corrected_dme, body.note.strip(), ai_stage,
+                           pipeline().grader_spec, reviewer_user_id=user["id"], next_action=body.next_action, ai_dme=ai_dme,
+                           ai_model_version=a.get("model_version"), ai_route_state=route["state"], analysed_with=r["analysed_with"])
+    network_security.audit({"id": user["id"], "role": "ophthalmologist"}, "clinical.review.sign", "case", cid, f"review {rid}: {body.next_action}")
     return case_payload(cid)
 
 
-@app.get("/api/disagreements")
+@app.get("/api/disagreements", dependencies=CLIN)
 def disagreements():
     """Reviews in which the clinician changed the AI's stage, newest first (the doctor-feedback view)."""
     out = []
@@ -309,59 +434,103 @@ def disagreements():
         c = store.case(state["db"], r["case_id"])
         out.append(dict(review_id=r["id"], case_id=r["case_id"], created=r["created"], reviewer=r["reviewer"], ai_stage=r["ai_stage"],
                         corrected_stage=r["corrected_stage"], corrected_dme=r["corrected_dme"], note=r["note"], ai_grader=r["ai_grader"],
-                        patient_ref=c["patient_ref"] if c else None, eye=c["eye"] if c else None))
+                        patient_ref=c["patient_ref"] if c else None, eye=c["eye"] if c else None,
+                        authenticated=r.get("reviewer_user_id") is not None, next_action=r.get("next_action")))
     return dict(disagreements=out, reviews_total=len(store.reviews(state["db"])))
 
 
-@app.get("/api/feedback.csv")
+@app.get("/api/feedback.csv", dependencies=CLIN)
 def feedback_csv():
     rows = store.reviews(state["db"])
     buf = io.StringIO()
-    cols = ["id", "case_id", "created", "reviewer", "decision", "ai_stage", "corrected_stage", "corrected_dme", "note", "ai_grader"]
+    cols = ["id", "case_id", "created", "reviewer", "reviewer_user_id", "decision", "ai_stage", "corrected_stage", "corrected_dme", "next_action",
+            "note", "ai_grader", "ai_model_version"]
     w = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
     w.writeheader()
     w.writerows(rows)
     return Response(buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=feedback.csv"})
 
 
-# ---- patient-level output and reports (B7) --------------------------------------------------------------------------
-def patient_payload(patient_ref):
-    rows = store.patient_cases(state["db"], patient_ref)
-    if not rows:
-        raise HTTPException(404, f"No cases for patient {patient_ref}.")
+# ---- registration <-> screening link (explicit, consented, made by a signed-in clinician) ----------------------------
+class LinkIn(BaseModel):
+    ref: str = Field(min_length=3, max_length=20)
+    code: str = Field(min_length=3, max_length=20)
+    consent_confirmed: bool
+
+
+class UnlinkIn(BaseModel):
+    reason: str = Field(min_length=3, max_length=200)
+
+
+@app.post("/api/encounters/{eid}/link")
+def link_registration(eid: str, body: LinkIn, user=Depends(clinical_auth.need_clinician)):
+    if store.encounter(state["db"], eid) is None:
+        raise HTTPException(404, f"No screening encounter {eid}.")
+    network_services.link_screening(user, eid, body.ref, body.code, body.consent_confirmed)
+    return encounter_payload(eid)
+
+
+@app.post("/api/encounters/{eid}/unlink")
+def unlink_registration(eid: str, body: UnlinkIn, user=Depends(clinical_auth.need_clinician)):
+    network_services.unlink_screening(user, eid, body.reason)
+    return encounter_payload(eid)
+
+
+# ---- visit-level outcome and reports (B7) ---------------------------------------------------------------------------
+FOLLOW_UP_LEVEL = {"urgent_referral": "urgent", "referral": "refer", "examination": "human", "recapture": "retake", "follow_up": "follow_up",
+                   "routine_rescreen": "routine"}
+
+
+def outcome_payload(r):
+    """Outcome of the visit a case belongs to. Encounter cases: the latest photo of each eye in THAT encounter. Older cases
+    with no encounter: that single photograph only (never paired with other visits)."""
+    rows = store.encounter_cases(state["db"], r["encounter_id"]) if r["encounter_id"] else [r]
+    eyes = clinical_state.encounter_eyes(state["db"], r["encounter_id"]) if r["encounter_id"] else \
+        [dict(clinical_state.eye_decision(r, json.loads(r["analysis"]), store.reviews(state["db"], r["id"])), pending=None)]
+    for e in eyes:
+        if e.get("pending") is None:
+            e["pending"] = not e["signed"]
     cases = []
-    for r in rows:
-        c = full_case(r)
-        c["review"] = c["reviews"][0] if c["reviews"] else None
+    for row in rows:
+        c = full_case(row)
+        c["review"] = next((x for x in c["reviews"] if x["authenticated"] and x.get("next_action")), None)
         cases.append(c)
-    summary = routing.patient_state([dict(eye=c["eye"], state=c["routing"]["state"], reasons=c["routing"]["reasons"],
-                                          stage=c["analysis"]["grading"]["grade"] if c["analysis"].get("status") == "ok" else None) for c in cases])
-    level = {routing.URGENT: "urgent", routing.REFERABLE: "refer", routing.ROUTINE: "routine", routing.RETAKE: "retake",
-             routing.INCOMPLETE: "incomplete"}.get(summary["state"], "human")
-    worst = max(cases, key=lambda c: routing.SEVERITY[c["routing"]["state"]])
-    text = " ".join(summary["notes"] or worst["routing"]["reasons"])
-    summary.update(follow_up=dict(level=level, title=summary["label"], text=text),
-                   note="Suggested by the prototype from the AI output; the clinician decides.",
+    ai = routing.patient_state([dict(eye=c["eye"], state=c["routing"]["state"], reasons=c["routing"]["reasons"],
+                                     stage=c["analysis"]["grading"]["grade"] if c["analysis"].get("status") == "ok" else None) for c in cases])
+    eff = clinical_state.aggregate(eyes)
+    if eff["state"] == "decision_recorded":
+        level = FOLLOW_UP_LEVEL[eff["next_action"]]
+        title, text = f"Clinician decision: {eff['next_action_label']}", "Signed by the reviewing clinician."
+    elif eff["state"] == "incomplete":
+        level, title, text = "incomplete", "Screening incomplete", f"No {' or '.join(eff['missing_eyes'])}-eye photograph in this visit."
+    else:
+        level, title = "pending", "Awaiting clinician review"
+        text = "Image quality was flagged by the automated check (provisional)." if eff["quality_provisional"] else "No clinician has signed this visit yet."
+    by_eye = {e["eye"]: e for e in eyes}  # by eye: a decision signed on an earlier photo of the eye still applies to it
+    summary = dict(state=ai["state"], label=ai["label"], notes=ai["notes"], ai_label=f"AI-suggested: {ai['label']}",
+                   effective=eff, encounter_id=r["encounter_id"], single_photo=not r["encounter_id"],
+                   follow_up=dict(level=level, title=title, text=text),
+                   note="AI routing is provisional and only orders the worklist. The signed clinician decision governs the next action.",
                    eyes=[dict(eye=c["eye"], case_id=c["id"], stage=c["analysis"]["grading"]["grade"] if c["analysis"].get("status") == "ok" else None,
                               label=c["analysis"].get("grading", {}).get("label"), state=c["routing"]["state"], state_label=c["routing"]["label"],
-                              reasons=c["routing"]["reasons"], defer=c["routing"]["state"] != routing.ROUTINE,
-                              p_referable=c["assist"].get("p_referable")) for c in cases],
+                              reasons=c["routing"]["reasons"], defer=c["routing"]["state"] != routing.ROUTINE, p_referable=c["assist"].get("p_referable"),
+                              effective=by_eye.get(c["eye"])) for c in cases],
                    operating_point=dict(target=target(), wording=routing.wording(target()), valid=state.get("routing_valid", False)))
-    return dict(cases=cases, summary=summary)
+    return dict(cases=cases, eyes=eyes, summary=summary)
 
 
 class Settings(BaseModel):
     target: float = Field(description="target referable miss rate: 0.025 (default) or 0.05")
 
 
-@app.get("/api/settings")
+@app.get("/api/settings", dependencies=CLIN)
 def get_settings():
     cfg = routing.load_config()
     return dict(target=target(), choices=[float(k) for k in cfg["thresholds"]], wording=routing.wording(target()),
                 routing_valid=state.get("routing_valid", False))
 
 
-@app.post("/api/settings")
+@app.post("/api/settings", dependencies=CLIN)
 def set_settings(body: Settings):
     if f"{body.target}" not in routing.load_config()["thresholds"]:
         raise HTTPException(422, "The operating point must be 0.025 or 0.05 (the thresholds fitted on the internal hold-out).")
@@ -369,22 +538,40 @@ def set_settings(body: Settings):
     return get_settings()
 
 
-def report_html(patient_ref, kind, lang):
+def report_case(patient_ref, case_id):
+    """The case whose visit a report describes: the given case (it must belong to this patient), else the patient's most
+    recent encounter, else their most recent single photograph. A report never mixes visits."""
+    if case_id:
+        r = store.case(state["db"], case_id)
+        if not r or r["patient_ref"] != patient_ref:
+            raise HTTPException(404, f"No case {case_id} for patient {patient_ref}.")
+        return r
+    e = store.latest_encounter_for_patient(state["db"], patient_ref)
+    rows = store.encounter_cases(state["db"], e["id"]) if e else []
+    if rows:
+        return rows[0]
+    rows = state["db"].execute("SELECT * FROM cases WHERE patient_ref=? ORDER BY created DESC, rowid DESC LIMIT 1", (patient_ref,)).fetchall()
+    if not rows:
+        raise HTTPException(404, f"No cases for patient {patient_ref}.")
+    return rows[0]
+
+
+def report_html(patient_ref, kind, lang, case_id=None):
     if kind not in ("doctor", "patient") or lang not in ("en", "hi"):
         raise HTTPException(422, "kind must be doctor or patient; lang must be en or hi.")
-    p = patient_payload(patient_ref)
+    p = outcome_payload(report_case(patient_ref, case_id))
     return report.render(kind, lang, patient_ref, p["cases"], p["summary"], pipeline().model_version)
 
 
-@app.get("/api/patients/{patient_ref}/report.html", response_class=HTMLResponse)
-def report_preview(patient_ref: str, kind: str = "doctor", lang: str = "en"):
-    return report_html(patient_ref, kind, lang)
+@app.get("/api/patients/{patient_ref}/report.html", response_class=HTMLResponse, dependencies=CLIN)
+def report_preview(patient_ref: str, kind: str = "doctor", lang: str = "en", case: str | None = None):
+    return report_html(patient_ref, kind, lang, case)
 
 
-@app.get("/api/patients/{patient_ref}/report.pdf")
-def report_pdf(patient_ref: str, kind: str = "doctor", lang: str = "en"):
+@app.get("/api/patients/{patient_ref}/report.pdf", dependencies=CLIN)
+def report_pdf(patient_ref: str, kind: str = "doctor", lang: str = "en", case: str | None = None):
     try:
-        data = report.pdf(report_html(patient_ref, kind, lang))
+        data = report.pdf(report_html(patient_ref, kind, lang, case))
     except RuntimeError as e:
         raise HTTPException(503, str(e))
     name = f"{patient_ref}_{kind}{'' if kind == 'doctor' else '_' + lang}.pdf"

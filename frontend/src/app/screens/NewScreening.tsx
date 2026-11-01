@@ -2,7 +2,7 @@ import { Aperture, CircleCheck, Crosshair, Eye as EyeIcon, FileText, ImageUp, Li
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { Alert, Badge, Button, Card, Checkbox, Field, IconCircle, Input, Progress, Segmented, StageBadge, cn } from '../../design/components'
 import { api, type CaseDetail, type Eye } from '../api'
-import { ROUTING, STAGE_CLINICAL, eyeName } from '../format'
+import { ROUTING, STAGE_CLINICAL, VISIT, eyeName } from '../format'
 import { linkProps, navigate } from '../router'
 import { PageHeader } from '../Shell'
 import { useUnsavedChanges } from '../useUnsavedChanges'
@@ -19,6 +19,8 @@ export function NewScreening() {
   const [fileMessage, setFileMessage] = useState<string | null>(null)
   const previewUrls = useRef(new Set<string>())
   const inFlight = useRef(false)
+  const newKey = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`)
+  const visitKey = useRef(newKey())
   useEffect(() => { const urls = previewUrls.current; return () => { urls.forEach(url => URL.revokeObjectURL(url)) } }, [])
   // ADR-040: at most two optional intake questions; either one sends the case to clinician review.
   const [intake, setIntake] = useState({ vision_problems: false, prior_treatment: false })
@@ -60,10 +62,22 @@ export function NewScreening() {
     if (!patient.trim() || chosen.length === 0 || tooBig.length) { document.getElementById(!patient.trim() ? 'patient' : 'photographs')?.focus(); return }
     inFlight.current = true
     const out: Done[] = []
+    // One screening visit (encounter) pairs the right and left photographs. The key makes a retried submit reuse it.
+    let encounterId: string | undefined
+    if (!eyeUnknown) {
+      try {
+        setBusy('Starting the screening visit…')
+        encounterId = (await api.createEncounter(patient.trim(), visitKey.current)).id
+      } catch (e) {
+        setBusy(null); inFlight.current = false
+        setDone(chosen.map((eye) => ({ eye, error: `The visit could not be started: ${(e as Error).message}` })))
+        return
+      }
+    }
     for (const eye of chosen) {
       setBusy(`Analysing the ${eyeName(eye).toLowerCase()}…`)
       try {
-        out.push({ eye, case: await api.createCase(slots[eye]!.file, patient.trim(), eye, intake) })
+        out.push({ eye, case: await api.createCase(slots[eye]!.file, patient.trim(), eye, intake, encounterId) })
       } catch (e) {
         out.push({ eye, error: (e as Error).message })
       }
@@ -78,6 +92,7 @@ export function NewScreening() {
     previewUrls.current.clear()
     setFileMessage(null)
     setSlots({}); setDone(null); setPatient(''); setTouched(false); setIntake({ vision_problems: false, prior_treatment: false })
+    visitKey.current = newKey()  // the next screening is a new visit
   }
 
   if (uploadMode === 'batch' && !batch) return <BatchPicker onFiles={setBatch} onBack={() => setUploadMode('individual')} />
@@ -130,6 +145,7 @@ export function NewScreening() {
               {fileMessage && <p role="alert" className="mt-3 text-secondary text-status-danger-text">{fileMessage}</p>}
               {fileError && <p role="alert" className="mt-2 text-caption text-status-danger-text">{fileError}</p>}
               {tooBig.length > 0 && <p className="mt-2 text-caption text-status-danger-text">The photograph of the {tooBig.map((e) => eyeName(e).toLowerCase()).join(' and ')} is larger than {MAX_MB} MB.</p>}
+              {!eyeUnknown && chosen.length === 1 && <p className="mt-3 text-caption text-status-warning-text">Only the {eyeName(chosen[0]).toLowerCase()} is added. This visit will show as incomplete until the other eye is photographed.</p>}
               <div className="mt-5 flex flex-wrap justify-end gap-2">
                 <Button variant="secondary" onClick={() => navigate('/worklist')} state={busy ? 'disabled' : 'default'}>Cancel</Button>
                 <Button icon={ScanEye} onClick={submit} state={busy ? 'loading' : 'default'}>
@@ -204,7 +220,7 @@ function Results({ patient, done, onRestart }: { patient: string; done: Done[]; 
           const c = d.case, a = c?.analysis
           const retake = a && (a.status === 'rejected' || !a.quality.usable)
           return (
-            <Card key={d.eye} title={eyeName(d.eye)} actions={c && <Badge tone={ROUTING[c.routing.state].tone} dot>{ROUTING[c.routing.state].label}</Badge>}>
+            <Card key={d.eye} title={eyeName(d.eye)} actions={c && <Badge tone={ROUTING[c.routing.state].tone} dot>AI: {ROUTING[c.routing.state].label}</Badge>}>
               {d.error && <Alert tone="danger" title="This photograph could not be analysed">{d.error}</Alert>}
               {c && a && (
                 <div className="flex flex-col gap-4">
@@ -214,6 +230,7 @@ function Results({ patient, done, onRestart }: { patient: string; done: Done[]; 
                     </Alert>
                   ) : (
                     <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-caption text-text-secondary">AI severity suggestion</span>
                       <StageBadge stage={a.grading!.grade} label={STAGE_CLINICAL[a.grading!.grade]} />
                       {c.assist.available && <span className="text-secondary text-text-secondary">Chance it needs a specialist: {Math.round(100 * (c.assist.p_referable ?? 0))}%</span>}
                     </div>
@@ -229,15 +246,16 @@ function Results({ patient, done, onRestart }: { patient: string; done: Done[]; 
         })}
       </div>
       {latest && (
-        <Alert tone={latest.patient.state === 'ROUTINE_RESCREEN_ELIGIBLE' ? 'info' : 'warning'} title={`Patient ${patient}: ${latest.patient.label}`}>
-          {latest.patient.notes.join(' ')} A clinician reviews every case before any decision.
+        <Alert tone={latest.patient.effective.missing_eyes.length ? 'warning' : 'info'} title={`Visit for ${patient}: ${VISIT[latest.patient.effective.state].label}`}>
+          {latest.patient.effective.missing_eyes.length > 0 && `No ${latest.patient.effective.missing_eyes.join(' or ')}-eye photograph yet. `}
+          {latest.patient.ai_label}. {latest.patient.notes.join(' ')} The next action is set only when a clinician signs each eye in Specialist Attention.
         </Alert>
       )}
       <div className="flex flex-wrap justify-end gap-2">
         <Button variant="secondary" onClick={onRestart}>Screen another patient</Button>
-        <Button variant="secondary" icon={ListChecks} onClick={() => navigate('/worklist')}>Go to the worklist</Button>
-        {done.some((d) => d.case) && (
-          <a {...linkProps(`/patients/${encodeURIComponent(patient)}/report`)}
+        <Button variant="secondary" icon={ListChecks} onClick={() => navigate('/worklist')}>Go to Specialist Attention</Button>
+        {latest && (
+          <a {...linkProps(`/patients/${encodeURIComponent(patient)}/report?case=${encodeURIComponent(latest.id)}`)}
             className="inline-flex h-control items-center gap-2 rounded-control bg-cta px-4 text-body font-medium text-text-onBrand no-underline shadow-card hover:bg-cta-hover">
             <FileText size={16} strokeWidth={1.75} aria-hidden />Patient report
           </a>
